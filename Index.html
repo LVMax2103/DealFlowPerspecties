@@ -1,1 +1,619 @@
-
++<!DOCTYPE html>
++<html lang="es">
++<head>
++  <meta charset="UTF-8">
++  <meta name="viewport" content="width=device-width, initial-scale=1.0">
++  <title>DealFlow Perspectives | El pulso del capital privado en LATAM</title>
++  <meta name="description" content="Inteligencia financiera y análisis premium sobre Private Equity, M&A y Venture Capital en América Latina.">
++  <!-- Fuentes: Serif para titulares y Sans para cuerpo -->
++  <link rel="preconnect" href="https://fonts.googleapis.com">
++  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
++  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
++  <style>
++    :root {
++      --bg-dark: #0a0f1a;
++      --bg-darker: #05070d;
++      --navy: #0f172a;
++      --accent: #0ea5e9;
++      --text-light: #e5e7eb;
++      --text-muted: #94a3b8;
++      --card: #111827;
++      --border: rgba(255,255,255,0.08);
++      --gradient: linear-gradient(135deg, rgba(14,165,233,0.08), rgba(14,165,233,0.02));
++      --shadow-soft: 0 24px 70px rgba(0,0,0,0.35);
++    }
+ 
++    * {
++      box-sizing: border-box;
++    }
++
++    body {
++      margin: 0;
++      font-family: 'Inter', system-ui, -apple-system, sans-serif;
++      background: var(--bg-dark);
++      color: var(--text-light);
++      line-height: 1.6;
++      overflow-x: hidden;
++    }
++
++    a { color: inherit; text-decoration: none; }
++
++    img { max-width: 100%; display: block; }
++
++    /* Navegación sticky */
++    header {
++      position: sticky;
++      top: 0;
++      z-index: 999;
++      backdrop-filter: blur(12px);
++      background: rgba(5, 7, 13, 0.8);
++      border-bottom: 1px solid var(--border);
++      transition: all 0.3s ease;
++    }
++
++    header.scrolled {
++      background: rgba(5, 7, 13, 0.95);
++      box-shadow: 0 10px 40px rgba(0,0,0,0.35);
++    }
++
++    .nav {
++      max-width: 1200px;
++      margin: 0 auto;
++      padding: 16px 24px;
++      display: flex;
++      align-items: center;
++      justify-content: space-between;
++      gap: 18px;
++    }
++
++    .logo {
++      display: flex;
++      align-items: center;
++      gap: 12px;
++      font-family: 'Playfair Display', serif;
++      font-size: 1.1rem;
++      letter-spacing: 0.5px;
++      font-weight: 700;
++    }
++
++    .logo img {
++      width: 42px;
++      height: 42px;
++      object-fit: contain;
++      filter: drop-shadow(0 6px 18px rgba(14,165,233,0.2));
++    }
++
++    nav ul {
++      list-style: none;
++      display: flex;
++      gap: 18px;
++      margin: 0;
++      padding: 0;
++      font-weight: 500;
++      color: var(--text-muted);
++    }
++
++    nav li { position: relative; }
++
++    nav a::after {
++      content: '';
++      position: absolute;
++      left: 0;
++      bottom: -6px;
++      width: 0;
++      height: 2px;
++      background: var(--accent);
++      transition: width 0.25s ease;
++    }
++
++    nav a:hover::after,
++    nav a:focus-visible::after {
++      width: 100%;
++    }
++
++    .btn {
++      display: inline-flex;
++      align-items: center;
++      justify-content: center;
++      gap: 10px;
++      border-radius: 999px;
++      padding: 12px 18px;
++      background: linear-gradient(135deg, #0ea5e9, #0b6ba8);
++      color: white;
++      font-weight: 600;
++      letter-spacing: 0.2px;
++      box-shadow: 0 10px 30px rgba(14,165,233,0.25);
++      transition: transform 0.2s ease, box-shadow 0.2s ease;
++    }
++
++    .btn:hover { transform: translateY(-2px); box-shadow: 0 16px 40px rgba(14,165,233,0.35); }
++    .btn:active { transform: translateY(0); }
++
++    main { overflow-x: hidden; }
++
++    .section {
++      max-width: 1200px;
++      margin: 0 auto;
++      padding: 80px 24px;
++    }
++
++    /* Hero */
++    .hero {
++      position: relative;
++      min-height: 80vh;
++      display: grid;
++      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
++      gap: 32px;
++      align-items: center;
++      padding-top: 120px;
++    }
++
++    .hero::before {
++      content: '';
++      position: absolute;
++      inset: 0;
++      background: linear-gradient(120deg, rgba(14,165,233,0.2), rgba(14,165,233,0)),
++                  linear-gradient(180deg, rgba(5,7,13,0.35), var(--bg-darker));
++      z-index: -1;
++    }
++
++    .hero::after {
++      content: '';
++      position: absolute;
++      inset: 0;
++      background: url('https://images.unsplash.com/photo-1473186578172-c141e6798cf4?auto=format&fit=crop&w=1600&q=80') center/cover;
++      opacity: 0.18;
++      mix-blend-mode: screen;
++      z-index: -2;
++    }
++
++    .hero h1 {
++      font-family: 'Playfair Display', serif;
++      font-size: clamp(2.2rem, 4vw, 3.4rem);
++      margin: 0 0 12px;
++      line-height: 1.15;
++      letter-spacing: -0.5px;
++    }
++
++    .hero p.lead {
++      color: var(--text-muted);
++      font-size: 1.05rem;
++      margin-bottom: 26px;
++      max-width: 620px;
++    }
++
++    .badge {
++      display: inline-flex;
++      align-items: center;
++      gap: 8px;
++      background: rgba(14,165,233,0.12);
++      color: #7dd3fc;
++      padding: 8px 12px;
++      border-radius: 999px;
++      font-weight: 600;
++      letter-spacing: 0.2px;
++      border: 1px solid rgba(14,165,233,0.25);
++      box-shadow: 0 12px 30px rgba(14,165,233,0.12);
++      margin-bottom: 16px;
++      width: fit-content;
++    }
++
++    .hero-visual {
++      position: relative;
++      background: var(--gradient);
++      border: 1px solid var(--border);
++      border-radius: 20px;
++      padding: 24px;
++      box-shadow: var(--shadow-soft);
++      overflow: hidden;
++      isolation: isolate;
++    }
++
++    .hero-visual img {
++      width: 180px;
++      margin-bottom: 16px;
++      filter: drop-shadow(0 12px 40px rgba(14,165,233,0.35));
++    }
++
++    .glass-card {
++      background: rgba(255,255,255,0.04);
++      border: 1px solid rgba(255,255,255,0.06);
++      border-radius: 16px;
++      padding: 16px;
++      margin-top: 10px;
++      display: grid;
++      grid-template-columns: 1fr auto;
++      gap: 12px;
++      align-items: center;
++    }
++
++    .glass-card strong { font-family: 'Playfair Display', serif; letter-spacing: 0.2px; }
++    .accent { color: #7dd3fc; }
++
++    /* Cards base */
++    .card-grid {
++      display: grid;
++      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
++      gap: 22px;
++    }
++
++    .card {
++      background: var(--card);
++      border: 1px solid var(--border);
++      border-radius: 16px;
++      overflow: hidden;
++      box-shadow: 0 16px 48px rgba(0,0,0,0.25);
++      position: relative;
++      transition: transform 0.2s ease, box-shadow 0.2s ease;
++    }
++
++    .card:hover { transform: translateY(-6px); box-shadow: 0 20px 60px rgba(0,0,0,0.35); }
++
++    .card img {
++      height: 180px;
++      width: 100%;
++      object-fit: cover;
++    }
++
++    .card-content { padding: 18px; }
++
++    .pill {
++      display: inline-flex;
++      align-items: center;
++      gap: 8px;
++      padding: 6px 10px;
++      border-radius: 999px;
++      border: 1px solid var(--border);
++      font-weight: 600;
++      color: #a5b4fc;
++      background: rgba(79,70,229,0.08);
++      margin-bottom: 10px;
++      text-transform: uppercase;
++      letter-spacing: 0.5px;
++      font-size: 0.75rem;
++    }
++
++    .meta { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 10px; }
++    .card h3 { margin: 0 0 10px; font-family: 'Playfair Display', serif; letter-spacing: -0.2px; }
++    .card p { margin: 0; color: var(--text-muted); }
++
++    /* About */
++    .about {
++      display: grid;
++      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
++      gap: 32px;
++      align-items: center;
++    }
++
++    .about img { border-radius: 16px; border: 1px solid var(--border); box-shadow: var(--shadow-soft); }
++
++    .stats {
++      display: grid;
++      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
++      gap: 18px;
++      margin-top: 20px;
++    }
++
++    .stat {
++      padding: 14px 16px;
++      border-radius: 14px;
++      background: rgba(255,255,255,0.03);
++      border: 1px solid var(--border);
++    }
++
++    .stat strong { display: block; font-family: 'Playfair Display', serif; font-size: 1.3rem; }
++    .stat span { color: var(--text-muted); }
++
++    /* Categorías */
++    .category-card {
++      padding: 18px;
++      border-radius: 16px;
++      background: rgba(255,255,255,0.03);
++      border: 1px solid var(--border);
++      display: grid;
++      gap: 10px;
++      transition: all 0.2s ease;
++    }
++
++    .category-card:hover { border-color: rgba(14,165,233,0.4); box-shadow: 0 10px 30px rgba(14,165,233,0.16); }
++
++    .category-icon {
++      width: 42px;
++      height: 42px;
++      border-radius: 12px;
++      display: grid;
++      place-items: center;
++      color: #7dd3fc;
++      background: rgba(14,165,233,0.14);
++      border: 1px solid rgba(14,165,233,0.2);
++      font-weight: 800;
++    }
++
++    /* Newsletter */
++    .newsletter {
++      background: linear-gradient(120deg, rgba(14,165,233,0.18), rgba(14,165,233,0.05));
++      border: 1px solid rgba(14,165,233,0.2);
++      border-radius: 20px;
++      padding: 32px;
++      box-shadow: var(--shadow-soft);
++      position: relative;
++      overflow: hidden;
++      isolation: isolate;
++    }
++
++    .newsletter::after {
++      content: '';
++      position: absolute;
++      inset: 0;
++      background: radial-gradient(circle at 20% 20%, rgba(255,255,255,0.18), transparent 35%),
++                  radial-gradient(circle at 80% 0%, rgba(14,165,233,0.32), transparent 45%);
++      z-index: -1;
++    }
++
++    .newsletter form {
++      display: grid;
++      grid-template-columns: 2fr 1fr;
++      gap: 12px;
++      max-width: 600px;
++    }
++
++    .newsletter input {
++      padding: 14px 16px;
++      border-radius: 12px;
++      border: 1px solid rgba(255,255,255,0.18);
++      background: rgba(5,7,13,0.6);
++      color: white;
++      font-size: 1rem;
++    }
++
++    .newsletter input::placeholder { color: #cbd5e1; }
++
++    footer {
++      background: var(--bg-darker);
++      border-top: 1px solid var(--border);
++      padding: 32px 24px 24px;
++      color: var(--text-muted);
++    }
++
++    .footer-content { max-width: 1200px; margin: 0 auto; display: grid; gap: 22px; grid-template-columns: repeat(auto-fit, minmax(200px,1fr)); }
++    .footer-logo img { width: 140px; }
++    .footer-links { display: grid; gap: 10px; }
++    .social { display: flex; gap: 14px; align-items: center; }
++    .social a { color: #7dd3fc; font-weight: 600; }
++
++    /* Animaciones */
++    .fade-in { opacity: 0; transform: translateY(12px); transition: opacity 0.6s ease, transform 0.6s ease; }
++    .fade-in.visible { opacity: 1; transform: translateY(0); }
++
++    /* Responsive */
++    @media (max-width: 720px) {
++      nav ul { display: none; }
++      .nav { padding: 14px 16px; }
++      .hero { padding-top: 100px; }
++      .newsletter form { grid-template-columns: 1fr; }
++    }
++  </style>
++</head>
++<body>
++  <header id="topNav">
++    <div class="nav">
++      <div class="logo">
++        <!-- Reemplaza 'logo-light.png' por la ruta de tu logo claro -->
++        <img src="logo-light.png" alt="DealFlow Perspectives logo">
++        <span>DealFlow Perspectives</span>
++      </div>
++      <nav aria-label="Secciones principales">
++        <ul>
++          <li><a href="#noticias">Noticias</a></li>
++          <li><a href="#sobre">Sobre Nosotros</a></li>
++          <li><a href="#categorias">Categorías</a></li>
++          <li><a href="#newsletter">Newsletter</a></li>
++        </ul>
++      </nav>
++      <a class="btn" href="#newsletter">Suscríbete</a>
++    </div>
++  </header>
++
++  <main>
++    <section class="section hero" id="inicio">
++      <div class="fade-in">
++        <div class="badge">El pulso del capital privado en LATAM</div>
++        <h1>Inteligencia y análisis para inversionistas de élite en América Latina.</h1>
++        <p class="lead">Insights accionables sobre Private Equity, M&A y Venture Capital. Cobertura regional, entrevistas exclusivas y tendencias que definen las próximas oportunidades en la región.</p>
++        <a class="btn" href="#newsletter">Suscríbete al Newsletter</a>
++      </div>
++      <div class="hero-visual fade-in" aria-hidden="true">
++        <!-- Reemplaza 'logo-dark.png' por la ruta de tu logo oscuro -->
++        <img src="logo-dark.png" alt="DealFlow Perspectives">
++        <div class="glass-card">
++          <div>
++            <small class="meta">Cobertura diaria</small>
++            <strong>PE &amp; M&amp;A</strong>
++            <span class="accent">LatAm</span>
++          </div>
++          <div>
++            <small class="meta">Comunidad</small>
++            <strong>500+ líderes</strong>
++          </div>
++        </div>
++        <div class="glass-card">
++          <div>
++            <small class="meta">Nuevas historias</small>
++            <strong>Deals destacados</strong>
++          </div>
++          <div>
++            <small class="accent">Premium</small>
++          </div>
++        </div>
++      </div>
++    </section>
++
++    <section class="section" id="noticias">
++      <div class="fade-in" style="margin-bottom: 18px;">
++        <p class="meta">Últimas noticias</p>
++        <h2 style="margin: 0 0 6px; font-family: 'Playfair Display', serif;">Movimientos recientes en Private Equity y M&amp;A</h2>
++        <p class="meta">Cobertura curada por analistas especializados en capital privado latinoamericano.</p>
++      </div>
++      <div class="card-grid fade-in">
++        <article class="card">
++          <img src="https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=800&q=80" alt="Deal reciente en Brasil">
++          <div class="card-content">
++            <span class="pill">Private Equity</span>
++            <div class="meta">12 Feb 2025 • Brasil</div>
++            <h3>Fondo global lidera ronda de USD 420M para infraestructura digital brasileña</h3>
++            <p>Inversionistas institucionales apuestan por data centers y conectividad 5G con enfoque sostenible.</p>
++          </div>
++        </article>
++        <article class="card">
++          <img src="https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=800&q=80" alt="M&A en México">
++          <div class="card-content">
++            <span class="pill" style="background: rgba(16,185,129,0.12); color:#6ee7b7;">M&amp;A</span>
++            <div class="meta">10 Feb 2025 • México</div>
++            <h3>Consolidación fintech: adquisición estratégica redefine pagos B2B en la región</h3>
++            <p>Las sinergias operativas impulsan márgenes y crean un nuevo hub de innovación financiera.</p>
++          </div>
++        </article>
++        <article class="card">
++          <img src="https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?auto=format&fit=crop&w=800&q=80" alt="Venture Capital en Chile">
++          <div class="card-content">
++            <span class="pill" style="background: rgba(59,130,246,0.12); color:#93c5fd;">Venture Capital</span>
++            <div class="meta">08 Feb 2025 • Chile</div>
++            <h3>Startups climáticas atraen récord de capital semilla en la Andina</h3>
++            <p>Fondos early-stage priorizan soluciones de energía distribuida y almacenamiento inteligente.</p>
++          </div>
++        </article>
++      </div>
++    </section>
++
++    <section class="section about" id="sobre">
++      <div class="fade-in">
++        <p class="meta">Sobre DealFlow Perspectives</p>
++        <h2 style="margin-top:0; font-family: 'Playfair Display', serif;">Somos la comunidad que marca el ritmo del capital privado</h2>
++        <p>Centralizamos inteligencia accionable para inversionistas, family offices y ejecutivos que buscan anticipar tendencias y descubrir oportunidades en LATAM. Nuestra cobertura combina periodismo financiero, datos y análisis estratégico.</p>
++        <div class="stats">
++          <div class="stat">
++            <strong>500+</strong>
++            <span>Inversores y líderes en la comunidad</span>
++          </div>
++          <div class="stat">
++            <strong>20+</strong>
++            <span>Países cubiertos con reportes dedicados</span>
++          </div>
++          <div class="stat">
++            <strong>1200+</strong>
++            <span>Deals analizados en los últimos 12 meses</span>
++          </div>
++          <div class="stat">
++            <strong>24/7</strong>
++            <span>Monitor de transacciones y tendencias</span>
++          </div>
++        </div>
++      </div>
++      <div class="fade-in">
++        <img src="https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=900&q=80" alt="Equipo financiero trabajando">
++      </div>
++    </section>
++
++    <section class="section" id="categorias">
++      <div class="fade-in" style="margin-bottom: 14px;">
++        <p class="meta">Temas clave</p>
++        <h2 style="margin: 0; font-family: 'Playfair Display', serif;">Explora por categoría</h2>
++      </div>
++      <div class="card-grid fade-in">
++        <div class="category-card">
++          <div class="category-icon">PE</div>
++          <h3 style="margin:0; font-family: 'Playfair Display', serif;">Private Equity</h3>
++          <p class="meta">Fondos, portafolios y estrategias de valor en LATAM.</p>
++        </div>
++        <div class="category-card">
++          <div class="category-icon">M&amp;A</div>
++          <h3 style="margin:0; font-family: 'Playfair Display', serif;">M&amp;A</h3>
++          <p class="meta">Integraciones estratégicas, consolidación sectorial y cross-border deals.</p>
++        </div>
++        <div class="category-card">
++          <div class="category-icon">VC</div>
++          <h3 style="margin:0; font-family: 'Playfair Display', serif;">Venture Capital</h3>
++          <p class="meta">Rondas, fundadores y verticales emergentes de alto crecimiento.</p>
++        </div>
++        <div class="category-card">
++          <div class="category-icon">FO</div>
++          <h3 style="margin:0; font-family: 'Playfair Display', serif;">Family Offices</h3>
++          <p class="meta">Tesis de inversión, gobierno patrimonial y coinversiones.</p>
++        </div>
++        <div class="category-card">
++          <div class="category-icon">MT</div>
++          <h3 style="margin:0; font-family: 'Playfair Display', serif;">Market Trends</h3>
++          <p class="meta">Macro, sectores defensivos y riesgos geopolíticos en la región.</p>
++        </div>
++      </div>
++    </section>
++
++    <section class="section" id="newsletter">
++      <div class="newsletter fade-in">
++        <p class="meta">Newsletter semanal</p>
++        <h2 style="margin-top: 0; font-family: 'Playfair Display', serif;">Únete a +5,000 profesionales que reciben análisis exclusivo cada semana</h2>
++        <p style="max-width: 680px; color: var(--text-light);">Resúmenes accionables, deals a seguir, entrevistas con inversionistas y mapas de oportunidades sectoriales. Todo lo que necesitas para anticipar el próximo movimiento.</p>
++        <form>
++          <label class="sr-only" for="email">Correo electrónico</label>
++          <input id="email" type="email" name="email" placeholder="Tu correo corporativo" required>
++          <button class="btn" type="submit">Suscribirme</button>
++        </form>
++        <p class="meta" style="margin-top: 10px;">Cero spam. Cancela cuando quieras.</p>
++      </div>
++    </section>
++  </main>
++
++  <footer>
++    <div class="footer-content">
++      <div class="footer-logo">
++        <!-- Reemplaza 'logo-dark.png' por la ruta de tu logo oscuro -->
++        <img src="logo-dark.png" alt="DealFlow Perspectives">
++        <p>Inteligencia, análisis y comunidad para el ecosistema de capital privado en América Latina.</p>
++      </div>
++      <div class="footer-links">
++        <strong style="color: white;">Compañía</strong>
++        <a href="#sobre">About</a>
++        <a href="mailto:contacto@dealflowperspectives.com">Contact</a>
++      </div>
++      <div class="footer-links">
++        <strong style="color: white;">Legal</strong>
++        <a href="#">Privacy Policy</a>
++        <a href="#">Terms</a>
++      </div>
++      <div class="footer-links">
++        <strong style="color: white;">Síguenos</strong>
++        <div class="social">
++          <a href="https://www.linkedin.com" aria-label="LinkedIn">LinkedIn</a>
++          <a href="#" aria-label="Twitter">Twitter</a>
++        </div>
++      </div>
++    </div>
++    <p style="margin-top: 24px; text-align:center; font-size: 0.9rem;">© 2025 DealFlow Perspectives. Todos los derechos reservados.</p>
++  </footer>
++
++  <script>
++    // Efecto sticky al hacer scroll
++    const nav = document.getElementById('topNav');
++    window.addEventListener('scroll', () => {
++      nav.classList.toggle('scrolled', window.scrollY > 10);
++    });
++
++    // Animaciones de aparición con IntersectionObserver
++    const observer = new IntersectionObserver((entries) => {
++      entries.forEach(entry => {
++        if (entry.isIntersecting) {
++          entry.target.classList.add('visible');
++          observer.unobserve(entry.target);
++        }
++      });
++    }, { threshold: 0.2 });
++
++    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
++
++    // Mejora de accesibilidad: etiqueta oculta para inputs
++    const srStyle = document.createElement('style');
++    srStyle.innerHTML = `.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0;}`;
++    document.head.appendChild(srStyle);
++  </script>
++</body>
++</html>
