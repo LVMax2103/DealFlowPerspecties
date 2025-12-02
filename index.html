@@ -23,9 +23,7 @@
       --shadow-soft: 0 24px 70px rgba(0,0,0,0.35);
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
@@ -37,6 +35,18 @@
     }
 
     a { color: inherit; text-decoration: none; }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
 
     img { max-width: 100%; display: block; }
 
@@ -128,6 +138,7 @@
 
     .btn:hover { transform: translateY(-2px); box-shadow: 0 16px 40px rgba(14,165,233,0.35); }
     .btn:active { transform: translateY(0); }
+    .btn:focus-visible { outline: 2px solid #7dd3fc; outline-offset: 3px; }
 
     main { overflow-x: hidden; }
 
@@ -135,7 +146,24 @@
       max-width: 1200px;
       margin: 0 auto;
       padding: 80px 24px;
+      scroll-margin-top: 96px;
     }
+
+    .section-title {
+      margin: 0 0 6px;
+      font-family: 'Playfair Display', serif;
+    }
+
+    .section-subtitle {
+      margin: 0 0 14px;
+      font-family: 'Playfair Display', serif;
+    }
+
+    .section-header { margin-bottom: 18px; }
+    .section-header--compact { margin-bottom: 14px; }
+    .heading-tight { margin: 0; font-family: 'Playfair Display', serif; }
+    .mt-10 { margin-top: 10px; }
+    .footer-note { margin-top: 24px; text-align:center; font-size: 0.9rem; }
 
     /* Hero */
     .hero {
@@ -273,6 +301,9 @@
       font-size: 0.75rem;
     }
 
+    .pill--success { background: rgba(16,185,129,0.12); color:#6ee7b7; }
+    .pill--info { background: rgba(59,130,246,0.12); color:#93c5fd; }
+
     .meta { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 10px; }
     .card h3 { margin: 0 0 10px; font-family: 'Playfair Display', serif; letter-spacing: -0.2px; }
     .card p { margin: 0; color: var(--text-muted); }
@@ -357,6 +388,8 @@
       max-width: 600px;
     }
 
+    .text-muted-light { color: var(--text-light); max-width: 680px; }
+
     .newsletter input {
       padding: 14px 16px;
       border-radius: 12px;
@@ -378,12 +411,20 @@
     .footer-content { max-width: 1200px; margin: 0 auto; display: grid; gap: 22px; grid-template-columns: repeat(auto-fit, minmax(200px,1fr)); }
     .footer-logo img { width: 140px; }
     .footer-links { display: grid; gap: 10px; }
+    .footer-links strong { color: white; }
     .social { display: flex; gap: 14px; align-items: center; }
     .social a { color: #7dd3fc; font-weight: 600; }
 
     /* Animaciones */
     .fade-in { opacity: 0; transform: translateY(12px); transition: opacity 0.6s ease, transform 0.6s ease; }
     .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+    @media (prefers-reduced-motion: reduce) {
+      * { scroll-behavior: auto !important; }
+      .fade-in { opacity: 1; transform: none; transition: none; }
+      .btn { transition: none; }
+      header { transition: none; }
+    }
 
     /* Responsive */
     @media (max-width: 720px) {
@@ -398,7 +439,7 @@
   <header id="topNav">
     <div class="nav">
       <div class="logo">
-        <img src="logo-light.png" alt="DealFlow Perspectives logo">
+        <img src="logo-light.png" alt="DealFlow Perspectives logo" loading="lazy">
         <span>DealFlow Perspectives</span>
       </div>
       <nav aria-label="Secciones principales">
@@ -455,14 +496,14 @@
     </section>
 
     <section class="section" id="noticias">
-      <div class="fade-in" style="margin-bottom: 18px;">
+      <div class="fade-in section-header">
         <p class="meta">Últimas noticias</p>
-        <h2 style="margin: 0 0 6px; font-family: 'Playfair Display', serif;">Movimientos recientes en Private Equity y M&amp;A</h2>
+        <h2 class="section-title">Movimientos recientes en Private Equity y M&amp;A</h2>
         <p class="meta">Cobertura curada por analistas especializados en capital privado latinoamericano.</p>
       </div>
       <div class="card-grid fade-in">
         <article class="card">
-          <img src="https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=800&q=80" alt="Deal reciente en Brasil">
+          <img src="https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=800&q=80" alt="Deal reciente en Brasil" loading="lazy">
           <div class="card-content">
             <span class="pill">Private Equity</span>
             <div class="meta">12 Feb 2025 • Brasil</div>
@@ -471,18 +512,18 @@
           </div>
         </article>
         <article class="card">
-          <img src="https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=800&q=80" alt="M&A en México">
+          <img src="https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=800&q=80" alt="M&A en México" loading="lazy">
           <div class="card-content">
-            <span class="pill" style="background: rgba(16,185,129,0.12); color:#6ee7b7;">M&amp;A</span>
+            <span class="pill pill--success">M&amp;A</span>
             <div class="meta">10 Feb 2025 • México</div>
             <h3>Consolidación fintech: adquisición estratégica redefine pagos B2B en la región</h3>
             <p>Las sinergias operativas impulsan márgenes y crean un nuevo hub de innovación financiera.</p>
           </div>
         </article>
         <article class="card">
-          <img src="https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?auto=format&fit=crop&w=800&q=80" alt="Venture Capital en Chile">
+          <img src="https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?auto=format&fit=crop&w=800&q=80" alt="Venture Capital en Chile" loading="lazy">
           <div class="card-content">
-            <span class="pill" style="background: rgba(59,130,246,0.12); color:#93c5fd;">Venture Capital</span>
+            <span class="pill pill--info">Venture Capital</span>
             <div class="meta">08 Feb 2025 • Chile</div>
             <h3>Startups climáticas atraen récord de capital semilla en la Andina</h3>
             <p>Fondos early-stage priorizan soluciones de energía distribuida y almacenamiento inteligente.</p>
@@ -494,7 +535,7 @@
     <section class="section about" id="sobre">
       <div class="fade-in">
         <p class="meta">Sobre DealFlow Perspectives</p>
-        <h2 style="margin-top:0; font-family: 'Playfair Display', serif;">Somos la comunidad que marca el ritmo del capital privado</h2>
+        <h2 class="heading-tight">Somos la comunidad que marca el ritmo del capital privado</h2>
         <p>Centralizamos inteligencia accionable para inversionistas, family offices y ejecutivos que buscan anticipar tendencias y descubrir oportunidades en LATAM. Nuestra cobertura combina periodismo financiero, datos y análisis estratégico.</p>
         <div class="stats">
           <div class="stat">
@@ -516,39 +557,39 @@
         </div>
       </div>
       <div class="fade-in">
-        <img src="https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=900&q=80" alt="Equipo financiero trabajando">
+        <img src="https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=900&q=80" alt="Equipo financiero trabajando" loading="lazy">
       </div>
     </section>
 
     <section class="section" id="categorias">
-      <div class="fade-in" style="margin-bottom: 14px;">
+      <div class="fade-in section-header section-header--compact">
         <p class="meta">Temas clave</p>
-        <h2 style="margin: 0; font-family: 'Playfair Display', serif;">Explora por categoría</h2>
+        <h2 class="heading-tight">Explora por categoría</h2>
       </div>
       <div class="card-grid fade-in">
         <div class="category-card">
           <div class="category-icon">PE</div>
-          <h3 style="margin:0; font-family: 'Playfair Display', serif;">Private Equity</h3>
+          <h3 class="heading-tight">Private Equity</h3>
           <p class="meta">Fondos, portafolios y estrategias de valor en LATAM.</p>
         </div>
         <div class="category-card">
           <div class="category-icon">M&amp;A</div>
-          <h3 style="margin:0; font-family: 'Playfair Display', serif;">M&amp;A</h3>
+          <h3 class="heading-tight">M&amp;A</h3>
           <p class="meta">Integraciones estratégicas, consolidación sectorial y cross-border deals.</p>
         </div>
         <div class="category-card">
           <div class="category-icon">VC</div>
-          <h3 style="margin:0; font-family: 'Playfair Display', serif;">Venture Capital</h3>
+          <h3 class="heading-tight">Venture Capital</h3>
           <p class="meta">Rondas, fundadores y verticales emergentes de alto crecimiento.</p>
         </div>
         <div class="category-card">
           <div class="category-icon">FO</div>
-          <h3 style="margin:0; font-family: 'Playfair Display', serif;">Family Offices</h3>
+          <h3 class="heading-tight">Family Offices</h3>
           <p class="meta">Tesis de inversión, gobierno patrimonial y coinversiones.</p>
         </div>
         <div class="category-card">
           <div class="category-icon">MT</div>
-          <h3 style="margin:0; font-family: 'Playfair Display', serif;">Market Trends</h3>
+          <h3 class="heading-tight">Market Trends</h3>
           <p class="meta">Macro, sectores defensivos y riesgos geopolíticos en la región.</p>
         </div>
       </div>
@@ -557,14 +598,14 @@
     <section class="section" id="newsletter">
       <div class="newsletter fade-in">
         <p class="meta">Newsletter semanal</p>
-        <h2 style="margin-top: 0; font-family: 'Playfair Display', serif;">Únete a +5,000 profesionales que reciben análisis exclusivo cada semana</h2>
-        <p style="max-width: 680px; color: var(--text-light);">Resúmenes accionables, deals a seguir, entrevistas con inversionistas y mapas de oportunidades sectoriales. Todo lo que necesitas para anticipar el próximo movimiento.</p>
+        <h2 class="heading-tight">Únete a +5,000 profesionales que reciben análisis exclusivo cada semana</h2>
+        <p class="text-muted-light">Resúmenes accionables, deals a seguir, entrevistas con inversionistas y mapas de oportunidades sectoriales. Todo lo que necesitas para anticipar el próximo movimiento.</p>
         <form>
           <label class="sr-only" for="email">Correo electrónico</label>
           <input id="email" type="email" name="email" placeholder="Tu correo corporativo" required>
           <button class="btn" type="submit">Suscribirme</button>
         </form>
-        <p class="meta" style="margin-top: 10px;">Cero spam. Cancela cuando quieras.</p>
+        <p class="meta mt-10">Cero spam. Cancela cuando quieras.</p>
       </div>
     </section>
   </main>
@@ -576,17 +617,17 @@
         <p>Inteligencia, análisis y comunidad para el ecosistema de capital privado en América Latina.</p>
       </div>
       <div class="footer-links">
-        <strong style="color: white;">Compañía</strong>
+        <strong>Compañía</strong>
         <a href="#sobre">About</a>
         <a href="mailto:contacto@dealflowperspectives.com">Contact</a>
       </div>
       <div class="footer-links">
-        <strong style="color: white;">Legal</strong>
+        <strong>Legal</strong>
         <a href="#">Privacy Policy</a>
         <a href="#">Terms</a>
       </div>
       <div class="footer-links">
-        <strong style="color: white;">Síguenos</strong>
+        <strong>Síguenos</strong>
         <div class="social">
           <a href="https://www.linkedin.com/company/dealflow-perspectives/"
              target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
@@ -596,7 +637,7 @@
         </div>
       </div>
     </div>
-    <p style="margin-top: 24px; text-align:center; font-size: 0.9rem;">© 2025 DealFlow Perspectives. Todos los derechos reservados.</p>
+    <p class="footer-note">© 2025 DealFlow Perspectives. Todos los derechos reservados.</p>
   </footer>
 
   <script>
@@ -606,22 +647,23 @@
       nav.classList.toggle('scrolled', window.scrollY > 10);
     });
 
-    // Animaciones de aparición con IntersectionObserver
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('visible');
-          observer.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.2 });
+    // Animaciones de aparición con IntersectionObserver, respetando preferencia de movimiento reducido
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+    if (!prefersReducedMotion) {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.2 });
 
-    // Mejora de accesibilidad: etiqueta oculta para inputs
-    const srStyle = document.createElement('style');
-    srStyle.innerHTML = `.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0;}`;
-    document.head.appendChild(srStyle);
+      document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+    } else {
+      document.querySelectorAll('.fade-in').forEach(el => el.classList.add('visible'));
+    }
   </script>
 </body>
 </html>
