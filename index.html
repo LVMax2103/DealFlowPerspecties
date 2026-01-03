@@ -1,14 +1,16 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DealFlow Perspectives | El pulso del capital privado en LatAm</title>
-  <meta name="description" content="Inteligencia financiera y análisis premium sobre Private Equity, M&A y Venture Capital en América Latina.">
-  <!-- Fuentes: Serif para titulares y Sans para cuerpo -->
+  <title>DealFlow Perspectives | Latin America Private Markets Intelligence</title>
+  <meta name="description" content="Premium intelligence and analysis on Private Equity, M&A, Private Credit, and Venture Capital across Latin America.">
+
+  <!-- Fonts: Serif for headlines + Sans for body -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
   <style>
     :root {
       --bg-dark: #0a0f1a;
@@ -50,7 +52,7 @@
 
     img { max-width: 100%; display: block; }
 
-    /* Navegación sticky */
+    /* Sticky nav */
     header {
       position: sticky;
       top: 0;
@@ -134,6 +136,7 @@
       letter-spacing: 0.2px;
       box-shadow: 0 10px 30px rgba(14,165,233,0.25);
       transition: transform 0.2s ease, box-shadow 0.2s ease;
+      cursor: pointer;
     }
 
     .btn:hover { transform: translateY(-2px); box-shadow: 0 16px 40px rgba(14,165,233,0.35); }
@@ -149,16 +152,7 @@
       scroll-margin-top: 96px;
     }
 
-    .section-title {
-      margin: 0 0 6px;
-      font-family: 'Playfair Display', serif;
-    }
-
-    .section-subtitle {
-      margin: 0 0 14px;
-      font-family: 'Playfair Display', serif;
-    }
-
+    .section-title { margin: 0 0 6px; font-family: 'Playfair Display', serif; }
     .section-header { margin-bottom: 18px; }
     .section-header--compact { margin-bottom: 14px; }
     .heading-tight { margin: 0; font-family: 'Playfair Display', serif; }
@@ -185,13 +179,13 @@
       z-index: -1;
     }
 
+    /* Replace background image with your own logo (no third-party photos) */
     .hero::after {
       content: '';
       position: absolute;
       inset: 0;
-      background: url('https://images.unsplash.com/photo-1473186578172-c141e6798cf4?auto=format&fit=crop&w=1600&q=80') center/cover;
-      opacity: 0.18;
-      mix-blend-mode: screen;
+      background: url('logo-light.png') center/280px no-repeat;
+      opacity: 0.06;
       z-index: -2;
     }
 
@@ -277,10 +271,13 @@
 
     .card:hover { transform: translateY(-6px); box-shadow: 0 20px 60px rgba(0,0,0,0.35); }
 
+    /* All card images are your logo (no third-party photos) */
     .card img {
       height: 180px;
       width: 100%;
-      object-fit: cover;
+      object-fit: contain;
+      padding: 22px;
+      background: rgba(255,255,255,0.02);
     }
 
     .card-content { padding: 18px; }
@@ -316,7 +313,14 @@
       align-items: center;
     }
 
-    .about img { border-radius: 16px; border: 1px solid var(--border); box-shadow: var(--shadow-soft); }
+    .about img {
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-soft);
+      padding: 30px;
+      background: rgba(255,255,255,0.02);
+      object-fit: contain;
+    }
 
     .stats {
       display: grid;
@@ -335,7 +339,7 @@
     .stat strong { display: block; font-family: 'Playfair Display', serif; font-size: 1.3rem; }
     .stat span { color: var(--text-muted); }
 
-    /* Categorías */
+    /* Categories */
     .category-card {
       padding: 18px;
       border-radius: 16px;
@@ -408,14 +412,21 @@
       color: var(--text-muted);
     }
 
-    .footer-content { max-width: 1200px; margin: 0 auto; display: grid; gap: 22px; grid-template-columns: repeat(auto-fit, minmax(200px,1fr)); }
+    .footer-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      gap: 22px;
+      grid-template-columns: repeat(auto-fit, minmax(200px,1fr));
+    }
+
     .footer-logo img { width: 140px; }
     .footer-links { display: grid; gap: 10px; }
     .footer-links strong { color: white; }
     .social { display: flex; gap: 14px; align-items: center; }
     .social a { color: #7dd3fc; font-weight: 600; }
 
-    /* Animaciones */
+    /* Animations */
     .fade-in { opacity: 0; transform: translateY(12px); transition: opacity 0.6s ease, transform 0.6s ease; }
     .fade-in.visible { opacity: 1; transform: translateY(0); }
 
@@ -433,8 +444,85 @@
       .hero { padding-top: 100px; }
       .newsletter form { grid-template-columns: 1fr; }
     }
+
+    /* =========================
+       "WALL" / LOCK SCREEN
+       ========================= */
+    .site-locked { height: 100vh; overflow: hidden; }
+    .wall {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      background:
+        radial-gradient(circle at 20% 15%, rgba(14,165,233,0.16), transparent 40%),
+        radial-gradient(circle at 80% 0%, rgba(14,165,233,0.12), transparent 45%),
+        linear-gradient(180deg, rgba(5,7,13,0.92), rgba(5,7,13,0.98));
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(10px);
+    }
+
+    .wall-card {
+      width: min(920px, 100%);
+      border-radius: 22px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.10);
+      box-shadow: var(--shadow-soft);
+      padding: 28px;
+      display: grid;
+      gap: 16px;
+      text-align: center;
+    }
+
+    .wall-logo {
+      width: 92px;
+      height: 92px;
+      margin: 0 auto 4px;
+      object-fit: contain;
+      filter: drop-shadow(0 16px 40px rgba(14,165,233,0.25));
+    }
+
+    .wall-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.6rem, 2.8vw, 2.2rem);
+      margin: 0;
+      letter-spacing: -0.3px;
+    }
+
+    .wall-subtitle {
+      margin: 0 auto;
+      max-width: 760px;
+      color: var(--text-muted);
+      font-size: 1.05rem;
+      line-height: 1.7;
+    }
+
+    .wall-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 4px;
+    }
+
+    .wall-note {
+      margin: 0;
+      color: rgba(229,231,235,0.75);
+      font-size: 0.92rem;
+    }
+
+    .btn-secondary {
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.18);
+      box-shadow: none;
+      color: var(--text-light);
+    }
+    .btn-secondary:hover { transform: translateY(-2px); }
   </style>
 </head>
+
 <body>
   <header id="topNav">
     <div class="nav">
@@ -442,51 +530,54 @@
         <img src="logo-light.png" alt="DealFlow Perspectives logo" loading="lazy">
         <span>DealFlow Perspectives</span>
       </div>
-      <nav aria-label="Secciones principales">
+
+      <nav aria-label="Primary sections">
         <ul>
-          <li><a href="#noticias">Noticias</a></li>
-          <li><a href="#sobre">Sobre Nosotros</a></li>
-          <li><a href="#categorias">Categorías</a></li>
+          <li><a href="#news">News</a></li>
+          <li><a href="#about">About</a></li>
+          <li><a href="#categories">Coverage</a></li>
           <li><a href="#newsletter">Newsletter</a></li>
         </ul>
       </nav>
-      <!-- Botón principal: seguir en LinkedIn -->
+
       <a class="btn" href="https://www.linkedin.com/company/dealflow-perspectives/"
          target="_blank" rel="noopener noreferrer">
-        Seguir en LinkedIn
+        Follow on LinkedIn
       </a>
     </div>
   </header>
 
   <main>
-    <section class="section hero" id="inicio">
+    <section class="section hero" id="home">
       <div class="fade-in">
-        <div class="badge">El pulso del capital privado en LATAM</div>
-        <h1>Inteligencia y análisis para inversionistas de élite en América Latina.</h1>
-        <p class="lead">Insights accionables sobre Private Equity, M&A y Venture Capital. Cobertura regional, entrevistas exclusivas y tendencias que definen las próximas oportunidades en la región.</p>
-        <!-- CTA del hero también hacia LinkedIn -->
+        <div class="badge">Latin America Private Markets Intelligence</div>
+        <h1>Signal over noise for Private Equity, M&amp;A, and private capital across LATAM.</h1>
+        <p class="lead">
+          Curated coverage, operator-grade analysis, and a growing community tracking the deals, the events, and the people shaping the region’s private markets.
+        </p>
         <a class="btn" href="https://www.linkedin.com/company/dealflow-perspectives/"
            target="_blank" rel="noopener noreferrer">
-          Seguir en LinkedIn
+          Follow on LinkedIn
         </a>
       </div>
+
       <div class="hero-visual fade-in" aria-hidden="true">
-        <img src="logo-light.png" alt="DealFlow Perspectives">
+        <img src="logo-light.png" alt="DealFlow Perspectives" loading="lazy">
         <div class="glass-card">
           <div>
-            <small class="meta">Cobertura diaria</small>
+            <small class="meta">Daily coverage</small>
             <strong>PE &amp; M&amp;A</strong>
-            <span class="accent">LatAm</span>
+            <span class="accent">LATAM</span>
           </div>
           <div>
-            <small class="meta">Comunidad</small>
-            <strong>500+ líderes</strong>
+            <small class="meta">Community</small>
+            <strong>500+ leaders</strong>
           </div>
         </div>
         <div class="glass-card">
           <div>
-            <small class="meta">Nuevas historias</small>
-            <strong>Deals destacados</strong>
+            <small class="meta">New stories</small>
+            <strong>Featured deals</strong>
           </div>
           <div>
             <small class="accent">Premium</small>
@@ -495,117 +586,133 @@
       </div>
     </section>
 
-    <section class="section" id="noticias">
+    <section class="section" id="news">
       <div class="fade-in section-header">
-        <p class="meta">Últimas noticias</p>
-        <h2 class="section-title">Movimientos recientes en el capital privado de Latino America</h2>
-        <p class="meta">Cobertura completa e impacto en perspectiva.</p>
+        <p class="meta">Latest</p>
+        <h2 class="section-title">Recent moves across Latin America’s private markets</h2>
+        <p class="meta">Curated coverage by analysts focused on private capital in the region.</p>
       </div>
+
       <div class="card-grid fade-in">
         <article class="card">
-          <img src="https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=800&q=80" alt="Deal reciente en Brasil" loading="lazy">
+          <img src="logo-light.png" alt="DealFlow Perspectives" loading="lazy">
           <div class="card-content">
             <span class="pill">Private Equity</span>
-            <div class="meta">12 Feb 2025 • Brasil</div>
-            <h3>Fondo global lidera ronda de USD 420M para infraestructura digital brasileña</h3>
-            <p>Inversionistas institucionales apuestan por data centers y conectividad 5G con enfoque sostenible.</p>
+            <div class="meta">Feb 12, 2025 • Brazil</div>
+            <h3>Sample headline: Institutional capital backs digital infrastructure buildout</h3>
+            <p>Short summary placeholder — replace with your real headline and 1–2 lines of context.</p>
           </div>
         </article>
+
         <article class="card">
-          <img src="https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=800&q=80" alt="M&A en México" loading="lazy">
+          <img src="logo-light.png" alt="DealFlow Perspectives" loading="lazy">
           <div class="card-content">
             <span class="pill pill--success">M&amp;A</span>
-            <div class="meta">10 Feb 2025 • México</div>
-            <h3>Consolidación fintech: adquisición estratégica redefine pagos B2B en la región</h3>
-            <p>Las sinergias operativas impulsan márgenes y crean un nuevo hub de innovación financiera.</p>
+            <div class="meta">Feb 10, 2025 • Mexico</div>
+            <h3>Sample headline: Strategic acquisition reshapes a key vertical</h3>
+            <p>Short summary placeholder — keep it tight: what happened + why it matters.</p>
           </div>
         </article>
+
         <article class="card">
-          <img src="https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?auto=format&fit=crop&w=800&q=80" alt="Venture Capital en Chile" loading="lazy">
+          <img src="logo-light.png" alt="DealFlow Perspectives" loading="lazy">
           <div class="card-content">
             <span class="pill pill--info">Venture Capital</span>
-            <div class="meta">08 Feb 2025 • Chile</div>
-            <h3>Startups climáticas atraen récord de capital semilla en la Andina</h3>
-            <p>Fondos early-stage priorizan soluciones de energía distribuida y almacenamiento inteligente.</p>
+            <div class="meta">Feb 8, 2025 • Chile</div>
+            <h3>Sample headline: Early-stage funding accelerates climate tech adoption</h3>
+            <p>Short summary placeholder — focus on the angle, not the press release.</p>
           </div>
         </article>
       </div>
     </section>
 
-    <section class="section about" id="sobre">
+    <section class="section about" id="about">
       <div class="fade-in">
-        <p class="meta">Sobre DealFlow Perspectives</p>
-        <h2 class="heading-tight">Somos la comunidad que marca el ritmo del capital privado</h2>
-        <p>Centralizamos inteligencia accionable para inversionistas, family offices y ejecutivos que buscan anticipar tendencias y descubrir oportunidades en LATAM. Nuestra cobertura combina periodismo financiero, datos y análisis estratégico.</p>
+        <p class="meta">About DealFlow Perspectives</p>
+        <h2 class="heading-tight">A community built around deal intelligence</h2>
+        <p>
+          We centralize actionable intelligence for investors, founders, family offices, and executives who want to anticipate trends and understand the real drivers behind private market activity in LATAM.
+        </p>
+
         <div class="stats">
           <div class="stat">
             <strong>500+</strong>
-            <span>Inversores y líderes en la comunidad</span>
+            <span>Investors and leaders in the community</span>
           </div>
           <div class="stat">
             <strong>20+</strong>
-            <span>Países cubiertos con reportes dedicados</span>
+            <span>Countries covered with dedicated insights</span>
           </div>
           <div class="stat">
-            <strong>1200+</strong>
-            <span>Deals analizados en los últimos 12 meses</span>
+            <strong>1,200+</strong>
+            <span>Deals tracked (rolling 12 months)</span>
           </div>
           <div class="stat">
-            <strong>24/7</strong>
-            <span>Monitor de transacciones y tendencias</span>
+            <strong>Always on</strong>
+            <span>Monitoring transactions, events, and narratives</span>
           </div>
         </div>
       </div>
+
       <div class="fade-in">
-        <img src="https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=900&q=80" alt="Equipo financiero trabajando" loading="lazy">
+        <img src="logo-light.png" alt="DealFlow Perspectives logo" loading="lazy">
       </div>
     </section>
 
-    <section class="section" id="categorias">
+    <section class="section" id="categories">
       <div class="fade-in section-header section-header--compact">
-        <p class="meta">Temas clave</p>
-        <h2 class="heading-tight">Explora por categoría</h2>
+        <p class="meta">Coverage</p>
+        <h2 class="heading-tight">Explore by category</h2>
       </div>
+
       <div class="card-grid fade-in">
         <div class="category-card">
           <div class="category-icon">PE</div>
           <h3 class="heading-tight">Private Equity</h3>
-          <p class="meta">Fondos, portafolios y estrategias de valor en LATAM.</p>
+          <p class="meta">Funds, portfolios, and value creation across LATAM.</p>
         </div>
+
         <div class="category-card">
           <div class="category-icon">M&amp;A</div>
           <h3 class="heading-tight">M&amp;A</h3>
-          <p class="meta">Integraciones estratégicas, consolidación sectorial y cross-border deals.</p>
+          <p class="meta">Strategic consolidation, carve-outs, and cross-border deals.</p>
         </div>
+
+        <div class="category-card">
+          <div class="category-icon">PC</div>
+          <h3 class="heading-tight">Private Credit</h3>
+          <p class="meta">Direct lending, structured credit, and specialty finance.</p>
+        </div>
+
         <div class="category-card">
           <div class="category-icon">VC</div>
           <h3 class="heading-tight">Venture Capital</h3>
-          <p class="meta">Rondas, fundadores y verticales emergentes de alto crecimiento.</p>
+          <p class="meta">Rounds, founders, and emerging high-growth verticals.</p>
         </div>
+
         <div class="category-card">
-          <div class="category-icon">FO</div>
-          <h3 class="heading-tight">Family Offices</h3>
-          <p class="meta">Tesis de inversión, gobierno patrimonial y coinversiones.</p>
-        </div>
-        <div class="category-card">
-          <div class="category-icon">MT</div>
-          <h3 class="heading-tight">Market Trends</h3>
-          <p class="meta">Macro, sectores defensivos y riesgos geopolíticos en la región.</p>
+          <div class="category-icon">RA</div>
+          <h3 class="heading-tight">Real Assets</h3>
+          <p class="meta">Infrastructure, energy, industrial platforms, and RE.</p>
         </div>
       </div>
     </section>
 
     <section class="section" id="newsletter">
       <div class="newsletter fade-in">
-        <p class="meta">Newsletter semanal</p>
-        <h2 class="heading-tight">Únete para recibir análisis de infromes internos y entrevistas exclusivas con los players mas destacados</h2>
-        <p class="text-muted-light">Recibe invitaciones para nuestros eventos de foros de discución y networking events.</p>
+        <p class="meta">Weekly newsletter</p>
+        <h2 class="heading-tight">Join 5,000+ professionals who get exclusive analysis every week</h2>
+        <p class="text-muted-light">
+          Actionable summaries, deals to watch, investor interviews, and sector opportunity maps — designed for decision-makers.
+        </p>
+
         <form>
-          <label class="sr-only" for="email">Correo electrónico</label>
-          <input id="email" type="email" name="email" placeholder="Tu correo corporativo" required>
-          <button class="btn" type="submit">Suscribirme</button>
+          <label class="sr-only" for="email">Email address</label>
+          <input id="email" type="email" name="email" placeholder="Your work email" required>
+          <button class="btn" type="submit">Subscribe</button>
         </form>
-        <p class="meta mt-10">Cero spam. Cancela cuando quieras.</p>
+
+        <p class="meta mt-10">No spam. Unsubscribe anytime.</p>
       </div>
     </section>
   </main>
@@ -613,43 +720,80 @@
   <footer>
     <div class="footer-content">
       <div class="footer-logo">
-        <img src="logo-light.png" alt="DealFlow Perspectives">
-        <p>Inteligencia, análisis y comunidad para el ecosistema de capital privado en América Latina.</p>
+        <img src="logo-light.png" alt="DealFlow Perspectives" loading="lazy">
+        <p>Intelligence, analysis, and community for Latin America’s private markets ecosystem.</p>
       </div>
+
       <div class="footer-links">
-        <strong>Compañía</strong>
-        <a href="#sobre">About</a>
+        <strong>Company</strong>
+        <a href="#about">About</a>
         <a href="mailto:contacto@dealflowperspectives.com">Contact</a>
       </div>
+
       <div class="footer-links">
         <strong>Legal</strong>
         <a href="#">Privacy Policy</a>
         <a href="#">Terms</a>
       </div>
+
       <div class="footer-links">
-        <strong>Síguenos</strong>
+        <strong>Follow</strong>
         <div class="social">
           <a href="https://www.linkedin.com/company/dealflow-perspectives/"
              target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
             LinkedIn
           </a>
-          <a href="#" aria-label="Twitter">Twitter</a>
+          <a href="#" aria-label="X / Twitter">X</a>
         </div>
       </div>
     </div>
-    <p class="footer-note">© 2025 DealFlow Perspectives. Todos los derechos reservados.</p>
+
+    <p class="footer-note">© 2025 DealFlow Perspectives. All rights reserved.</p>
   </footer>
 
+  <!-- =========================
+       WALL: blocks navigation
+       Only LinkedIn is clickable
+       ========================= -->
+  <div class="wall" id="wall" role="dialog" aria-modal="true" aria-labelledby="wallTitle">
+    <div class="wall-card">
+      <img class="wall-logo" src="logo-light.png" alt="DealFlow Perspectives logo" loading="lazy">
+
+      <h2 class="wall-title" id="wallTitle">We’re building the next-generation private markets hub for Latin America.</h2>
+
+      <p class="wall-subtitle">
+        DealFlow Perspectives is creating a centralized intelligence platform for Latin America’s private capital markets — tracking transactions and events, mapping the players behind them, connecting capital to real-world impact, and turning scattered information into decision-grade signal.
+      </p>
+
+      <div class="wall-actions">
+        <a class="btn" href="https://www.linkedin.com/company/dealflow-perspectives/"
+           target="_blank" rel="noopener noreferrer">
+          Continue on LinkedIn
+        </a>
+        <button class="btn btn-secondary" type="button" id="refreshBtn">
+          Refresh
+        </button>
+      </div>
+
+      <p class="wall-note">
+        Access to the full site is currently restricted while the platform is under active development.
+      </p>
+
+      <p class="wall-note" style="margin-top: -4px;">
+        (Owner note) To unlock the site later: set <strong>SITE_LOCKED</strong> to <strong>false</strong> in the script below.
+      </p>
+    </div>
+  </div>
+
   <script>
-    // Efecto sticky al hacer scroll
+    // Sticky nav effect
     const nav = document.getElementById('topNav');
     window.addEventListener('scroll', () => {
       nav.classList.toggle('scrolled', window.scrollY > 10);
     });
 
-    // Animaciones de aparición con IntersectionObserver, respetando preferencia de movimiento reducido
+    // Animations respecting reduced motion
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
     if (!prefersReducedMotion) {
       const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
@@ -664,6 +808,27 @@
     } else {
       document.querySelectorAll('.fade-in').forEach(el => el.classList.add('visible'));
     }
+
+    // =========================
+    // WALL LOCK TOGGLE
+    // =========================
+    const SITE_LOCKED = true; // <-- Change to false when you decide to open navigation
+
+    const wall = document.getElementById('wall');
+    const refreshBtn = document.getElementById('refreshBtn');
+
+    function applyLockState() {
+      if (SITE_LOCKED) {
+        document.body.classList.add('site-locked');
+        wall.style.display = 'grid';
+      } else {
+        document.body.classList.remove('site-locked');
+        wall.style.display = 'none';
+      }
+    }
+
+    refreshBtn.addEventListener('click', () => window.location.reload());
+    applyLockState();
   </script>
 </body>
 </html>
