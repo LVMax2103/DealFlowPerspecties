@@ -6,40 +6,32 @@
   <title>DealFlow Perspectives | Private Markets Intelligence for Latin America</title>
   <meta name="description" content="DealFlow Perspectives is building a centralized private markets intelligence platform for Latin America — tracking transactions and events, mapping the players behind them, and turning scattered information into decision-grade signal." />
 
-  <!-- Fonts: Serif for headlines, Sans for body -->
+  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 
   <style>
-    /* =========================================
-       THEME TOKENS
-    ========================================= */
+    /* === TOKENS === */
     :root {
       --bg-dark: #0a0f1a;
       --bg-darker: #05070d;
       --navy: #0f172a;
       --accent: #0ea5e9;
-
+      --accent-light: #7dd3fc;
       --text-light: #e5e7eb;
       --text-muted: #94a3b8;
-
-      --card: #111827;
+      --card-bg: #111827;
       --border: rgba(255,255,255,0.08);
-
       --gradient: linear-gradient(135deg, rgba(14,165,233,0.08), rgba(14,165,233,0.02));
       --shadow-soft: 0 24px 70px rgba(0,0,0,0.35);
     }
 
-    /* =========================================
-       BASE / RESET
-    ========================================= */
-    * { box-sizing: border-box; }
-
+    /* === RESET === */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; }
     html, body { height: 100%; }
 
     body {
-      margin: 0;
       font-family: 'Inter', system-ui, -apple-system, sans-serif;
       background: var(--bg-dark);
       color: var(--text-light);
@@ -51,233 +43,142 @@
     img { max-width: 100%; display: block; }
 
     .sr-only {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      padding: 0;
-      margin: -1px;
-      overflow: hidden;
-      clip: rect(0, 0, 0, 0);
-      white-space: nowrap;
-      border: 0;
+      position: absolute; width: 1px; height: 1px;
+      padding: 0; margin: -1px; overflow: hidden;
+      clip: rect(0,0,0,0); white-space: nowrap; border: 0;
     }
 
-    /* =========================================
-       BUTTONS
-    ========================================= */
+    /* === UTILITIES === */
+    .meta { color: var(--text-muted); font-size: 0.95rem; }
+    .heading-serif { font-family: 'Playfair Display', serif; letter-spacing: -0.2px; }
+    .accent { color: var(--accent-light); }
+
+    /* === BUTTONS === */
     .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      border-radius: 999px;
-      padding: 12px 18px;
+      display: inline-flex; align-items: center; justify-content: center;
+      gap: 10px; border-radius: 999px; padding: 12px 18px;
       background: linear-gradient(135deg, #0ea5e9, #0b6ba8);
-      color: white;
-      font-weight: 700;
-      letter-spacing: 0.2px;
-      border: none;
-      cursor: pointer;
+      color: white; font-weight: 700; letter-spacing: 0.2px;
+      border: none; cursor: pointer;
       box-shadow: 0 10px 30px rgba(14,165,233,0.25);
-      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
-
     .btn:hover { transform: translateY(-2px); box-shadow: 0 16px 40px rgba(14,165,233,0.35); }
     .btn:active { transform: translateY(0); }
-    .btn:focus-visible { outline: 2px solid #7dd3fc; outline-offset: 3px; }
+    .btn:focus-visible { outline: 2px solid var(--accent-light); outline-offset: 3px; }
 
     .btn-secondary {
       background: rgba(255,255,255,0.06);
       border: 1px solid rgba(255,255,255,0.14);
-      box-shadow: none;
-      color: #e5e7eb;
-      font-weight: 700;
+      box-shadow: none; color: var(--text-light); font-weight: 700;
     }
-
     .btn-secondary:hover {
       transform: translateY(-2px);
       background: rgba(255,255,255,0.09);
       box-shadow: 0 16px 40px rgba(0,0,0,0.35);
     }
 
-    /* =========================================
-       LAYOUT HELPERS
-    ========================================= */
+    /* === LAYOUT === */
     main { overflow-x: hidden; }
 
     .section {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 80px 24px;
-      scroll-margin-top: 96px;
+      max-width: 1200px; margin: 0 auto;
+      padding: 80px 24px; scroll-margin-top: 96px;
     }
 
-    .meta { color: var(--text-muted); font-size: 0.95rem; }
-    .heading-serif { font-family: 'Playfair Display', serif; letter-spacing: -0.2px; }
-    .mt-10 { margin-top: 10px; }
-
-    /* =========================================
-       NAVIGATION (kept for later unlock)
-    ========================================= */
+    /* === HEADER === */
     header {
-      position: sticky;
-      top: 0;
-      z-index: 999;
+      position: sticky; top: 0; z-index: 999;
       backdrop-filter: blur(12px);
-      background: rgba(5, 7, 13, 0.8);
+      background: rgba(5,7,13,0.8);
       border-bottom: 1px solid var(--border);
-      transition: all 0.3s ease;
+      transition: background 0.3s ease, box-shadow 0.3s ease;
     }
-
     header.scrolled {
-      background: rgba(5, 7, 13, 0.95);
+      background: rgba(5,7,13,0.95);
       box-shadow: 0 10px 40px rgba(0,0,0,0.35);
     }
 
     .nav {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 16px 24px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 18px;
+      max-width: 1200px; margin: 0 auto; padding: 16px 24px;
+      display: flex; align-items: center; justify-content: space-between; gap: 18px;
     }
 
     .logo {
-      display: flex;
-      align-items: center;
-      gap: 12px;
+      display: flex; align-items: center; gap: 12px;
       font-family: 'Playfair Display', serif;
-      font-size: 1.1rem;
-      letter-spacing: 0.5px;
-      font-weight: 700;
+      font-size: 1.1rem; font-weight: 700; letter-spacing: 0.5px;
     }
-
     .logo img {
-      width: 42px;
-      height: 42px;
-      object-fit: contain;
+      width: 42px; height: 42px; object-fit: contain;
       filter: drop-shadow(0 6px 18px rgba(14,165,233,0.2));
     }
 
     nav ul {
-      list-style: none;
-      display: flex;
-      gap: 18px;
-      margin: 0;
-      padding: 0;
-      font-weight: 600;
-      color: var(--text-muted);
+      list-style: none; display: flex; gap: 18px;
+      padding: 0; font-weight: 600; color: var(--text-muted);
     }
-
     nav li { position: relative; }
-
     nav a::after {
-      content: '';
-      position: absolute;
-      left: 0;
-      bottom: -6px;
-      width: 0;
-      height: 2px;
-      background: var(--accent);
+      content: ''; position: absolute; left: 0; bottom: -6px;
+      width: 0; height: 2px; background: var(--accent);
       transition: width 0.25s ease;
     }
+    nav a:hover::after, nav a:focus-visible::after { width: 100%; }
 
-    nav a:hover::after,
-    nav a:focus-visible::after {
-      width: 100%;
-    }
-
-    /* =========================================
-       HERO (kept for later unlock; images replaced with logo)
-    ========================================= */
+    /* === HERO === */
     .hero {
-      position: relative;
-      min-height: 80vh;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      gap: 32px;
-      align-items: center;
-      padding-top: 120px;
+      position: relative; min-height: 80vh;
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 32px; align-items: center; padding-top: 120px;
     }
-
     .hero::before {
-      content: '';
-      position: absolute;
-      inset: 0;
+      content: ''; position: absolute; inset: 0; z-index: -1;
       background:
         linear-gradient(120deg, rgba(14,165,233,0.2), rgba(14,165,233,0)),
         linear-gradient(180deg, rgba(5,7,13,0.35), var(--bg-darker));
-      z-index: -1;
     }
-
     .hero h1 {
       font-family: 'Playfair Display', serif;
       font-size: clamp(2.2rem, 4vw, 3.4rem);
-      margin: 0 0 12px;
-      line-height: 1.15;
-      letter-spacing: -0.5px;
+      margin-bottom: 12px; line-height: 1.15; letter-spacing: -0.5px;
     }
-
-    .hero p.lead {
-      color: var(--text-muted);
-      font-size: 1.05rem;
-      margin-bottom: 26px;
-      max-width: 620px;
+    .hero .lead {
+      color: var(--text-muted); font-size: 1.05rem;
+      margin-bottom: 26px; max-width: 620px;
     }
 
     .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: rgba(14,165,233,0.12);
-      color: #7dd3fc;
-      padding: 8px 12px;
-      border-radius: 999px;
-      font-weight: 700;
-      letter-spacing: 0.2px;
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(14,165,233,0.12); color: var(--accent-light);
+      padding: 8px 12px; border-radius: 999px;
+      font-weight: 700; letter-spacing: 0.2px;
       border: 1px solid rgba(14,165,233,0.25);
       box-shadow: 0 12px 30px rgba(14,165,233,0.12);
-      margin-bottom: 16px;
-      width: fit-content;
+      margin-bottom: 16px; width: fit-content;
     }
 
     .hero-visual {
-      position: relative;
-      background: var(--gradient);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 24px;
-      box-shadow: var(--shadow-soft);
-      overflow: hidden;
-      isolation: isolate;
+      position: relative; background: var(--gradient);
+      border: 1px solid var(--border); border-radius: 20px;
+      padding: 24px; box-shadow: var(--shadow-soft);
+      overflow: hidden; isolation: isolate;
     }
-
     .hero-visual img {
-      width: 180px;
-      margin-bottom: 16px;
+      width: 180px; margin-bottom: 16px;
       filter: drop-shadow(0 12px 40px rgba(14,165,233,0.35));
     }
 
     .glass-card {
       background: rgba(255,255,255,0.04);
       border: 1px solid rgba(255,255,255,0.06);
-      border-radius: 16px;
-      padding: 16px;
-      margin-top: 10px;
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 12px;
-      align-items: center;
+      border-radius: 16px; padding: 16px; margin-top: 10px;
+      display: grid; grid-template-columns: 1fr auto;
+      gap: 12px; align-items: center;
     }
-
     .glass-card strong { font-family: 'Playfair Display', serif; letter-spacing: 0.2px; }
-    .accent { color: #7dd3fc; }
 
-    /* =========================================
-       CARDS (kept for later unlock; images replaced with logo)
-    ========================================= */
+    /* === CARDS === */
     .card-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -285,320 +186,218 @@
     }
 
     .card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      overflow: hidden;
+      background: var(--card-bg); border: 1px solid var(--border);
+      border-radius: 16px; overflow: hidden;
       box-shadow: 0 16px 48px rgba(0,0,0,0.25);
-      position: relative;
       transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
-
     .card:hover { transform: translateY(-6px); box-shadow: 0 20px 60px rgba(0,0,0,0.35); }
 
     .card img {
-      height: 180px;
-      width: 100%;
-      object-fit: contain;
-      padding: 22px;
+      height: 180px; width: 100%; object-fit: contain; padding: 22px;
       background: rgba(255,255,255,0.02);
       border-bottom: 1px solid rgba(255,255,255,0.06);
       filter: drop-shadow(0 10px 30px rgba(14,165,233,0.18));
     }
-
     .card-content { padding: 18px; }
+    .card h3 { margin-bottom: 10px; font-family: 'Playfair Display', serif; letter-spacing: -0.2px; }
+    .card p { color: var(--text-muted); }
 
     .pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 6px 10px;
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      font-weight: 800;
-      color: #a5b4fc;
-      background: rgba(79,70,229,0.08);
-      margin-bottom: 10px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      font-size: 0.75rem;
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 6px 10px; border-radius: 999px;
+      border: 1px solid var(--border); font-weight: 800;
+      color: #a5b4fc; background: rgba(79,70,229,0.08);
+      margin-bottom: 10px; text-transform: uppercase;
+      letter-spacing: 0.5px; font-size: 0.75rem;
     }
+    .pill--success { background: rgba(16,185,129,0.12); color: #6ee7b7; }
+    .pill--info    { background: rgba(59,130,246,0.12); color: #93c5fd; }
 
-    .pill--success { background: rgba(16,185,129,0.12); color:#6ee7b7; }
-    .pill--info { background: rgba(59,130,246,0.12); color:#93c5fd; }
-
-    .card h3 { margin: 0 0 10px; font-family: 'Playfair Display', serif; letter-spacing: -0.2px; }
-    .card p { margin: 0; color: var(--text-muted); }
-
-    /* =========================================
-       ABOUT / STATS (kept for later unlock; images replaced with logo)
-    ========================================= */
+    /* === ABOUT === */
     .about {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 32px;
-      align-items: center;
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 32px; align-items: center;
     }
-
     .about img {
-      border-radius: 16px;
-      border: 1px solid var(--border);
-      box-shadow: var(--shadow-soft);
-      background: rgba(255,255,255,0.02);
-      padding: 24px;
-      object-fit: contain;
+      border-radius: 16px; border: 1px solid var(--border);
+      box-shadow: var(--shadow-soft); background: rgba(255,255,255,0.02);
+      padding: 24px; object-fit: contain;
     }
 
     .stats {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-      gap: 18px;
-      margin-top: 20px;
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 18px; margin-top: 20px;
     }
-
     .stat {
-      padding: 14px 16px;
-      border-radius: 14px;
-      background: rgba(255,255,255,0.03);
-      border: 1px solid var(--border);
+      padding: 14px 16px; border-radius: 14px;
+      background: rgba(255,255,255,0.03); border: 1px solid var(--border);
     }
-
     .stat strong {
-      display: block;
-      font-family: 'Playfair Display', serif;
-      font-size: 1.3rem;
+      display: block; font-family: 'Playfair Display', serif; font-size: 1.3rem;
     }
-
     .stat span { color: var(--text-muted); }
 
-    /* =========================================
-       CATEGORIES (kept for later unlock)
-    ========================================= */
+    /* === CATEGORIES === */
     .category-card {
-      padding: 18px;
-      border-radius: 16px;
+      padding: 18px; border-radius: 16px;
       background: rgba(255,255,255,0.03);
       border: 1px solid var(--border);
-      display: grid;
-      gap: 10px;
-      transition: all 0.2s ease;
+      display: grid; gap: 10px;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
     }
-
-    .category-card:hover { border-color: rgba(14,165,233,0.4); box-shadow: 0 10px 30px rgba(14,165,233,0.16); }
+    .category-card:hover {
+      border-color: rgba(14,165,233,0.4);
+      box-shadow: 0 10px 30px rgba(14,165,233,0.16);
+    }
+    .category-card h3 { margin: 0; }
 
     .category-icon {
-      width: 42px;
-      height: 42px;
-      border-radius: 12px;
-      display: grid;
-      place-items: center;
-      color: #7dd3fc;
+      width: 42px; height: 42px; border-radius: 12px;
+      display: grid; place-items: center;
+      color: var(--accent-light);
       background: rgba(14,165,233,0.14);
       border: 1px solid rgba(14,165,233,0.2);
-      font-weight: 900;
-      letter-spacing: 0.2px;
+      font-weight: 900; letter-spacing: 0.2px;
     }
 
-    /* =========================================
-       NEWSLETTER (kept for later unlock)
-    ========================================= */
+    /* === NEWSLETTER === */
     .newsletter {
       background: linear-gradient(120deg, rgba(14,165,233,0.18), rgba(14,165,233,0.05));
       border: 1px solid rgba(14,165,233,0.2);
-      border-radius: 20px;
-      padding: 32px;
+      border-radius: 20px; padding: 32px;
       box-shadow: var(--shadow-soft);
-      position: relative;
-      overflow: hidden;
-      isolation: isolate;
+      position: relative; overflow: hidden; isolation: isolate;
     }
-
     .newsletter::after {
-      content: '';
-      position: absolute;
-      inset: 0;
+      content: ''; position: absolute; inset: 0; z-index: -1;
       background:
         radial-gradient(circle at 20% 20%, rgba(255,255,255,0.18), transparent 35%),
         radial-gradient(circle at 80% 0%, rgba(14,165,233,0.32), transparent 45%);
-      z-index: -1;
     }
-
+    .newsletter h2 { margin-bottom: 10px; }
+    .newsletter .subtitle { color: var(--text-light); max-width: 680px; margin-bottom: 18px; }
     .newsletter form {
-      display: grid;
-      grid-template-columns: 2fr 1fr;
-      gap: 12px;
-      max-width: 600px;
+      display: grid; grid-template-columns: 2fr 1fr;
+      gap: 12px; max-width: 600px;
     }
-
-    .text-muted-light { color: var(--text-light); max-width: 680px; }
-
     .newsletter input {
-      padding: 14px 16px;
-      border-radius: 12px;
+      padding: 14px 16px; border-radius: 12px;
       border: 1px solid rgba(255,255,255,0.18);
-      background: rgba(5,7,13,0.6);
-      color: white;
-      font-size: 1rem;
+      background: rgba(5,7,13,0.6); color: white; font-size: 1rem;
     }
-
     .newsletter input::placeholder { color: #cbd5e1; }
+    .newsletter .note { margin-top: 10px; }
 
-    /* =========================================
-       FOOTER
-    ========================================= */
+    /* === FOOTER === */
     footer {
       background: var(--bg-darker);
       border-top: 1px solid var(--border);
-      padding: 32px 24px 24px;
-      color: var(--text-muted);
+      padding: 32px 24px 24px; color: var(--text-muted);
     }
-
     .footer-content {
-      max-width: 1200px;
-      margin: 0 auto;
-      display: grid;
-      gap: 22px;
-      grid-template-columns: repeat(auto-fit, minmax(200px,1fr));
+      max-width: 1200px; margin: 0 auto;
+      display: grid; gap: 22px;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     }
-
     .footer-logo img { width: 140px; }
     .footer-links { display: grid; gap: 10px; }
     .footer-links strong { color: white; }
-
     .social { display: flex; gap: 14px; align-items: center; }
-    .social a { color: #7dd3fc; font-weight: 700; }
+    .social a { color: var(--accent-light); font-weight: 700; }
+    .footer-note { margin-top: 24px; text-align: center; font-size: 0.9rem; }
 
-    .footer-note { margin-top: 24px; text-align:center; font-size: 0.9rem; }
-
-    /* =========================================
-       ANIMATIONS (kept for later unlock)
-    ========================================= */
-    .fade-in { opacity: 0; transform: translateY(12px); transition: opacity 0.6s ease, transform 0.6s ease; }
-    .fade-in.visible { opacity: 1; transform: translateY(0); }
-
-    @media (prefers-reduced-motion: reduce) {
-      * { scroll-behavior: auto !important; }
-      .fade-in { opacity: 1; transform: none; transition: none; }
-      .btn { transition: none; }
-      header { transition: none; }
-    }
-
-    /* =========================================
-       RESPONSIVE
-    ========================================= */
-    @media (max-width: 720px) {
-      nav ul { display: none; }
-      .nav { padding: 14px 16px; }
-      .hero { padding-top: 100px; }
-      .newsletter form { grid-template-columns: 1fr; }
-    }
-
-    /* =========================================
-       WALL (LOCK SCREEN)
-    ========================================= */
+    /* === WALL (LOCK SCREEN) === */
     body.is-locked { overflow: hidden; }
 
     .wall {
-      position: fixed;
-      inset: 0;
-      z-index: 99999;
-      display: grid;
-      place-items: center;
-      padding: 28px 18px;
+      position: fixed; inset: 0; z-index: 99999;
+      display: grid; place-items: center; padding: 28px 18px;
       background:
         radial-gradient(900px 420px at 12% 15%, rgba(14,165,233,0.22), transparent 60%),
         radial-gradient(900px 420px at 88% 15%, rgba(99,102,241,0.18), transparent 60%),
         radial-gradient(1000px 600px at 50% 95%, rgba(14,165,233,0.10), transparent 55%),
         linear-gradient(180deg, #05070d, #0a0f1a);
     }
-
     .wall::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      opacity: 0.06;
+      content: ''; position: absolute; inset: 0; opacity: 0.06;
+      pointer-events: none;
       background-image:
         linear-gradient(to right, rgba(255,255,255,0.18) 1px, transparent 1px),
         linear-gradient(to bottom, rgba(255,255,255,0.18) 1px, transparent 1px);
       background-size: 64px 64px;
-      pointer-events: none;
     }
 
     .wall-card {
-      position: relative;
-      width: min(960px, 100%);
-      border-radius: 24px;
-      border: 1px solid rgba(255,255,255,0.10);
-      background: rgba(17,24,39,0.58);
-      backdrop-filter: blur(14px);
+      position: relative; width: min(960px, 100%);
+      border-radius: 24px; border: 1px solid rgba(255,255,255,0.10);
+      background: rgba(17,24,39,0.58); backdrop-filter: blur(14px);
       box-shadow: 0 30px 90px rgba(0,0,0,0.55);
-      padding: clamp(22px, 3.2vw, 34px);
-      overflow: hidden;
+      padding: clamp(22px, 3.2vw, 34px); overflow: hidden;
     }
-
     .wall-card::after {
-      content: "";
-      position: absolute;
-      inset: -2px;
-      background: radial-gradient(circle at 20% 20%, rgba(14,165,233,0.18), transparent 42%),
-                  radial-gradient(circle at 80% 0%, rgba(99,102,241,0.12), transparent 40%);
-      z-index: -1;
-      filter: blur(18px);
-      opacity: 0.9;
+      content: ''; position: absolute; inset: -2px; z-index: -1;
+      filter: blur(18px); opacity: 0.9;
+      background:
+        radial-gradient(circle at 20% 20%, rgba(14,165,233,0.18), transparent 42%),
+        radial-gradient(circle at 80% 0%, rgba(99,102,241,0.12), transparent 40%);
     }
 
     .wall-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 12px;
-      border-radius: 999px;
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 8px 12px; border-radius: 999px;
       border: 1px solid rgba(14,165,233,0.25);
-      background: rgba(14,165,233,0.12);
-      color: #7dd3fc;
-      font-weight: 800;
-      letter-spacing: 0.2px;
-      width: fit-content;
-      margin-bottom: 14px;
+      background: rgba(14,165,233,0.12); color: var(--accent-light);
+      font-weight: 800; letter-spacing: 0.2px;
+      width: fit-content; margin-bottom: 14px;
     }
 
     .wall-logo {
-      width: 138px; /* +50% */
-      height: 138px;
-      object-fit: contain;
-      display: block;
-      margin: 10px 0 14px;
+      width: 138px; height: 138px; object-fit: contain;
+      display: block; margin: 10px 0 14px;
       filter: drop-shadow(0 18px 44px rgba(14,165,233,0.30));
     }
 
     .wall-title {
-      margin: 0 0 10px;
       font-family: 'Playfair Display', serif;
       font-size: clamp(1.6rem, 2.6vw, 2.3rem);
-      line-height: 1.15;
-      letter-spacing: -0.4px;
-      color: #ffffff;
+      line-height: 1.15; letter-spacing: -0.4px;
+      color: #ffffff; margin-bottom: 10px;
     }
 
     .wall-subtitle {
-      margin: 0 0 18px;
       color: rgba(229,231,235,0.86);
-      max-width: 72ch;
-      font-size: 1.02rem;
+      max-width: 72ch; font-size: 1.02rem; margin-bottom: 18px;
     }
 
     .wall-actions {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-      align-items: center;
-      margin-top: 6px;
+      display: flex; gap: 12px; flex-wrap: wrap;
+      align-items: center; margin-top: 6px;
     }
 
     .wall-note {
-      margin: 16px 0 0;
-      color: rgba(148,163,184,0.95);
-      font-size: 0.92rem;
+      margin-top: 16px; color: rgba(148,163,184,0.95); font-size: 0.92rem;
+    }
+
+    /* === ANIMATIONS === */
+    .fade-in {
+      opacity: 0; transform: translateY(12px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+    /* === ACCESSIBILITY === */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { transition: none !important; scroll-behavior: auto !important; }
+      .fade-in { opacity: 1; transform: none; }
+    }
+
+    /* === RESPONSIVE === */
+    @media (max-width: 720px) {
+      nav ul { display: none; }
+      .nav { padding: 14px 16px; }
+      .hero { padding-top: 100px; }
+      .newsletter form { grid-template-columns: 1fr; }
     }
 
     @media (max-width: 520px) {
@@ -608,21 +407,22 @@
 </head>
 
 <body>
-  <!-- WALL / LOCK SCREEN -->
+
+  <!-- ==================== WALL / LOCK SCREEN ==================== -->
   <div class="wall" id="wall" role="dialog" aria-modal="true" aria-labelledby="wallTitle">
     <div class="wall-card">
-      <div class="wall-badge">Coming soon • Private Markets Intelligence</div>
+      <div class="wall-badge">Coming soon · Private Markets Intelligence</div>
 
-      <img class="wall-logo" src="logo-light.png" alt="DealFlow Perspectives logo" loading="lazy" />
+      <img class="wall-logo" src="logo-light.png" alt="DealFlow Perspectives logo" />
 
       <h2 class="wall-title" id="wallTitle">
-        We’re building the next-generation private markets hub for Latin America.
+        We're building the next-generation private markets hub for Latin America.
       </h2>
 
       <p class="wall-subtitle">
-        DealFlow Perspectives is creating a centralized intelligence platform for Latin America’s private capital markets —
-        tracking transactions and events, mapping the players behind them, connecting capital to real-world impact,
-        and turning scattered information into decision-grade signal.
+        DealFlow Perspectives is creating a centralized intelligence platform for Latin America's
+        private capital markets — tracking transactions and events, mapping the players behind them,
+        connecting capital to real-world impact, and turning scattered information into decision-grade signal.
       </p>
 
       <div class="wall-actions">
@@ -630,27 +430,20 @@
            target="_blank" rel="noopener noreferrer">
           Continue on LinkedIn
         </a>
-
-        <button class="btn btn-secondary" type="button" id="refreshBtn">
-          Refresh
-        </button>
+        <button class="btn btn-secondary" type="button" id="refreshBtn">Refresh</button>
       </div>
 
       <p class="wall-note">
         Access to the full site is currently restricted while the platform is under active development.
       </p>
-
-      <!-- OWNER NOTE (CODE ONLY):
-           To unlock the full site later, set SITE_LOCKED = false in the script at the bottom.
-      -->
     </div>
   </div>
 
-  <!-- SITE (kept behind the wall until you unlock) -->
+  <!-- ==================== SITE (behind wall until SITE_LOCKED = false) ==================== -->
   <header id="topNav">
     <div class="nav">
       <div class="logo">
-        <img src="logo-light.png" alt="DealFlow Perspectives logo" loading="lazy" />
+        <img src="logo-light.png" alt="DealFlow Perspectives logo" />
         <span>DealFlow Perspectives</span>
       </div>
 
@@ -671,6 +464,8 @@
   </header>
 
   <main>
+
+    <!-- HERO -->
     <section class="section hero" id="home">
       <div class="fade-in">
         <div class="badge">Private markets intelligence for Latin America</div>
@@ -710,39 +505,40 @@
       </div>
     </section>
 
+    <!-- NEWS -->
     <section class="section" id="news">
       <div class="fade-in">
         <p class="meta">Latest coverage</p>
         <h2 class="heading-serif">Recent moves in Private Equity and M&amp;A</h2>
-        <p class="meta">Curated updates and analysis across Latin America’s private capital ecosystem.</p>
+        <p class="meta">Curated updates and analysis across Latin America's private capital ecosystem.</p>
       </div>
 
       <div class="card-grid fade-in">
         <article class="card">
-          <img src="logo-light.png" alt="DealFlow Perspectives logo" loading="lazy" />
+          <img src="logo-light.png" alt="DealFlow Perspectives" loading="lazy" />
           <div class="card-content">
             <span class="pill">Private Equity</span>
-            <div class="meta">12 Feb 2025 • Brazil</div>
-            <h3>Global fund backs Brazil’s digital infrastructure expansion</h3>
+            <div class="meta">12 Feb 2025 · Brazil</div>
+            <h3>Global fund backs Brazil's digital infrastructure expansion</h3>
             <p>Institutional capital targets connectivity and resilient data infrastructure themes across the region.</p>
           </div>
         </article>
 
         <article class="card">
-          <img src="logo-light.png" alt="DealFlow Perspectives logo" loading="lazy" />
+          <img src="logo-light.png" alt="DealFlow Perspectives" loading="lazy" />
           <div class="card-content">
             <span class="pill pill--success">M&amp;A</span>
-            <div class="meta">10 Feb 2025 • Mexico</div>
+            <div class="meta">10 Feb 2025 · Mexico</div>
             <h3>Strategic consolidation reshapes B2B payments in LatAm</h3>
             <p>Operational synergies and distribution scale redefine the competitive map for enterprise fintech.</p>
           </div>
         </article>
 
         <article class="card">
-          <img src="logo-light.png" alt="DealFlow Perspectives logo" loading="lazy" />
+          <img src="logo-light.png" alt="DealFlow Perspectives" loading="lazy" />
           <div class="card-content">
             <span class="pill pill--info">Venture Capital</span>
-            <div class="meta">08 Feb 2025 • Chile</div>
+            <div class="meta">08 Feb 2025 · Chile</div>
             <h3>Climate startups attract rising seed capital in the Andes</h3>
             <p>Early-stage investors prioritize distributed energy, storage, and infrastructure-enabling software.</p>
           </div>
@@ -750,41 +546,31 @@
       </div>
     </section>
 
+    <!-- ABOUT -->
     <section class="section about" id="about">
       <div class="fade-in">
         <p class="meta">About DealFlow Perspectives</p>
-        <h2 class="heading-serif">A single source of truth for Latin America’s private markets.</h2>
+        <h2 class="heading-serif">A single source of truth for Latin America's private markets.</h2>
         <p>
-          We’re building a centralized platform for investors, family offices, and operators who want to anticipate moves,
-          understand who matters, and track where capital is flowing — across Private Equity, M&amp;A, Venture Capital,
-          Private Credit, and Real Assets.
+          We're building a centralized platform for investors, family offices, and operators who want to
+          anticipate moves, understand who matters, and track where capital is flowing — across Private Equity,
+          M&amp;A, Venture Capital, Private Credit, and Real Assets.
         </p>
 
         <div class="stats">
-          <div class="stat">
-            <strong>500+</strong>
-            <span>Community members</span>
-          </div>
-          <div class="stat">
-            <strong>20+</strong>
-            <span>Countries tracked</span>
-          </div>
-          <div class="stat">
-            <strong>1,200+</strong>
-            <span>Deals referenced annually</span>
-          </div>
-          <div class="stat">
-            <strong>24/7</strong>
-            <span>Always-on monitoring</span>
-          </div>
+          <div class="stat"><strong>500+</strong><span>Community members</span></div>
+          <div class="stat"><strong>20+</strong><span>Countries tracked</span></div>
+          <div class="stat"><strong>1,200+</strong><span>Deals referenced annually</span></div>
+          <div class="stat"><strong>24/7</strong><span>Always-on monitoring</span></div>
         </div>
       </div>
 
       <div class="fade-in">
-        <img src="logo-light.png" alt="DealFlow Perspectives logo" loading="lazy" />
+        <img src="logo-light.png" alt="DealFlow Perspectives" loading="lazy" />
       </div>
     </section>
 
+    <!-- CATEGORIES -->
     <section class="section" id="categories">
       <div class="fade-in">
         <p class="meta">Core themes</p>
@@ -794,43 +580,40 @@
       <div class="card-grid fade-in">
         <div class="category-card">
           <div class="category-icon">PE</div>
-          <h3 class="heading-serif" style="margin:0;">Private Equity</h3>
+          <h3 class="heading-serif">Private Equity</h3>
           <p class="meta">Funds, platforms, and value creation across LATAM.</p>
         </div>
-
         <div class="category-card">
           <div class="category-icon">M&amp;A</div>
-          <h3 class="heading-serif" style="margin:0;">M&amp;A</h3>
+          <h3 class="heading-serif">M&amp;A</h3>
           <p class="meta">Strategic consolidation and cross-border transactions.</p>
         </div>
-
         <div class="category-card">
           <div class="category-icon">VC</div>
-          <h3 class="heading-serif" style="margin:0;">Venture Capital</h3>
+          <h3 class="heading-serif">Venture Capital</h3>
           <p class="meta">Rounds, founders, and emerging high-growth verticals.</p>
         </div>
-
         <div class="category-card">
           <div class="category-icon">FO</div>
-          <h3 class="heading-serif" style="margin:0;">Family Offices</h3>
+          <h3 class="heading-serif">Family Offices</h3>
           <p class="meta">Investment theses, governance, and co-investment maps.</p>
         </div>
-
         <div class="category-card">
           <div class="category-icon">MT</div>
-          <h3 class="heading-serif" style="margin:0;">Market Trends</h3>
+          <h3 class="heading-serif">Market Trends</h3>
           <p class="meta">Macro drivers, sector shifts, and regional risk signals.</p>
         </div>
       </div>
     </section>
 
+    <!-- NEWSLETTER -->
     <section class="section" id="newsletter">
       <div class="newsletter fade-in">
         <p class="meta">Weekly newsletter</p>
-        <h2 class="heading-serif" style="margin:0 0 10px;">
+        <h2 class="heading-serif">
           Join thousands of professionals receiving private markets analysis each week.
         </h2>
-        <p class="text-muted-light" style="margin:0 0 18px;">
+        <p class="subtitle">
           Curated deal monitoring, key themes, investor interviews, and sector maps — built for decision-makers.
         </p>
 
@@ -840,16 +623,18 @@
           <button class="btn" type="submit">Subscribe</button>
         </form>
 
-        <p class="meta mt-10">No spam. Unsubscribe anytime.</p>
+        <p class="meta note">No spam. Unsubscribe anytime.</p>
       </div>
     </section>
+
   </main>
 
+  <!-- FOOTER -->
   <footer>
     <div class="footer-content">
       <div class="footer-logo">
-        <img src="logo-light.png" alt="DealFlow Perspectives logo" loading="lazy" />
-        <p>Intelligence, analysis, and community for Latin America’s private capital markets.</p>
+        <img src="logo-light.png" alt="DealFlow Perspectives" loading="lazy" />
+        <p>Intelligence, analysis, and community for Latin America's private capital markets.</p>
       </div>
 
       <div class="footer-links">
@@ -868,70 +653,50 @@
         <strong>Follow</strong>
         <div class="social">
           <a href="https://www.linkedin.com/company/dealflow-perspectives/"
-             target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
-            LinkedIn
-          </a>
+             target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">LinkedIn</a>
         </div>
       </div>
     </div>
 
-    <p class="footer-note">© 2026 DealFlow Perspectives. All rights reserved.</p>
+    <p class="footer-note">&copy; 2026 DealFlow Perspectives. All rights reserved.</p>
   </footer>
 
   <script>
-    /* =========================================================
-       SETTINGS
-       - Keep the wall ON while you build.
-       - When ready to launch, set SITE_LOCKED = false.
-    ========================================================= */
+    /* === CONFIG — Set to false when ready to launch === */
     const SITE_LOCKED = true;
 
-    /* =========================================================
-       WALL LOGIC
-    ========================================================= */
+    /* Wall logic */
     const wall = document.getElementById('wall');
     const refreshBtn = document.getElementById('refreshBtn');
 
-    function applyLock() {
-      if (SITE_LOCKED) {
-        document.body.classList.add('is-locked');
-        wall.style.display = 'grid';
-      } else {
-        document.body.classList.remove('is-locked');
-        wall.style.display = 'none';
-      }
+    if (SITE_LOCKED) {
+      document.body.classList.add('is-locked');
+      wall.style.display = 'grid';
+    } else {
+      document.body.classList.remove('is-locked');
+      wall.style.display = 'none';
     }
 
-    refreshBtn?.addEventListener('click', () => window.location.reload());
-    applyLock();
+    refreshBtn?.addEventListener('click', () => location.reload());
 
-    /* =========================================================
-       NAV SCROLL EFFECT (for later unlock)
-    ========================================================= */
-    const nav = document.getElementById('topNav');
-    window.addEventListener('scroll', () => {
-      nav.classList.toggle('scrolled', window.scrollY > 10);
+    /* Nav scroll effect */
+    const topNav = document.getElementById('topNav');
+    addEventListener('scroll', () => {
+      topNav.classList.toggle('scrolled', scrollY > 10);
     });
 
-    /* =========================================================
-       FADE-IN ANIMATIONS (for later unlock)
-    ========================================================= */
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-    if (!prefersReducedMotion) {
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('visible');
-            observer.unobserve(entry.target);
-          }
+    /* Fade-in observer */
+    if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      const io = new IntersectionObserver(entries => {
+        entries.forEach(e => {
+          if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); }
         });
       }, { threshold: 0.2 });
-
-      document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+      document.querySelectorAll('.fade-in').forEach(el => io.observe(el));
     } else {
       document.querySelectorAll('.fade-in').forEach(el => el.classList.add('visible'));
     }
   </script>
+
 </body>
 </html>
