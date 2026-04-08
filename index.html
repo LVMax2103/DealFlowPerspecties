@@ -143,6 +143,7 @@ a:hover { text-decoration: underline; }
 
 .section { display: none; padding: 32px; max-width: 1440px; margin: 0 auto; }
 .section.active { display: block; }
+#home.section { padding: 0; max-width: none; }
 
 .section-header {
   margin-bottom: 28px;
@@ -1355,6 +1356,7 @@ a:hover { text-decoration: underline; }
 /* ===================================================================
    LANDING PAGE
    =================================================================== */
+/* --- Home Section: full-height scroll container --- */
 #home {
   position: relative;
   overflow-y: auto;
@@ -1362,6 +1364,7 @@ a:hover { text-decoration: underline; }
   max-height: calc(100vh - 60px);
   padding: 0;
   max-width: 100%;
+  scroll-snap-type: y proximity;
 }
 
 .home-watermark {
@@ -1369,11 +1372,12 @@ a:hover { text-decoration: underline; }
   top: 0; left: 0;
   width: 100vw; height: 100vh;
   background: url('logo-light.png') no-repeat center center;
-  background-size: 100% auto;
-  opacity: 0.09;
+  background-size: 80% auto;
+  opacity: 0.06;
   pointer-events: none;
   z-index: 0;
   will-change: transform;
+  filter: brightness(0.7) contrast(1.2);
 }
 
 /* --- Hero Section (viewport 1) --- */
@@ -1384,39 +1388,65 @@ a:hover { text-decoration: underline; }
   padding: 60px 20px 40px;
   position: relative;
   z-index: 1;
+  scroll-snap-align: start;
+  background: radial-gradient(ellipse 80% 60% at 50% 40%, rgba(0,102,255,0.04) 0%, transparent 70%);
 }
 
 .landing-logo {
-  width: 550px; max-width: 90vw; height: auto; margin-bottom: 32px;
-  filter: drop-shadow(0 0 30px rgba(0, 102, 255, 0.15));
+  width: 260px; max-width: 70vw; height: auto; margin-bottom: 40px;
+  filter: drop-shadow(0 0 40px rgba(0, 102, 255, 0.2));
+  animation: logoFadeIn 1.2s ease-out;
+}
+
+@keyframes logoFadeIn {
+  from { opacity: 0; transform: translateY(-10px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 .landing-title {
-  font-size: 32px; font-weight: 800; letter-spacing: -0.8px;
-  color: var(--text-primary); margin-bottom: 12px;
-  max-width: 600px;
+  font-size: 52px; font-weight: 800; letter-spacing: -1.5px;
+  color: #FFFFFF; margin-bottom: 16px;
+  max-width: 800px;
+  line-height: 1.1;
+  animation: titleFadeIn 1s ease-out 0.3s both;
+}
+
+@keyframes titleFadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 .landing-subtitle {
-  font-size: 15px; color: var(--text-secondary); line-height: 1.7;
-  max-width: 520px; margin-bottom: 0;
+  font-size: 17px; color: var(--text-secondary); line-height: 1.8;
+  max-width: 560px; margin-bottom: 0;
+  animation: subtitleFadeIn 1s ease-out 0.6s both;
+}
+
+@keyframes subtitleFadeIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 /* Scroll arrow */
 .scroll-arrow {
   position: absolute;
-  bottom: 32px;
+  bottom: 40px;
   left: 50%;
   transform: translateX(-50%);
   display: flex; flex-direction: column; align-items: center;
-  gap: 6px;
+  gap: 8px;
   cursor: pointer;
-  opacity: 0.5;
+  opacity: 0;
+  animation: arrowAppear 1s ease-out 1.2s both;
   transition: opacity 0.3s ease;
+}
+@keyframes arrowAppear {
+  from { opacity: 0; transform: translateX(-50%) translateY(10px); }
+  to   { opacity: 0.5; transform: translateX(-50%) translateY(0); }
 }
 .scroll-arrow:hover { opacity: 1; }
 .scroll-arrow span {
-  font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px;
+  font-size: 10px; text-transform: uppercase; letter-spacing: 2px;
   color: var(--text-muted); font-weight: 600;
 }
 .scroll-arrow svg {
@@ -1436,12 +1466,24 @@ a:hover { text-decoration: underline; }
   padding: 80px 20px;
   position: relative;
   z-index: 1;
+  scroll-snap-align: start;
+  background:
+    radial-gradient(ellipse 60% 50% at 50% 0%, rgba(0,102,255,0.03) 0%, transparent 60%),
+    radial-gradient(ellipse 80% 40% at 50% 100%, rgba(0,196,140,0.02) 0%, transparent 60%);
+}
+
+/* Section divider gradient */
+.home-info::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 10%; right: 10%; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.06) 50%, transparent);
 }
 
 /* Staggered fade-in for child elements */
 .home-info .fade-up {
   opacity: 0;
-  transform: translateY(24px);
+  transform: translateY(30px);
   transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .home-info.visible .fade-up {
@@ -1452,24 +1494,26 @@ a:hover { text-decoration: underline; }
 .home-info.visible .fade-up:nth-child(2) { transition-delay: 0.15s; }
 .home-info.visible .fade-up:nth-child(3) { transition-delay: 0.3s; }
 
-/* Stats bar */
+/* Stats bar — Pedralbes style */
 .home-stats {
-  display: flex; gap: 40px; margin-bottom: 48px; flex-wrap: wrap;
+  display: flex; gap: 60px; margin-bottom: 56px; flex-wrap: wrap;
   justify-content: center;
 }
 .home-stat {
   text-align: center;
 }
 .home-stat-value {
-  font-size: 36px; font-weight: 800; color: var(--accent-light);
-  letter-spacing: -1px; line-height: 1.2;
+  font-size: 56px; font-weight: 800; color: #FFFFFF;
+  letter-spacing: -2px; line-height: 1;
+  font-feature-settings: 'tnum';
 }
 .home-stat-label {
-  font-size: 12px; color: var(--text-muted); text-transform: uppercase;
-  letter-spacing: 1px; margin-top: 4px; font-weight: 600;
+  font-size: 11px; color: var(--text-muted); text-transform: uppercase;
+  letter-spacing: 2px; margin-top: 10px; font-weight: 600;
 }
 .home-stat-divider {
   width: 1px; background: var(--border-light); align-self: stretch;
+  opacity: 0.5;
 }
 
 /* Actions & newsletter */
@@ -1599,11 +1643,15 @@ a:hover { text-decoration: underline; }
   }
   .navbar-mobile-toggle { display: block; }
   .section { padding: 20px 16px; }
+  #home.section { padding: 0; }
   .kpi-grid { grid-template-columns: 1fr 1fr; }
   .db-toolbar { flex-direction: column; align-items: stretch; }
   .db-search { min-width: unset; }
   .modal { max-width: 100%; margin: 10px; }
   .modal-kpi-row { grid-template-columns: 1fr; }
+  .landing-title { font-size: 36px; }
+  .home-stat-value { font-size: 44px; }
+  .home-stats { gap: 36px; }
 }
 
 @media (max-width: 480px) {
@@ -1611,10 +1659,10 @@ a:hover { text-decoration: underline; }
   .kpi-card .kpi-value { font-size: 24px; }
   .navbar-brand .brand-divider,
   .navbar-brand .brand-sub { display: none; }
-  .landing-title { font-size: 24px; }
-  .landing-logo { width: 300px; }
-  .home-stats { gap: 20px; }
-  .home-stat-value { font-size: 26px; }
+  .landing-title { font-size: 28px; letter-spacing: -0.5px; }
+  .landing-logo { width: 180px; }
+  .home-stats { gap: 24px; }
+  .home-stat-value { font-size: 36px; letter-spacing: -1px; }
   .home-stat-divider { display: none; }
 }
 
@@ -1922,11 +1970,11 @@ a:hover { text-decoration: underline; }
       <h1 class="landing-title">Latin America Private Markets Intelligence</h1>
       <p class="landing-subtitle">Deal flow analytics, fund tracking, and market intelligence for PE, VC, M&A, Real Assets, and Private Credit across Latin America.</p>
       <div class="scroll-arrow" id="scrollArrow">
-        <span>Scroll down</span>
+        <span>Explore</span>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
       </div>
     </div>
-    <!-- Info (viewport 2) -->
+    <!-- Stats + CTA (viewport 2) -->
     <div class="home-info" id="homeInfo">
       <div class="home-stats fade-up" id="homeStats">
         <div class="home-stat">
@@ -2580,8 +2628,8 @@ a:hover { text-decoration: underline; }
     const totalVal = withValue.reduce((s, d) => s + d.dealValueUSDM, 0);
     const countries = new Set(allDeals.map(d => d.country)).size;
 
-    // Animate deals count
-    if (dealsEl) animateCounter(dealsEl, total, 2000, '', '');
+    // Animate deals count (2.5s easeOutExpo)
+    if (dealsEl) animateCounter(dealsEl, total, 2500, '', '');
 
     // Animate aggregate value (show in $B)
     if (valueEl) {
@@ -2589,7 +2637,7 @@ a:hover { text-decoration: underline; }
       const start = performance.now();
       function tickVal(now) {
         const elapsed = now - start;
-        const progress = Math.min(elapsed / 2000, 1);
+        const progress = Math.min(elapsed / 2500, 1);
         const eased = easeOutExpo(progress);
         const current = (valB * eased).toFixed(1).replace(/\.0$/, '');
         valueEl.textContent = '$' + current + 'B';
@@ -2599,7 +2647,7 @@ a:hover { text-decoration: underline; }
     }
 
     // Animate countries count
-    if (countriesEl) animateCounter(countriesEl, countries, 2000, '', '');
+    if (countriesEl) animateCounter(countriesEl, countries, 2500, '', '');
   }
 
   function updateHomeStats() {
