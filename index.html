@@ -99,7 +99,7 @@ a:hover { text-decoration: underline; }
 
 .navbar-brand .brand-sub {
   font-size: 12px; font-weight: 400; color: var(--text-secondary);
-  letter-spacing: 0.5px; text-transform: uppercase;
+  letter-spacing: 0.3px; text-transform: none; font-style: italic;
 }
 
 .navbar-nav {
@@ -239,6 +239,34 @@ a:hover { text-decoration: underline; }
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
   overflow: hidden;
+}
+
+.panel.resizable {
+  resize: both;
+  overflow: auto;
+  min-width: 280px;
+  min-height: 200px;
+}
+
+.panel.resizable::-webkit-resizer {
+  background: transparent;
+}
+
+.panel.resizable::after {
+  content: '';
+  position: absolute;
+  bottom: 4px; right: 4px;
+  width: 12px; height: 12px;
+  border-right: 2px solid var(--text-muted);
+  border-bottom: 2px solid var(--text-muted);
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.kpi-grid.resizable {
+  resize: vertical;
+  overflow: auto;
+  min-height: 100px;
 }
 
 .panel-header {
@@ -795,11 +823,31 @@ a:hover { text-decoration: underline; }
 /* ===================================================================
    LANDING PAGE
    =================================================================== */
+#home {
+  position: relative;
+  overflow: hidden;
+}
+
+#home::before {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 600px; height: 600px;
+  background: url('logo-light.png') no-repeat center center;
+  background-size: contain;
+  opacity: 0.08;
+  pointer-events: none;
+  z-index: 0;
+}
+
 .landing-container {
   display: flex; flex-direction: column; align-items: center;
   justify-content: center; text-align: center;
   min-height: calc(100vh - 140px);
   padding: 60px 20px;
+  position: relative;
+  z-index: 1;
 }
 
 .landing-logo {
@@ -1008,6 +1056,113 @@ a:hover { text-decoration: underline; }
   font-feature-settings: 'tnum';
 }
 
+/* 2D/3D Toggle */
+.heatmap-toggle {
+  display: inline-flex; gap: 0; border-radius: var(--radius-sm); overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.heatmap-toggle button {
+  padding: 6px 16px; border: none; background: var(--bg-secondary);
+  color: var(--text-secondary); font-size: 12px; font-weight: 600;
+  font-family: var(--font-sans); cursor: pointer; transition: all var(--transition);
+}
+
+.heatmap-toggle button.active {
+  background: var(--accent); color: #fff;
+}
+
+.heatmap-toggle button:hover:not(.active) {
+  color: var(--text-primary); background: var(--bg-card);
+}
+
+/* 2D Map Container */
+#map2dContainer {
+  width: 100%; height: 600px; position: relative;
+  background: #000; border-radius: var(--radius-md); overflow: hidden;
+  display: none; cursor: grab;
+}
+
+#map2dContainer:active { cursor: grabbing; }
+
+#map2dContainer canvas {
+  display: block; width: 100% !important; height: 100% !important;
+}
+
+#map2dTooltip {
+  position: absolute; pointer-events: none;
+  background: rgba(10, 10, 10, 0.92); backdrop-filter: blur(8px);
+  border: 1px solid var(--border-light); border-radius: var(--radius-sm);
+  padding: 8px 14px; font-size: 13px; color: var(--text-primary);
+  white-space: nowrap; opacity: 0; transition: opacity 0.15s ease; z-index: 10;
+}
+
+#map2dTooltip.visible { opacity: 1; }
+#map2dTooltip .tt-country { font-weight: 700; margin-bottom: 2px; }
+#map2dTooltip .tt-deals { font-size: 12px; color: var(--accent-light); font-feature-settings: 'tnum'; }
+
+/* Country Deals Modal */
+#countryDealsModal {
+  display: none; position: fixed; inset: 0; z-index: 200;
+  background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(8px);
+  align-items: center; justify-content: center; padding: 20px;
+}
+
+#countryDealsModal.open { display: flex; }
+
+.country-modal {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); box-shadow: var(--shadow-modal);
+  width: 100%; max-width: 900px; max-height: 85vh; overflow-y: auto;
+  position: relative; animation: modalIn 0.25s ease;
+}
+
+.country-modal-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px 28px; border-bottom: 1px solid var(--border);
+}
+
+.country-modal-header h2 {
+  font-size: 18px; font-weight: 700; display: flex; align-items: center; gap: 10px;
+}
+
+.country-modal-header .deal-count-badge {
+  font-size: 12px; font-weight: 600; padding: 3px 10px;
+  border-radius: 100px; background: var(--accent-glow); color: var(--accent-light);
+}
+
+.country-modal-close {
+  background: var(--bg-secondary); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); color: var(--text-secondary); cursor: pointer;
+  width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;
+  font-size: 20px; line-height: 1; transition: all var(--transition);
+}
+
+.country-modal-close:hover {
+  background: var(--danger); border-color: var(--danger); color: #fff;
+}
+
+.country-deals-table {
+  width: 100%; border-collapse: collapse; font-size: 13px;
+}
+
+.country-deals-table thead th {
+  text-align: left; padding: 12px 16px; font-size: 11px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted);
+  background: var(--bg-secondary); border-bottom: 1px solid var(--border);
+}
+
+.country-deals-table tbody td {
+  padding: 12px 16px; border-bottom: 1px solid var(--border);
+  color: var(--text-primary); vertical-align: top;
+}
+
+.country-deals-table tbody tr:hover { background: var(--bg-secondary); }
+
+.country-deals-table tbody tr:last-child td { border-bottom: none; }
+
+.country-deals-table .val-cell { text-align: right; font-feature-settings: 'tnum'; }
+
 /* ===================================================================
    CATEGORY DRILLDOWN VIEW
    =================================================================== */
@@ -1104,7 +1259,7 @@ a:hover { text-decoration: underline; }
     <img src="logo-light.png" alt="DealFlow Perspectives" onerror="this.style.display='none'">
     <span id="navBrandText">Guest v1.0</span>
     <span class="brand-divider"></span>
-    <span class="brand-sub">Deal Intelligence</span>
+    <span class="brand-sub">pulse of LatAm growth</span>
   </a>
 
   <button class="navbar-mobile-toggle" id="mobileToggle" aria-label="Toggle menu">
@@ -1181,13 +1336,13 @@ a:hover { text-decoration: underline; }
     </div>
 
     <!-- KPI row -->
-    <div class="kpi-grid" id="kpiGrid">
+    <div class="kpi-grid resizable" id="kpiGrid" data-panel-id="kpi">
       <div class="loading-state"><div class="spinner"></div><p>Loading data...</p></div>
     </div>
 
     <!-- Category Breakdown + Top Sectors -->
     <div class="dashboard-grid">
-      <div class="panel">
+      <div class="panel resizable" data-panel-id="catBreakdown" style="position:relative;">
         <div class="panel-header">
           <h2>Deal Activity by Category</h2>
           <span class="panel-badge" id="catTotal">-</span>
@@ -1197,7 +1352,7 @@ a:hover { text-decoration: underline; }
         </div>
       </div>
 
-      <div class="panel">
+      <div class="panel resizable" data-panel-id="topDeals" style="position:relative;">
         <div class="panel-header">
           <h2>Top 15 Deals by Value</h2>
           <span class="panel-badge">USD M</span>
@@ -1217,7 +1372,7 @@ a:hover { text-decoration: underline; }
     </div>
 
     <!-- Country Map -->
-    <div class="panel" style="margin-bottom:28px;">
+    <div class="panel resizable" style="margin-bottom:28px;position:relative;" data-panel-id="geoDistribution">
       <div class="panel-header">
         <h2>Geographic Distribution</h2>
         <span class="panel-badge" id="countryTotal">-</span>
@@ -1287,20 +1442,32 @@ a:hover { text-decoration: underline; }
     <div class="empty-state"><p>This section is under development.</p></div>
   </section>
 
-  <!-- ====== HEATMAP — 3D GLOBE ====== -->
+  <!-- ====== HEATMAP — 3D GLOBE / 2D MAP ====== -->
   <section id="heatmap" class="section">
     <div class="section-header">
       <h1>Deal Heatmap</h1>
-      <p>Interactive 3D globe — countries illuminate based on deal activity</p>
+      <p>Interactive globe — countries illuminate based on deal activity</p>
     </div>
     <div class="panel">
       <div class="panel-header">
         <h2>Geographic Deal Activity</h2>
-        <span class="panel-badge" id="globeCountryCount">-</span>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div class="heatmap-toggle" id="heatmapToggle">
+            <button class="active" data-mode="3d">3D Globe</button>
+            <button data-mode="2d">2D Map</button>
+          </div>
+          <span class="panel-badge" id="globeCountryCount">-</span>
+        </div>
       </div>
       <div class="panel-body" style="padding:0;">
         <div id="globeContainer">
           <div id="globeTooltip">
+            <div class="tt-country"></div>
+            <div class="tt-deals"></div>
+          </div>
+        </div>
+        <div id="map2dContainer">
+          <div id="map2dTooltip">
             <div class="tt-country"></div>
             <div class="tt-deals"></div>
           </div>
@@ -1413,6 +1580,34 @@ a:hover { text-decoration: underline; }
 
       <div class="modal-section-label">Deal Parties</div>
       <div class="modal-parties" id="modalParties"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     COUNTRY DEALS MODAL
+     ============================================================ -->
+<div id="countryDealsModal">
+  <div class="country-modal">
+    <div class="country-modal-header">
+      <h2>
+        <span id="countryModalFlag"></span>
+        <span id="countryModalName"></span>
+        <span class="deal-count-badge" id="countryModalCount"></span>
+      </h2>
+      <button class="country-modal-close" id="countryModalClose">&times;</button>
+    </div>
+    <div style="overflow-x:auto;">
+      <table class="country-deals-table" id="countryDealsTable">
+        <thead><tr>
+          <th>Deal Name</th>
+          <th>Category</th>
+          <th>Investor / Buyer</th>
+          <th class="val-cell">Value (USD M)</th>
+          <th>Sector</th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
     </div>
   </div>
 </div>
@@ -1647,6 +1842,7 @@ a:hover { text-decoration: underline; }
     populateFilters();
     applyFiltersAndSort();
     bindEvents();
+    initResizablePanels();
   }
 
   /* ==============================================================
@@ -2434,7 +2630,8 @@ a:hover { text-decoration: underline; }
     globeRenderer.render(globeScene, globeCamera);
   }
 
-  function onGlobeMouseDown(e) { isDragging = true; prevMouse = { x: e.clientX, y: e.clientY }; }
+  let globeMouseDownPos = { x: 0, y: 0 };
+  function onGlobeMouseDown(e) { isDragging = true; prevMouse = { x: e.clientX, y: e.clientY }; globeMouseDownPos = { x: e.clientX, y: e.clientY }; }
 
   function onGlobeMouseMove(e) {
     const container = document.getElementById('globeContainer');
@@ -2475,7 +2672,30 @@ a:hover { text-decoration: underline; }
     }
   }
 
-  function onGlobeMouseUp() { isDragging = false; }
+  function onGlobeMouseUp(e) {
+    const wasDrag = isDragging && e && e.clientX !== undefined &&
+      (Math.abs(e.clientX - globeMouseDownPos.x) > 5 || Math.abs(e.clientY - globeMouseDownPos.y) > 5);
+    isDragging = false;
+    if (!wasDrag && e && e.clientX !== undefined) {
+      onGlobeClick(e);
+    }
+  }
+
+  function onGlobeClick(e) {
+    const container = document.getElementById('globeContainer');
+    const rect = container.getBoundingClientRect();
+    const mouse = new THREE.Vector2(
+      ((e.clientX - rect.left) / rect.width) * 2 - 1,
+      -((e.clientY - rect.top) / rect.height) * 2 + 1
+    );
+    const raycaster = new THREE.Raycaster();
+    raycaster.setFromCamera(mouse, globeCamera);
+    const intersects = raycaster.intersectObjects(globeCountryMeshes);
+    if (intersects.length > 0) {
+      const data = intersects[0].object.userData;
+      openCountryDealsModal(data.country);
+    }
+  }
 
   function onGlobeTouchStart(e) {
     if (e.touches.length === 1) {
@@ -2508,6 +2728,344 @@ a:hover { text-decoration: underline; }
   }
 
   /* ==============================================================
+     DASHBOARD — RESIZABLE PANELS (localStorage persistence)
+     ============================================================== */
+  function getDashboardLayoutKey() {
+    const user = getUser();
+    const id = user ? user.email : 'guest';
+    return 'dfp_layout_' + id;
+  }
+
+  function savePanelSizes() {
+    const layout = {};
+    document.querySelectorAll('[data-panel-id]').forEach(el => {
+      const id = el.dataset.panelId;
+      if (el.style.width || el.style.height) {
+        layout[id] = { width: el.style.width, height: el.style.height };
+      }
+    });
+    localStorage.setItem(getDashboardLayoutKey(), JSON.stringify(layout));
+  }
+
+  function restorePanelSizes() {
+    try {
+      const layout = JSON.parse(localStorage.getItem(getDashboardLayoutKey()));
+      if (!layout) return;
+      Object.entries(layout).forEach(([id, size]) => {
+        const el = document.querySelector('[data-panel-id="' + id + '"]');
+        if (el) {
+          if (size.width) el.style.width = size.width;
+          if (size.height) el.style.height = size.height;
+        }
+      });
+    } catch {}
+  }
+
+  function initResizablePanels() {
+    restorePanelSizes();
+    const observer = new MutationObserver(() => savePanelSizes());
+    document.querySelectorAll('[data-panel-id]').forEach(el => {
+      observer.observe(el, { attributes: true, attributeFilter: ['style'] });
+    });
+    // Also use ResizeObserver for more reliable detection
+    if (typeof ResizeObserver !== 'undefined') {
+      const ro = new ResizeObserver(() => savePanelSizes());
+      document.querySelectorAll('[data-panel-id]').forEach(el => ro.observe(el));
+    }
+  }
+
+  /* ==============================================================
+     2D MAP — Mercator projection
+     ============================================================== */
+  let map2dCanvas, map2dCtx, map2dGeojson, map2dCountryCounts, map2dMaxDeals;
+  let map2dInitialized = false;
+  let map2dCountryPaths = []; // stored for click/hover detection
+
+  function mercatorX(lng, w) { return (lng + 180) / 360 * w; }
+  function mercatorY(lat, h) {
+    const latRad = lat * Math.PI / 180;
+    const mercN = Math.log(Math.tan(Math.PI / 4 + latRad / 2));
+    return h / 2 - (mercN / Math.PI) * (h / 2);
+  }
+
+  async function init2dMap() {
+    const container = document.getElementById('map2dContainer');
+    if (!container) return;
+
+    map2dCanvas = document.createElement('canvas');
+    container.insertBefore(map2dCanvas, container.firstChild);
+
+    const w = container.clientWidth;
+    const h = container.clientHeight;
+    const dpr = Math.min(window.devicePixelRatio, 2);
+    map2dCanvas.width = w * dpr;
+    map2dCanvas.height = h * dpr;
+    map2dCanvas.style.width = w + 'px';
+    map2dCanvas.style.height = h + 'px';
+    map2dCtx = map2dCanvas.getContext('2d');
+    map2dCtx.scale(dpr, dpr);
+
+    // Build deal counts
+    map2dCountryCounts = {};
+    allDeals.forEach(d => {
+      if (!d.country) return;
+      d.country.split(/[;,]/).map(s => s.trim().toLowerCase()).forEach(part => {
+        const clean = part.replace(/\s*\(.*?\)\s*/g, '').trim();
+        if (COUNTRY_CENTROIDS[clean]) {
+          map2dCountryCounts[clean] = (map2dCountryCounts[clean] || 0) + 1;
+        } else {
+          for (const key of Object.keys(COUNTRY_CENTROIDS)) {
+            if (clean.includes(key) || key.includes(clean)) {
+              map2dCountryCounts[key] = (map2dCountryCounts[key] || 0) + 1;
+              break;
+            }
+          }
+        }
+      });
+    });
+    map2dMaxDeals = Math.max(...Object.values(map2dCountryCounts), 1);
+
+    // Load TopoJSON
+    try {
+      const resp = await fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json');
+      const topology = await resp.json();
+      map2dGeojson = topojson.feature(topology, topology.objects.countries);
+      render2dMap(w, h);
+    } catch (e) {
+      console.warn('Could not load world borders for 2D map', e);
+    }
+
+    // Mouse events
+    container.addEventListener('mousemove', on2dMouseMove);
+    container.addEventListener('click', on2dClick);
+    window.addEventListener('resize', on2dResize);
+    map2dInitialized = true;
+  }
+
+  function render2dMap(w, h) {
+    if (!map2dCtx || !map2dGeojson) return;
+    map2dCtx.clearRect(0, 0, w, h);
+    map2dCountryPaths = [];
+
+    map2dGeojson.features.forEach(feature => {
+      if (!feature.geometry) return;
+      const isoId = String(feature.id).padStart(3, '0');
+      const matchKey = ISO_TO_KEY[isoId] || '';
+      const dealCount = map2dCountryCounts[matchKey] || 0;
+      const hasDeal = dealCount > 0;
+
+      const coords = feature.geometry.type === 'Polygon'
+        ? [feature.geometry.coordinates]
+        : feature.geometry.type === 'MultiPolygon'
+          ? feature.geometry.coordinates
+          : [];
+
+      const path = new Path2D();
+      coords.forEach(polygon => {
+        polygon.forEach(ring => {
+          for (let i = 0; i < ring.length; i++) {
+            const x = mercatorX(ring[i][0], w);
+            const y = mercatorY(ring[i][1], h);
+            if (i === 0) path.moveTo(x, y);
+            else path.lineTo(x, y);
+          }
+          path.closePath();
+        });
+      });
+
+      // Fill
+      if (hasDeal) {
+        const intensity = dealCount / map2dMaxDeals;
+        const hue = Math.round(210 - intensity * 20);
+        const light = Math.round(20 + intensity * 35);
+        map2dCtx.fillStyle = 'hsl(' + hue + ', 100%, ' + light + '%)';
+      } else {
+        map2dCtx.fillStyle = '#111';
+      }
+      map2dCtx.fill(path);
+
+      // Border
+      map2dCtx.strokeStyle = hasDeal ? 'rgba(100,180,255,0.4)' : 'rgba(68,68,68,0.3)';
+      map2dCtx.lineWidth = hasDeal ? 1 : 0.5;
+      map2dCtx.stroke(path);
+
+      map2dCountryPaths.push({
+        path: path,
+        key: matchKey,
+        name: matchKey ? matchKey.split(' ').map(ww => ww.charAt(0).toUpperCase() + ww.slice(1)).join(' ') : '',
+        deals: dealCount
+      });
+
+      // Deal dot at centroid for countries with deals
+      if (hasDeal && COUNTRY_CENTROIDS[matchKey]) {
+        const c = COUNTRY_CENTROIDS[matchKey];
+        const cx = mercatorX(c.lng, w);
+        const cy = mercatorY(c.lat, h);
+        const intensity = dealCount / map2dMaxDeals;
+        const radius = 4 + intensity * 8;
+        const hue = Math.round(210 - intensity * 20);
+        const light = Math.round(40 + intensity * 30);
+
+        // Glow
+        map2dCtx.beginPath();
+        map2dCtx.arc(cx, cy, radius * 2, 0, Math.PI * 2);
+        map2dCtx.fillStyle = 'hsla(' + hue + ', 100%, ' + light + '%, 0.2)';
+        map2dCtx.fill();
+
+        // Dot
+        map2dCtx.beginPath();
+        map2dCtx.arc(cx, cy, radius, 0, Math.PI * 2);
+        map2dCtx.fillStyle = 'hsl(' + hue + ', 100%, ' + light + '%)';
+        map2dCtx.fill();
+      }
+    });
+  }
+
+  function on2dMouseMove(e) {
+    const container = document.getElementById('map2dContainer');
+    const tooltip = document.getElementById('map2dTooltip');
+    const rect = container.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    let found = null;
+    for (let i = map2dCountryPaths.length - 1; i >= 0; i--) {
+      const cp = map2dCountryPaths[i];
+      if (cp.deals > 0 && map2dCtx.isPointInPath(cp.path, x, y)) {
+        found = cp;
+        break;
+      }
+    }
+
+    if (found) {
+      tooltip.querySelector('.tt-country').textContent = found.name;
+      tooltip.querySelector('.tt-deals').textContent = found.deals + ' deal' + (found.deals !== 1 ? 's' : '');
+      tooltip.style.left = (e.clientX - rect.left + 16) + 'px';
+      tooltip.style.top = (e.clientY - rect.top - 10) + 'px';
+      tooltip.classList.add('visible');
+      container.style.cursor = 'pointer';
+    } else {
+      tooltip.classList.remove('visible');
+      container.style.cursor = 'default';
+    }
+  }
+
+  function on2dClick(e) {
+    const container = document.getElementById('map2dContainer');
+    const rect = container.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    for (let i = map2dCountryPaths.length - 1; i >= 0; i--) {
+      const cp = map2dCountryPaths[i];
+      if (cp.deals > 0 && map2dCtx.isPointInPath(cp.path, x, y)) {
+        openCountryDealsModal(cp.name);
+        break;
+      }
+    }
+  }
+
+  function on2dResize() {
+    const container = document.getElementById('map2dContainer');
+    if (!container || !map2dCanvas || container.style.display === 'none') return;
+    const w = container.clientWidth;
+    const h = container.clientHeight;
+    const dpr = Math.min(window.devicePixelRatio, 2);
+    map2dCanvas.width = w * dpr;
+    map2dCanvas.height = h * dpr;
+    map2dCanvas.style.width = w + 'px';
+    map2dCanvas.style.height = h + 'px';
+    map2dCtx.setTransform(1, 0, 0, 1, 0, 0);
+    map2dCtx.scale(dpr, dpr);
+    render2dMap(w, h);
+  }
+
+  /* ==============================================================
+     HEATMAP — 2D/3D Toggle
+     ============================================================== */
+  let currentHeatmapMode = '3d';
+
+  function initHeatmapToggle() {
+    const toggle = document.getElementById('heatmapToggle');
+    if (!toggle) return;
+    toggle.querySelectorAll('button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const mode = btn.dataset.mode;
+        if (mode === currentHeatmapMode) return;
+        currentHeatmapMode = mode;
+        toggle.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        const globeC = document.getElementById('globeContainer');
+        const map2dC = document.getElementById('map2dContainer');
+
+        if (mode === '3d') {
+          globeC.style.display = '';
+          map2dC.style.display = 'none';
+        } else {
+          globeC.style.display = 'none';
+          map2dC.style.display = 'block';
+          if (!map2dInitialized && allDeals.length > 0) {
+            setTimeout(init2dMap, 50);
+          } else {
+            on2dResize();
+          }
+        }
+      });
+    });
+  }
+
+  /* ==============================================================
+     COUNTRY DEALS MODAL
+     ============================================================== */
+  function openCountryDealsModal(countryName) {
+    const modal = document.getElementById('countryDealsModal');
+    const nameEl = document.getElementById('countryModalName');
+    const flagEl = document.getElementById('countryModalFlag');
+    const countEl = document.getElementById('countryModalCount');
+    const tbody = document.querySelector('#countryDealsTable tbody');
+
+    const lowerCountry = countryName.toLowerCase().trim();
+
+    // Filter deals for this country
+    const deals = allDeals.filter(d => {
+      if (!d.country) return false;
+      const parts = d.country.split(/[;,]/).map(s => s.trim().toLowerCase());
+      return parts.some(p => {
+        const clean = p.replace(/\s*\(.*?\)\s*/g, '').trim();
+        return clean === lowerCountry || clean.includes(lowerCountry) || lowerCountry.includes(clean);
+      });
+    });
+
+    flagEl.textContent = countryToFlag(countryName);
+    nameEl.textContent = countryName;
+    countEl.textContent = deals.length + ' deal' + (deals.length !== 1 ? 's' : '');
+
+    // Sort by value descending
+    deals.sort((a, b) => (b.dealValueUSDM || 0) - (a.dealValueUSDM || 0));
+
+    let html = '';
+    deals.forEach(d => {
+      html += '<tr>' +
+        '<td>' + escapeHtml(d.dealName) + '</td>' +
+        '<td><span class="cat-badge ' + catClass(d.category) + '">' + escapeHtml(d.category) + '</span></td>' +
+        '<td>' + escapeHtml(d.investorBuyer || '—') + '</td>' +
+        '<td class="val-cell">' + (d.dealValueUSDM != null ? d.dealValueUSDM.toLocaleString('en-US') : 'Undisclosed') + '</td>' +
+        '<td>' + escapeHtml(d.sector || '—') + '</td>' +
+        '</tr>';
+    });
+    tbody.innerHTML = html;
+
+    modal.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeCountryDealsModal() {
+    document.getElementById('countryDealsModal').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  /* ==============================================================
      BOOT
      ============================================================== */
   // Brand logo click → home
@@ -2531,6 +3089,14 @@ a:hover { text-decoration: underline; }
 
   initAuth();
   initNewsletter();
+  initHeatmapToggle();
+
+  // Country deals modal — close handlers
+  document.getElementById('countryModalClose').addEventListener('click', closeCountryDealsModal);
+  document.getElementById('countryDealsModal').addEventListener('click', (e) => {
+    if (e.target === document.getElementById('countryDealsModal')) closeCountryDealsModal();
+  });
+
   loadData();
 })();
 </script>
