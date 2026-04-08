@@ -959,6 +959,136 @@ a:hover { text-decoration: underline; }
   .landing-title { font-size: 24px; }
   .landing-logo { height: 56px; }
 }
+
+/* ===================================================================
+   3D GLOBE HEATMAP
+   =================================================================== */
+#globeContainer {
+  width: 100%;
+  height: 600px;
+  position: relative;
+  background: #000;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  cursor: grab;
+}
+
+#globeContainer:active { cursor: grabbing; }
+
+#globeContainer canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+#globeTooltip {
+  position: absolute;
+  pointer-events: none;
+  background: rgba(10, 10, 10, 0.92);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 8px 14px;
+  font-size: 13px;
+  color: var(--text-primary);
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  z-index: 10;
+}
+
+#globeTooltip.visible { opacity: 1; }
+
+#globeTooltip .tt-country {
+  font-weight: 700; margin-bottom: 2px;
+}
+
+#globeTooltip .tt-deals {
+  font-size: 12px; color: var(--accent-light);
+  font-feature-settings: 'tnum';
+}
+
+/* ===================================================================
+   CATEGORY DRILLDOWN VIEW
+   =================================================================== */
+#categoryDrilldown {
+  display: none;
+  padding: 32px;
+  max-width: 1440px;
+  margin: 0 auto;
+}
+
+#categoryDrilldown.active { display: block; }
+
+.drilldown-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.btn-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 500;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.btn-back:hover {
+  color: var(--text-primary);
+  border-color: var(--accent);
+  background: var(--accent-glow);
+}
+
+.btn-back svg { width: 16px; height: 16px; }
+
+.drilldown-title {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.4px;
+}
+
+.drilldown-badge {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 100px;
+}
+
+.drilldown-stats {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 20px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.drilldown-stats strong {
+  color: var(--text-primary);
+  font-feature-settings: 'tnum';
+}
+
+/* clickable category items */
+.cat-breakdown-item {
+  cursor: pointer;
+  transition: background var(--transition), padding-left var(--transition);
+  border-radius: var(--radius-sm);
+  padding-left: 8px;
+  padding-right: 8px;
+}
+
+.cat-breakdown-item:hover {
+  background: var(--accent-glow);
+}
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1157,14 +1287,52 @@ a:hover { text-decoration: underline; }
     <div class="empty-state"><p>This section is under development.</p></div>
   </section>
 
-  <!-- ====== HEATMAP (placeholder) ====== -->
+  <!-- ====== HEATMAP — 3D GLOBE ====== -->
   <section id="heatmap" class="section">
     <div class="section-header">
-      <h1>Heatmap</h1>
-      <p>Geographic and sector activity heatmap — coming soon</p>
+      <h1>Deal Heatmap</h1>
+      <p>Interactive 3D globe — countries illuminate based on deal activity</p>
     </div>
-    <div class="empty-state"><p>This section is under development.</p></div>
+    <div class="panel">
+      <div class="panel-header">
+        <h2>Geographic Deal Activity</h2>
+        <span class="panel-badge" id="globeCountryCount">-</span>
+      </div>
+      <div class="panel-body" style="padding:0;">
+        <div id="globeContainer">
+          <div id="globeTooltip">
+            <div class="tt-country"></div>
+            <div class="tt-deals"></div>
+          </div>
+        </div>
+      </div>
+    </div>
   </section>
+
+  <!-- ====== CATEGORY DRILLDOWN (injected by JS) ====== -->
+  <div id="categoryDrilldown">
+    <div class="drilldown-header">
+      <button class="btn-back" id="btnBackDashboard">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        Back to Dashboard
+      </button>
+      <span class="drilldown-title" id="drilldownTitle"></span>
+      <span class="drilldown-badge cat-badge" id="drilldownBadge"></span>
+    </div>
+    <div class="drilldown-stats" id="drilldownStats"></div>
+    <div class="db-table-wrap">
+      <table class="db-table" id="drilldownTable">
+        <thead><tr>
+          <th>Deal</th>
+          <th>Investor / Buyer</th>
+          <th>Country</th>
+          <th>Sector</th>
+          <th style="text-align:right">Value (USD M)</th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
 
 </main>
 
@@ -1259,6 +1427,7 @@ a:hover { text-decoration: underline; }
 <!-- ============================================================
      JAVASCRIPT
      ============================================================ -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
 (function () {
   'use strict';
@@ -1467,6 +1636,8 @@ a:hover { text-decoration: underline; }
   /* ==============================================================
      INIT
      ============================================================== */
+  let globeInitialized = false;
+
   function init() {
     renderKPIs();
     renderCategoryBreakdown();
@@ -1541,7 +1712,7 @@ a:hover { text-decoration: underline; }
       const pct = (count / max * 100).toFixed(0);
       const val = values[cat] || 0;
       html += `
-        <li class="cat-breakdown-item">
+        <li class="cat-breakdown-item" data-category="${escapeHtml(cat)}" title="Click to view ${escapeHtml(cat)} deals">
           <span class="cat-dot ${cls}"></span>
           <div class="cat-info">
             <div class="cat-name">${escapeHtml(cat)}</div>
@@ -1549,6 +1720,7 @@ a:hover { text-decoration: underline; }
           </div>
           <span class="cat-count">${count}</span>
           <span class="cat-value">${fmtValue(val)}</span>
+          <svg style="width:14px;height:14px;color:var(--text-muted);flex-shrink:0;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
         </li>
       `;
     }
@@ -1808,6 +1980,9 @@ a:hover { text-decoration: underline; }
      NAVIGATION
      ============================================================== */
   function navigateTo(sectionId) {
+    // Hide category drilldown if visible
+    $('#categoryDrilldown').style.display = 'none';
+
     $$('.section').forEach(s => s.classList.remove('active'));
     const target = document.getElementById(sectionId);
     if (target) target.classList.add('active');
@@ -1815,6 +1990,12 @@ a:hover { text-decoration: underline; }
     $$('.navbar-nav a').forEach(a => {
       a.classList.toggle('active', a.dataset.section === sectionId);
     });
+
+    // Lazy-init the 3D globe when heatmap section is first shown
+    if (sectionId === 'heatmap' && !globeInitialized && allDeals.length > 0) {
+      globeInitialized = true;
+      setTimeout(initGlobe, 50);
+    }
 
     // Close mobile nav
     $('#navMenu').classList.remove('open');
@@ -1895,6 +2076,328 @@ a:hover { text-decoration: underline; }
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') closeDealModal();
     });
+
+    // Category breakdown click — open drilldown
+    $('#catBreakdown').addEventListener('click', (e) => {
+      const item = e.target.closest('.cat-breakdown-item');
+      if (!item) return;
+      const cat = item.dataset.category;
+      if (cat) openCategoryDrilldown(cat);
+    });
+
+    // Back from drilldown
+    $('#btnBackDashboard').addEventListener('click', closeCategoryDrilldown);
+
+    // Deal click in drilldown table
+    $('#drilldownTable tbody').addEventListener('click', (e) => {
+      const row = e.target.closest('tr[data-deal-id]');
+      if (row) openDealModal(parseInt(row.dataset.dealId));
+    });
+  }
+
+  /* ==============================================================
+     CATEGORY DRILLDOWN
+     ============================================================== */
+  function openCategoryDrilldown(category) {
+    const deals = allDeals.filter(d => d.category === category);
+    if (!deals.length) return;
+
+    const cls = catClass(category);
+    const withVal = deals.filter(d => d.dealValueUSDM != null);
+    const totalVal = withVal.reduce((s, d) => s + d.dealValueUSDM, 0);
+
+    // Hide all sections and show drilldown
+    $$('.section').forEach(s => s.classList.remove('active'));
+    const dd = $('#categoryDrilldown');
+    dd.style.display = 'block';
+
+    $('#drilldownTitle').textContent = category;
+    const badge = $('#drilldownBadge');
+    badge.textContent = deals.length + ' deals';
+    badge.className = 'drilldown-badge cat-badge ' + cls;
+
+    $('#drilldownStats').innerHTML = `
+      <span>Total deals: <strong>${deals.length}</strong></span>
+      <span>Aggregate value: <strong>${fmtValue(totalVal)}</strong></span>
+      <span>With disclosed value: <strong>${withVal.length}</strong></span>
+    `;
+
+    // Sort by value desc
+    const sorted = [...deals].sort((a, b) => (b.dealValueUSDM || 0) - (a.dealValueUSDM || 0));
+
+    const tbody = $('#drilldownTable tbody');
+    let html = '';
+    for (const d of sorted) {
+      html += `
+        <tr data-deal-id="${d.id}">
+          <td class="deal-col" title="${escapeHtml(d.dealName)}">${escapeHtml(d.dealName)}</td>
+          <td title="${escapeHtml(d.investorBuyer)}" style="max-width:220px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHtml(d.investorBuyer)}</td>
+          <td class="country-col">${countryToFlag(d.country)} ${escapeHtml(d.country)}</td>
+          <td class="sector-col" title="${escapeHtml(d.sector)}">${escapeHtml(d.sector)}</td>
+          <td class="value-col">${d.dealValueUSDM != null ? fmtValueShort(d.dealValueUSDM) : '<span style="color:var(--text-muted)">Undisclosed</span>'}</td>
+        </tr>
+      `;
+    }
+    tbody.innerHTML = html;
+
+    window.scrollTo(0, 0);
+  }
+
+  function closeCategoryDrilldown() {
+    $('#categoryDrilldown').style.display = 'none';
+    navigateTo('dashboard');
+  }
+
+  /* ==============================================================
+     3D GLOBE HEATMAP
+     ============================================================== */
+  const COUNTRY_CENTROIDS = {
+    'brazil':       { lat: -14.24, lng: -51.93 },
+    'mexico':       { lat: 23.63, lng: -102.55 },
+    'colombia':     { lat: 4.57, lng: -74.30 },
+    'chile':        { lat: -35.68, lng: -71.54 },
+    'argentina':    { lat: -38.42, lng: -63.62 },
+    'peru':         { lat: -9.19, lng: -75.02 },
+    'uruguay':      { lat: -32.52, lng: -55.77 },
+    'paraguay':     { lat: -23.44, lng: -58.44 },
+    'ecuador':      { lat: -1.83, lng: -78.18 },
+    'guatemala':    { lat: 15.78, lng: -90.23 },
+    'jamaica':      { lat: 18.11, lng: -77.30 },
+    'panama':       { lat: 8.54, lng: -80.78 },
+    'costa rica':   { lat: 9.75, lng: -83.75 },
+    'dominican republic': { lat: 18.74, lng: -70.16 },
+    'honduras':     { lat: 15.20, lng: -86.24 },
+    'el salvador':  { lat: 13.79, lng: -88.90 },
+    'bolivia':      { lat: -16.29, lng: -63.59 },
+    'venezuela':    { lat: 6.42, lng: -66.59 },
+    'nicaragua':    { lat: 12.87, lng: -85.21 },
+    'trinidad and tobago': { lat: 10.69, lng: -61.22 },
+    'united states':{ lat: 37.09, lng: -95.71 },
+    'spain':        { lat: 40.46, lng: -3.75 },
+    'canada':       { lat: 56.13, lng: -106.35 },
+    'united kingdom': { lat: 55.38, lng: -3.44 },
+    'latin america':{ lat: -8.78, lng: -55.49 },
+  };
+
+  let globeScene, globeCamera, globeRenderer, globeGroup;
+  let globeAnimFrame;
+  let isDragging = false, prevMouse = { x: 0, y: 0 };
+  let autoRotateSpeed = 0.002;
+  let globeCountryMeshes = [];
+
+  function latLngToVec3(lat, lng, radius) {
+    const phi = (90 - lat) * (Math.PI / 180);
+    const theta = (lng + 180) * (Math.PI / 180);
+    return new THREE.Vector3(
+      -(radius * Math.sin(phi) * Math.cos(theta)),
+      radius * Math.cos(phi),
+      radius * Math.sin(phi) * Math.sin(theta)
+    );
+  }
+
+  function initGlobe() {
+    const container = document.getElementById('globeContainer');
+    if (!container || typeof THREE === 'undefined') return;
+
+    const w = container.clientWidth;
+    const h = container.clientHeight;
+
+    globeScene = new THREE.Scene();
+    globeCamera = new THREE.PerspectiveCamera(45, w / h, 0.1, 1000);
+    globeCamera.position.z = 3.2;
+
+    globeRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
+    globeRenderer.setSize(w, h);
+    globeRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    globeRenderer.setClearColor(0x000000, 1);
+    container.insertBefore(globeRenderer.domElement, container.firstChild);
+
+    globeGroup = new THREE.Group();
+    globeGroup.rotation.x = 0.2;
+    globeGroup.rotation.y = 1.8;
+    globeScene.add(globeGroup);
+
+    // Dark sphere base
+    const globeGeo = new THREE.SphereGeometry(1, 64, 64);
+    const globeMat = new THREE.MeshBasicMaterial({ color: 0x0a0a0a, transparent: true, opacity: 0.95 });
+    globeGroup.add(new THREE.Mesh(globeGeo, globeMat));
+
+    // Wireframe grid
+    const wireGeo = new THREE.SphereGeometry(1.002, 36, 18);
+    const wireMat = new THREE.MeshBasicMaterial({ color: 0x1a1a1a, wireframe: true, transparent: true, opacity: 0.3 });
+    globeGroup.add(new THREE.Mesh(wireGeo, wireMat));
+
+    // Atmosphere glow
+    const glowGeo = new THREE.SphereGeometry(1.15, 64, 64);
+    const glowMat = new THREE.ShaderMaterial({
+      vertexShader: 'varying vec3 vNormal; void main(){ vNormal = normalize(normalMatrix * normal); gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }',
+      fragmentShader: 'varying vec3 vNormal; void main(){ float i = pow(0.65 - dot(vNormal, vec3(0,0,1.0)), 2.0); gl_FragColor = vec4(0.0,0.4,1.0,1.0) * i * 0.4; }',
+      blending: THREE.AdditiveBlending,
+      side: THREE.BackSide,
+      transparent: true
+    });
+    globeGroup.add(new THREE.Mesh(glowGeo, glowMat));
+
+    // Build deal count by resolved country
+    const countryCounts = {};
+    allDeals.forEach(d => {
+      if (!d.country) return;
+      const parts = d.country.split(/[;,]/).map(s => s.trim().toLowerCase());
+      parts.forEach(part => {
+        const clean = part.replace(/\s*\(.*?\)\s*/g, '').trim();
+        if (COUNTRY_CENTROIDS[clean]) {
+          countryCounts[clean] = (countryCounts[clean] || 0) + 1;
+        } else {
+          for (const key of Object.keys(COUNTRY_CENTROIDS)) {
+            if (clean.includes(key) || key.includes(clean)) {
+              countryCounts[key] = (countryCounts[key] || 0) + 1;
+              break;
+            }
+          }
+        }
+      });
+    });
+
+    const maxDeals = Math.max(...Object.values(countryCounts), 1);
+    const totalCountries = Object.keys(countryCounts).length;
+    const badge = document.getElementById('globeCountryCount');
+    if (badge) badge.textContent = totalCountries + ' countries';
+
+    // Create country markers
+    globeCountryMeshes = [];
+    for (const [country, count] of Object.entries(countryCounts)) {
+      const centroid = COUNTRY_CENTROIDS[country];
+      if (!centroid) continue;
+
+      const intensity = count / maxDeals;
+      const radius = 0.02 + intensity * 0.05;
+
+      const pointGeo = new THREE.SphereGeometry(radius, 16, 16);
+      const hue = 0.6 - intensity * 0.05;
+      const color = new THREE.Color().setHSL(hue, 1.0, 0.4 + intensity * 0.4);
+      const pointMat = new THREE.MeshBasicMaterial({ color: color });
+      const point = new THREE.Mesh(pointGeo, pointMat);
+
+      const pos = latLngToVec3(centroid.lat, centroid.lng, 1.01);
+      point.position.copy(pos);
+      point.userData = {
+        country: country.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '),
+        deals: count
+      };
+      globeGroup.add(point);
+      globeCountryMeshes.push(point);
+
+      // Glow ring
+      const glowRingGeo = new THREE.SphereGeometry(radius * 2.5, 16, 16);
+      const glowRingMat = new THREE.MeshBasicMaterial({ color: color, transparent: true, opacity: 0.15 + intensity * 0.2 });
+      const glowRing = new THREE.Mesh(glowRingGeo, glowRingMat);
+      glowRing.position.copy(pos);
+      globeGroup.add(glowRing);
+
+      // Vertical beam for high-deal countries
+      if (intensity > 0.15) {
+        const beamHeight = 0.05 + intensity * 0.3;
+        const beamGeo = new THREE.CylinderGeometry(0.003, 0.003, beamHeight, 8);
+        const beamMat = new THREE.MeshBasicMaterial({ color: color, transparent: true, opacity: 0.3 + intensity * 0.4 });
+        const beam = new THREE.Mesh(beamGeo, beamMat);
+        const outerPos = latLngToVec3(centroid.lat, centroid.lng, 1.01 + beamHeight / 2);
+        beam.position.copy(outerPos);
+        beam.lookAt(new THREE.Vector3(0, 0, 0));
+        beam.rotateX(Math.PI / 2);
+        globeGroup.add(beam);
+      }
+    }
+
+    // Mouse interaction
+    container.addEventListener('mousedown', onGlobeMouseDown);
+    container.addEventListener('mousemove', onGlobeMouseMove);
+    container.addEventListener('mouseup', onGlobeMouseUp);
+    container.addEventListener('mouseleave', onGlobeMouseUp);
+    container.addEventListener('touchstart', onGlobeTouchStart, { passive: false });
+    container.addEventListener('touchmove', onGlobeTouchMove, { passive: false });
+    container.addEventListener('touchend', onGlobeMouseUp);
+
+    window.addEventListener('resize', onGlobeResize);
+    animateGlobe();
+  }
+
+  function animateGlobe() {
+    globeAnimFrame = requestAnimationFrame(animateGlobe);
+    if (!isDragging) globeGroup.rotation.y += autoRotateSpeed;
+    globeRenderer.render(globeScene, globeCamera);
+  }
+
+  function onGlobeMouseDown(e) { isDragging = true; prevMouse = { x: e.clientX, y: e.clientY }; }
+
+  function onGlobeMouseMove(e) {
+    const container = document.getElementById('globeContainer');
+    const tooltip = document.getElementById('globeTooltip');
+
+    if (isDragging) {
+      const dx = e.clientX - prevMouse.x;
+      const dy = e.clientY - prevMouse.y;
+      globeGroup.rotation.y += dx * 0.005;
+      globeGroup.rotation.x += dy * 0.005;
+      globeGroup.rotation.x = Math.max(-1.2, Math.min(1.2, globeGroup.rotation.x));
+      prevMouse = { x: e.clientX, y: e.clientY };
+      tooltip.classList.remove('visible');
+      return;
+    }
+
+    const rect = container.getBoundingClientRect();
+    const mouse = new THREE.Vector2(
+      ((e.clientX - rect.left) / rect.width) * 2 - 1,
+      -((e.clientY - rect.top) / rect.height) * 2 + 1
+    );
+
+    const raycaster = new THREE.Raycaster();
+    raycaster.setFromCamera(mouse, globeCamera);
+    const intersects = raycaster.intersectObjects(globeCountryMeshes);
+
+    if (intersects.length > 0) {
+      const data = intersects[0].object.userData;
+      tooltip.querySelector('.tt-country').textContent = data.country;
+      tooltip.querySelector('.tt-deals').textContent = data.deals + ' deal' + (data.deals !== 1 ? 's' : '');
+      tooltip.style.left = (e.clientX - rect.left + 16) + 'px';
+      tooltip.style.top = (e.clientY - rect.top - 10) + 'px';
+      tooltip.classList.add('visible');
+      container.style.cursor = 'pointer';
+    } else {
+      tooltip.classList.remove('visible');
+      container.style.cursor = 'grab';
+    }
+  }
+
+  function onGlobeMouseUp() { isDragging = false; }
+
+  function onGlobeTouchStart(e) {
+    if (e.touches.length === 1) {
+      isDragging = true;
+      prevMouse = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+      e.preventDefault();
+    }
+  }
+
+  function onGlobeTouchMove(e) {
+    if (isDragging && e.touches.length === 1) {
+      const dx = e.touches[0].clientX - prevMouse.x;
+      const dy = e.touches[0].clientY - prevMouse.y;
+      globeGroup.rotation.y += dx * 0.005;
+      globeGroup.rotation.x += dy * 0.005;
+      globeGroup.rotation.x = Math.max(-1.2, Math.min(1.2, globeGroup.rotation.x));
+      prevMouse = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+      e.preventDefault();
+    }
+  }
+
+  function onGlobeResize() {
+    const container = document.getElementById('globeContainer');
+    if (!container || !globeRenderer) return;
+    const w = container.clientWidth;
+    const h = container.clientHeight;
+    globeCamera.aspect = w / h;
+    globeCamera.updateProjectionMatrix();
+    globeRenderer.setSize(w, h);
   }
 
   /* ==============================================================
