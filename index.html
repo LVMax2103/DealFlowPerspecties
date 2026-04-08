@@ -99,7 +99,7 @@ a:hover { text-decoration: underline; }
 
 .navbar-brand .brand-sub {
   font-size: 12px; font-weight: 400; color: var(--text-secondary);
-  letter-spacing: 0.3px; text-transform: none; font-style: italic;
+  letter-spacing: 0.3px; text-transform: uppercase; font-style: normal;
 }
 
 .navbar-nav {
@@ -833,10 +833,10 @@ a:hover { text-decoration: underline; }
   position: absolute;
   top: 50%; left: 50%;
   transform: translate(-50%, -50%);
-  width: 600px; height: 600px;
+  width: 85vw; height: 85vh;
   background: url('logo-light.png') no-repeat center center;
   background-size: contain;
-  opacity: 0.08;
+  opacity: 0.05;
   pointer-events: none;
   z-index: 0;
 }
@@ -851,7 +851,7 @@ a:hover { text-decoration: underline; }
 }
 
 .landing-logo {
-  height: 80px; width: auto; margin-bottom: 32px;
+  height: 100px; width: auto; margin-bottom: 32px;
   filter: drop-shadow(0 0 30px rgba(0, 102, 255, 0.15));
 }
 
@@ -1005,7 +1005,7 @@ a:hover { text-decoration: underline; }
   .navbar-brand .brand-divider,
   .navbar-brand .brand-sub { display: none; }
   .landing-title { font-size: 24px; }
-  .landing-logo { height: 56px; }
+  .landing-logo { height: 72px; }
 }
 
 /* ===================================================================
@@ -1080,13 +1080,11 @@ a:hover { text-decoration: underline; }
 #map2dContainer {
   width: 100%; height: 600px; position: relative;
   background: #000; border-radius: var(--radius-md); overflow: hidden;
-  display: none; cursor: grab;
+  display: none;
 }
 
-#map2dContainer:active { cursor: grabbing; }
-
-#map2dContainer canvas {
-  display: block; width: 100% !important; height: 100% !important;
+#map2dContainer svg {
+  display: block; width: 100%; height: 100%;
 }
 
 #map2dTooltip {
@@ -1259,7 +1257,7 @@ a:hover { text-decoration: underline; }
     <img src="logo-light.png" alt="DealFlow Perspectives" onerror="this.style.display='none'">
     <span id="navBrandText">Guest v1.0</span>
     <span class="brand-divider"></span>
-    <span class="brand-sub">pulse of LatAm growth</span>
+    <span class="brand-sub">PULSE OF LATAM GROWTH</span>
   </a>
 
   <button class="navbar-mobile-toggle" id="mobileToggle" aria-label="Toggle menu">
@@ -1624,6 +1622,7 @@ a:hover { text-decoration: underline; }
      ============================================================ -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
 <script>
 (function () {
   'use strict';
@@ -2777,33 +2776,16 @@ a:hover { text-decoration: underline; }
   /* ==============================================================
      2D MAP — Mercator projection
      ============================================================== */
-  let map2dCanvas, map2dCtx, map2dGeojson, map2dCountryCounts, map2dMaxDeals;
+  let map2dGeojson, map2dCountryCounts, map2dMaxDeals;
   let map2dInitialized = false;
-  let map2dCountryPaths = []; // stored for click/hover detection
-
-  function mercatorX(lng, w) { return (lng + 180) / 360 * w; }
-  function mercatorY(lat, h) {
-    const latRad = lat * Math.PI / 180;
-    const mercN = Math.log(Math.tan(Math.PI / 4 + latRad / 2));
-    return h / 2 - (mercN / Math.PI) * (h / 2);
-  }
+  let map2dSvg, map2dProjection, map2dPathGen;
 
   async function init2dMap() {
     const container = document.getElementById('map2dContainer');
     if (!container) return;
 
-    map2dCanvas = document.createElement('canvas');
-    container.insertBefore(map2dCanvas, container.firstChild);
-
     const w = container.clientWidth;
     const h = container.clientHeight;
-    const dpr = Math.min(window.devicePixelRatio, 2);
-    map2dCanvas.width = w * dpr;
-    map2dCanvas.height = h * dpr;
-    map2dCanvas.style.width = w + 'px';
-    map2dCanvas.style.height = h + 'px';
-    map2dCtx = map2dCanvas.getContext('2d');
-    map2dCtx.scale(dpr, dpr);
 
     // Build deal counts
     map2dCountryCounts = {};
@@ -2825,6 +2807,20 @@ a:hover { text-decoration: underline; }
     });
     map2dMaxDeals = Math.max(...Object.values(map2dCountryCounts), 1);
 
+    // D3 Mercator projection
+    map2dProjection = d3.geoMercator()
+      .scale((w / (2 * Math.PI)) * 0.95)
+      .translate([w / 2, h / 2 + 80])
+      .center([0, 15]);
+    map2dPathGen = d3.geoPath().projection(map2dProjection);
+
+    // Create SVG
+    map2dSvg = d3.select(container)
+      .insert('svg', ':first-child')
+      .attr('width', w)
+      .attr('height', h)
+      .attr('viewBox', '0 0 ' + w + ' ' + h);
+
     // Load TopoJSON
     try {
       const resp = await fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json');
@@ -2835,17 +2831,16 @@ a:hover { text-decoration: underline; }
       console.warn('Could not load world borders for 2D map', e);
     }
 
-    // Mouse events
-    container.addEventListener('mousemove', on2dMouseMove);
-    container.addEventListener('click', on2dClick);
     window.addEventListener('resize', on2dResize);
     map2dInitialized = true;
   }
 
   function render2dMap(w, h) {
-    if (!map2dCtx || !map2dGeojson) return;
-    map2dCtx.clearRect(0, 0, w, h);
-    map2dCountryPaths = [];
+    if (!map2dSvg || !map2dGeojson) return;
+    map2dSvg.selectAll('*').remove();
+
+    const tooltip = document.getElementById('map2dTooltip');
+    const container = document.getElementById('map2dContainer');
 
     map2dGeojson.features.forEach(feature => {
       if (!feature.geometry) return;
@@ -2853,130 +2848,73 @@ a:hover { text-decoration: underline; }
       const matchKey = ISO_TO_KEY[isoId] || '';
       const dealCount = map2dCountryCounts[matchKey] || 0;
       const hasDeal = dealCount > 0;
+      const countryName = matchKey ? matchKey.split(' ').map(ww => ww.charAt(0).toUpperCase() + ww.slice(1)).join(' ') : '';
 
-      const coords = feature.geometry.type === 'Polygon'
-        ? [feature.geometry.coordinates]
-        : feature.geometry.type === 'MultiPolygon'
-          ? feature.geometry.coordinates
-          : [];
-
-      const path = new Path2D();
-      coords.forEach(polygon => {
-        polygon.forEach(ring => {
-          for (let i = 0; i < ring.length; i++) {
-            const x = mercatorX(ring[i][0], w);
-            const y = mercatorY(ring[i][1], h);
-            if (i === 0) path.moveTo(x, y);
-            else path.lineTo(x, y);
-          }
-          path.closePath();
-        });
-      });
-
-      // Fill
+      let fillColor, strokeColor, strokeWidth;
       if (hasDeal) {
         const intensity = dealCount / map2dMaxDeals;
         const hue = Math.round(210 - intensity * 20);
         const light = Math.round(20 + intensity * 35);
-        map2dCtx.fillStyle = 'hsl(' + hue + ', 100%, ' + light + '%)';
+        fillColor = 'hsl(' + hue + ', 100%, ' + light + '%)';
+        strokeColor = 'rgba(100,180,255,0.4)';
+        strokeWidth = 1;
       } else {
-        map2dCtx.fillStyle = '#111';
+        fillColor = '#1a1a1a';
+        strokeColor = '#333';
+        strokeWidth = 0.5;
       }
-      map2dCtx.fill(path);
 
-      // Border
-      map2dCtx.strokeStyle = hasDeal ? 'rgba(100,180,255,0.4)' : 'rgba(68,68,68,0.3)';
-      map2dCtx.lineWidth = hasDeal ? 1 : 0.5;
-      map2dCtx.stroke(path);
+      const pathD = map2dPathGen(feature);
+      if (!pathD) return;
 
-      map2dCountryPaths.push({
-        path: path,
-        key: matchKey,
-        name: matchKey ? matchKey.split(' ').map(ww => ww.charAt(0).toUpperCase() + ww.slice(1)).join(' ') : '',
-        deals: dealCount
-      });
+      const pathEl = map2dSvg.append('path')
+        .attr('d', pathD)
+        .attr('fill', fillColor)
+        .attr('stroke', strokeColor)
+        .attr('stroke-width', strokeWidth)
+        .style('cursor', hasDeal ? 'pointer' : 'default')
+        .style('transition', 'fill 0.15s ease');
 
-      // Deal dot at centroid for countries with deals
-      if (hasDeal && COUNTRY_CENTROIDS[matchKey]) {
-        const c = COUNTRY_CENTROIDS[matchKey];
-        const cx = mercatorX(c.lng, w);
-        const cy = mercatorY(c.lat, h);
-        const intensity = dealCount / map2dMaxDeals;
-        const radius = 4 + intensity * 8;
-        const hue = Math.round(210 - intensity * 20);
-        const light = Math.round(40 + intensity * 30);
-
-        // Glow
-        map2dCtx.beginPath();
-        map2dCtx.arc(cx, cy, radius * 2, 0, Math.PI * 2);
-        map2dCtx.fillStyle = 'hsla(' + hue + ', 100%, ' + light + '%, 0.2)';
-        map2dCtx.fill();
-
-        // Dot
-        map2dCtx.beginPath();
-        map2dCtx.arc(cx, cy, radius, 0, Math.PI * 2);
-        map2dCtx.fillStyle = 'hsl(' + hue + ', 100%, ' + light + '%)';
-        map2dCtx.fill();
+      if (hasDeal) {
+        pathEl
+          .on('mouseenter', function (e) {
+            d3.select(this).attr('fill', 'hsl(210, 100%, ' + Math.min(60, 30 + (dealCount / map2dMaxDeals) * 35) + '%)');
+            tooltip.querySelector('.tt-country').textContent = countryName;
+            tooltip.querySelector('.tt-deals').textContent = dealCount + ' deal' + (dealCount !== 1 ? 's' : '');
+            tooltip.classList.add('visible');
+          })
+          .on('mousemove', function (e) {
+            const rect = container.getBoundingClientRect();
+            tooltip.style.left = (e.clientX - rect.left + 16) + 'px';
+            tooltip.style.top = (e.clientY - rect.top - 10) + 'px';
+          })
+          .on('mouseleave', function () {
+            d3.select(this).attr('fill', fillColor);
+            tooltip.classList.remove('visible');
+          })
+          .on('click', function () {
+            openCountryDealsModal(countryName);
+          });
       }
     });
   }
 
-  function on2dMouseMove(e) {
-    const container = document.getElementById('map2dContainer');
-    const tooltip = document.getElementById('map2dTooltip');
-    const rect = container.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-
-    let found = null;
-    for (let i = map2dCountryPaths.length - 1; i >= 0; i--) {
-      const cp = map2dCountryPaths[i];
-      if (cp.deals > 0 && map2dCtx.isPointInPath(cp.path, x, y)) {
-        found = cp;
-        break;
-      }
-    }
-
-    if (found) {
-      tooltip.querySelector('.tt-country').textContent = found.name;
-      tooltip.querySelector('.tt-deals').textContent = found.deals + ' deal' + (found.deals !== 1 ? 's' : '');
-      tooltip.style.left = (e.clientX - rect.left + 16) + 'px';
-      tooltip.style.top = (e.clientY - rect.top - 10) + 'px';
-      tooltip.classList.add('visible');
-      container.style.cursor = 'pointer';
-    } else {
-      tooltip.classList.remove('visible');
-      container.style.cursor = 'default';
-    }
-  }
-
-  function on2dClick(e) {
-    const container = document.getElementById('map2dContainer');
-    const rect = container.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-
-    for (let i = map2dCountryPaths.length - 1; i >= 0; i--) {
-      const cp = map2dCountryPaths[i];
-      if (cp.deals > 0 && map2dCtx.isPointInPath(cp.path, x, y)) {
-        openCountryDealsModal(cp.name);
-        break;
-      }
-    }
-  }
-
   function on2dResize() {
     const container = document.getElementById('map2dContainer');
-    if (!container || !map2dCanvas || container.style.display === 'none') return;
+    if (!container || !map2dSvg || container.style.display === 'none') return;
     const w = container.clientWidth;
     const h = container.clientHeight;
-    const dpr = Math.min(window.devicePixelRatio, 2);
-    map2dCanvas.width = w * dpr;
-    map2dCanvas.height = h * dpr;
-    map2dCanvas.style.width = w + 'px';
-    map2dCanvas.style.height = h + 'px';
-    map2dCtx.setTransform(1, 0, 0, 1, 0, 0);
-    map2dCtx.scale(dpr, dpr);
+
+    map2dProjection
+      .scale((w / (2 * Math.PI)) * 0.95)
+      .translate([w / 2, h / 2 + 80]);
+    map2dPathGen.projection(map2dProjection);
+
+    map2dSvg
+      .attr('width', w)
+      .attr('height', h)
+      .attr('viewBox', '0 0 ' + w + ' ' + h);
+
     render2dMap(w, h);
   }
 
