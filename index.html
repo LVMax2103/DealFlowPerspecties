@@ -1428,6 +1428,7 @@ a:hover { text-decoration: underline; }
      JAVASCRIPT
      ============================================================ -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js"></script>
 <script>
 (function () {
   'use strict';
@@ -2195,7 +2196,128 @@ a:hover { text-decoration: underline; }
     );
   }
 
-  function initGlobe() {
+  // Map ISO 3166-1 numeric codes to our centroid keys for deal matching
+  const ISO_TO_KEY = {
+    '076': 'brazil', '484': 'mexico', '170': 'colombia', '152': 'chile',
+    '032': 'argentina', '604': 'peru', '858': 'uruguay', '600': 'paraguay',
+    '218': 'ecuador', '320': 'guatemala', '388': 'jamaica', '591': 'panama',
+    '188': 'costa rica', '214': 'dominican republic', '340': 'honduras',
+    '222': 'el salvador', '068': 'bolivia', '862': 'venezuela',
+    '558': 'nicaragua', '780': 'trinidad and tobago',
+    '840': 'united states', '724': 'spain', '124': 'canada', '826': 'united kingdom'
+  };
+
+  // Convert GeoJSON polygon coordinates to THREE.js line points on globe
+  function geoCoordToVec3(coord, radius) {
+    const lng = coord[0];
+    const lat = coord[1];
+    const phi = (90 - lat) * (Math.PI / 180);
+    const theta = (lng + 180) * (Math.PI / 180);
+    return new THREE.Vector3(
+      -(radius * Math.sin(phi) * Math.cos(theta)),
+      radius * Math.cos(phi),
+      radius * Math.sin(phi) * Math.sin(theta)
+    );
+  }
+
+  function drawCountryBorders(geojson, countryCounts, maxDeals) {
+    const R = 1.003; // slightly above globe surface
+
+    geojson.features.forEach(feature => {
+      if (!feature.geometry) return;
+      const isoId = String(feature.id).padStart(3, '0');
+      const matchKey = ISO_TO_KEY[isoId] || '';
+      const dealCount = countryCounts[matchKey] || 0;
+      const hasDeal = dealCount > 0;
+
+      let borderColor, borderOpacity;
+      if (hasDeal) {
+        const intensity = dealCount / maxDeals;
+        const c = new THREE.Color().setHSL(0.58 - intensity * 0.05, 1.0, 0.35 + intensity * 0.35);
+        borderColor = c;
+        borderOpacity = 0.5 + intensity * 0.5;
+      } else {
+        borderColor = new THREE.Color(0x444444);
+        borderOpacity = 0.25;
+      }
+
+      const coords = feature.geometry.type === 'Polygon'
+        ? [feature.geometry.coordinates]
+        : feature.geometry.type === 'MultiPolygon'
+          ? feature.geometry.coordinates
+          : [];
+
+      coords.forEach(polygon => {
+        polygon.forEach(ring => {
+          // Subsample large rings for performance
+          const step = ring.length > 200 ? Math.ceil(ring.length / 200) : 1;
+          const points = [];
+          for (let i = 0; i < ring.length; i += step) {
+            points.push(geoCoordToVec3(ring[i], R));
+          }
+          // Close the ring
+          if (points.length > 1) {
+            points.push(geoCoordToVec3(ring[0], R));
+          }
+
+          const lineGeo = new THREE.BufferGeometry().setFromPoints(points);
+          const lineMat = new THREE.LineBasicMaterial({
+            color: borderColor,
+            transparent: true,
+            opacity: borderOpacity,
+            linewidth: 1
+          });
+          const line = new THREE.Line(lineGeo, lineMat);
+          globeGroup.add(line);
+        });
+      });
+
+      // If country has deals, fill it with a subtle glow mesh
+      if (hasDeal) {
+        const intensity = dealCount / maxDeals;
+        const centroid = COUNTRY_CENTROIDS[matchKey];
+        if (centroid) {
+          const radius = 0.025 + intensity * 0.05;
+          const pointGeo = new THREE.SphereGeometry(radius, 16, 16);
+          const hue = 0.58 - intensity * 0.05;
+          const color = new THREE.Color().setHSL(hue, 1.0, 0.4 + intensity * 0.4);
+          const pointMat = new THREE.MeshBasicMaterial({ color: color });
+          const point = new THREE.Mesh(pointGeo, pointMat);
+
+          const pos = latLngToVec3(centroid.lat, centroid.lng, 1.01);
+          point.position.copy(pos);
+          point.userData = {
+            country: matchKey.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '),
+            deals: dealCount
+          };
+          globeGroup.add(point);
+          globeCountryMeshes.push(point);
+
+          // Glow ring
+          const glowRingGeo = new THREE.SphereGeometry(radius * 2.5, 16, 16);
+          const glowRingMat = new THREE.MeshBasicMaterial({ color: color, transparent: true, opacity: 0.15 + intensity * 0.2 });
+          const glowRing = new THREE.Mesh(glowRingGeo, glowRingMat);
+          glowRing.position.copy(pos);
+          globeGroup.add(glowRing);
+
+          // Vertical beam for high-deal countries
+          if (intensity > 0.15) {
+            const beamHeight = 0.05 + intensity * 0.3;
+            const beamGeo = new THREE.CylinderGeometry(0.003, 0.003, beamHeight, 8);
+            const beamMat = new THREE.MeshBasicMaterial({ color: color, transparent: true, opacity: 0.3 + intensity * 0.4 });
+            const beam = new THREE.Mesh(beamGeo, beamMat);
+            const outerPos = latLngToVec3(centroid.lat, centroid.lng, 1.01 + beamHeight / 2);
+            beam.position.copy(outerPos);
+            beam.lookAt(new THREE.Vector3(0, 0, 0));
+            beam.rotateX(Math.PI / 2);
+            globeGroup.add(beam);
+          }
+        }
+      }
+    });
+  }
+
+  async function initGlobe() {
     const container = document.getElementById('globeContainer');
     if (!container || typeof THREE === 'undefined') return;
 
@@ -2219,13 +2341,8 @@ a:hover { text-decoration: underline; }
 
     // Dark sphere base
     const globeGeo = new THREE.SphereGeometry(1, 64, 64);
-    const globeMat = new THREE.MeshBasicMaterial({ color: 0x0a0a0a, transparent: true, opacity: 0.95 });
+    const globeMat = new THREE.MeshBasicMaterial({ color: 0x080810, transparent: true, opacity: 0.95 });
     globeGroup.add(new THREE.Mesh(globeGeo, globeMat));
-
-    // Wireframe grid
-    const wireGeo = new THREE.SphereGeometry(1.002, 36, 18);
-    const wireMat = new THREE.MeshBasicMaterial({ color: 0x1a1a1a, wireframe: true, transparent: true, opacity: 0.3 });
-    globeGroup.add(new THREE.Mesh(wireGeo, wireMat));
 
     // Atmosphere glow
     const glowGeo = new THREE.SphereGeometry(1.15, 64, 64);
@@ -2263,50 +2380,7 @@ a:hover { text-decoration: underline; }
     const badge = document.getElementById('globeCountryCount');
     if (badge) badge.textContent = totalCountries + ' countries';
 
-    // Create country markers
     globeCountryMeshes = [];
-    for (const [country, count] of Object.entries(countryCounts)) {
-      const centroid = COUNTRY_CENTROIDS[country];
-      if (!centroid) continue;
-
-      const intensity = count / maxDeals;
-      const radius = 0.02 + intensity * 0.05;
-
-      const pointGeo = new THREE.SphereGeometry(radius, 16, 16);
-      const hue = 0.6 - intensity * 0.05;
-      const color = new THREE.Color().setHSL(hue, 1.0, 0.4 + intensity * 0.4);
-      const pointMat = new THREE.MeshBasicMaterial({ color: color });
-      const point = new THREE.Mesh(pointGeo, pointMat);
-
-      const pos = latLngToVec3(centroid.lat, centroid.lng, 1.01);
-      point.position.copy(pos);
-      point.userData = {
-        country: country.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '),
-        deals: count
-      };
-      globeGroup.add(point);
-      globeCountryMeshes.push(point);
-
-      // Glow ring
-      const glowRingGeo = new THREE.SphereGeometry(radius * 2.5, 16, 16);
-      const glowRingMat = new THREE.MeshBasicMaterial({ color: color, transparent: true, opacity: 0.15 + intensity * 0.2 });
-      const glowRing = new THREE.Mesh(glowRingGeo, glowRingMat);
-      glowRing.position.copy(pos);
-      globeGroup.add(glowRing);
-
-      // Vertical beam for high-deal countries
-      if (intensity > 0.15) {
-        const beamHeight = 0.05 + intensity * 0.3;
-        const beamGeo = new THREE.CylinderGeometry(0.003, 0.003, beamHeight, 8);
-        const beamMat = new THREE.MeshBasicMaterial({ color: color, transparent: true, opacity: 0.3 + intensity * 0.4 });
-        const beam = new THREE.Mesh(beamGeo, beamMat);
-        const outerPos = latLngToVec3(centroid.lat, centroid.lng, 1.01 + beamHeight / 2);
-        beam.position.copy(outerPos);
-        beam.lookAt(new THREE.Vector3(0, 0, 0));
-        beam.rotateX(Math.PI / 2);
-        globeGroup.add(beam);
-      }
-    }
 
     // Mouse interaction
     container.addEventListener('mousedown', onGlobeMouseDown);
@@ -2319,6 +2393,39 @@ a:hover { text-decoration: underline; }
 
     window.addEventListener('resize', onGlobeResize);
     animateGlobe();
+
+    // Load world TopoJSON and draw country borders (async — globe renders while loading)
+    try {
+      const resp = await fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json');
+      const topology = await resp.json();
+      const geojson = topojson.feature(topology, topology.objects.countries);
+      drawCountryBorders(geojson, countryCounts, maxDeals);
+    } catch (e) {
+      console.warn('Could not load world borders, falling back to point markers', e);
+      // Fallback: draw old-style wireframe grid + point markers
+      const wireGeo = new THREE.SphereGeometry(1.002, 36, 18);
+      const wireMat = new THREE.MeshBasicMaterial({ color: 0x1a1a1a, wireframe: true, transparent: true, opacity: 0.3 });
+      globeGroup.add(new THREE.Mesh(wireGeo, wireMat));
+
+      for (const [country, count] of Object.entries(countryCounts)) {
+        const centroid = COUNTRY_CENTROIDS[country];
+        if (!centroid) continue;
+        const intensity = count / maxDeals;
+        const radius = 0.02 + intensity * 0.05;
+        const pointGeo = new THREE.SphereGeometry(radius, 16, 16);
+        const color = new THREE.Color().setHSL(0.6 - intensity * 0.05, 1.0, 0.4 + intensity * 0.4);
+        const pointMat = new THREE.MeshBasicMaterial({ color: color });
+        const point = new THREE.Mesh(pointGeo, pointMat);
+        const pos = latLngToVec3(centroid.lat, centroid.lng, 1.01);
+        point.position.copy(pos);
+        point.userData = {
+          country: country.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '),
+          deals: count
+        };
+        globeGroup.add(point);
+        globeCountryMeshes.push(point);
+      }
+    }
   }
 
   function animateGlobe() {
