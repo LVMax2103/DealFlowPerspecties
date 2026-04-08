@@ -917,15 +917,14 @@ a:hover { text-decoration: underline; }
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 
-.players-table tbody td.gp-name-col a {
+.players-table tbody td.gp-name-col .gp-name-link {
   color: var(--text-primary);
-  text-decoration: none;
   transition: color var(--transition);
+  cursor: pointer;
 }
 
-.players-table tbody td.gp-name-col a:hover {
+.players-table tbody tr:hover .gp-name-link {
   color: var(--accent-light);
-  text-decoration: underline;
 }
 
 .players-table tbody td.num-col {
@@ -939,6 +938,189 @@ a:hover { text-decoration: underline; }
   text-align: right;
   font-feature-settings: 'tnum';
   white-space: nowrap;
+}
+
+/* ===================================================================
+   PLAYER MODAL (Bloomberg DES style)
+   =================================================================== */
+.player-modal-overlay {
+  display: none;
+  position: fixed; inset: 0; z-index: 300;
+  background: rgba(0, 0, 0, 0.9);
+  backdrop-filter: blur(10px);
+  align-items: center; justify-content: center;
+  padding: 20px;
+}
+.player-modal-overlay.open { display: flex; }
+
+.player-modal {
+  background: #050505;
+  border: 1px solid #1a3a2a;
+  border-radius: 4px;
+  box-shadow: 0 0 60px rgba(0, 200, 140, 0.08), 0 0 120px rgba(0, 0, 0, 0.8);
+  width: 90vw; max-width: 1200px;
+  height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  animation: modalIn 0.25s ease;
+}
+
+.player-modal::-webkit-scrollbar { width: 5px; }
+.player-modal::-webkit-scrollbar-track { background: #050505; }
+.player-modal::-webkit-scrollbar-thumb { background: #1a3a2a; border-radius: 3px; }
+
+.pm-header {
+  position: sticky; top: 0; z-index: 10;
+  background: #080808;
+  border-bottom: 1px solid #1a3a2a;
+  padding: 20px 28px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+
+.pm-header-left {
+  display: flex; align-items: center; gap: 16px;
+}
+
+.pm-title {
+  font-size: 22px; font-weight: 800;
+  color: #00C48C;
+  font-family: var(--font-mono);
+  letter-spacing: -0.5px;
+}
+
+.pm-label {
+  font-size: 10px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 1.5px; color: #1a6a4a;
+  background: rgba(0, 196, 140, 0.08);
+  border: 1px solid #1a3a2a;
+  padding: 3px 10px; border-radius: 3px;
+}
+
+.pm-close {
+  background: none; border: 1px solid #1a3a2a;
+  color: #666; cursor: pointer;
+  width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; border-radius: 3px;
+  transition: all 0.15s ease;
+}
+.pm-close:hover { background: #FF4D6A; border-color: #FF4D6A; color: #fff; }
+
+.pm-body { padding: 24px 28px; }
+
+/* KPI row */
+.pm-kpis {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 12px; margin-bottom: 28px;
+}
+.pm-kpi {
+  background: #0a0a0a;
+  border: 1px solid #1a3a2a;
+  border-radius: 4px;
+  padding: 14px 16px;
+  text-align: center;
+}
+.pm-kpi-label {
+  font-size: 10px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 1px; color: #1a6a4a; margin-bottom: 6px;
+}
+.pm-kpi-value {
+  font-size: 20px; font-weight: 800;
+  font-family: var(--font-mono);
+  color: #00C48C;
+  font-feature-settings: 'tnum';
+}
+
+/* Section headers */
+.pm-section-title {
+  font-size: 11px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 1.5px; color: #1a6a4a;
+  margin-bottom: 12px; margin-top: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #1a3a2a;
+  display: flex; align-items: center; gap: 8px;
+}
+.pm-section-title .pm-count {
+  font-family: var(--font-mono); color: #00C48C;
+  font-size: 11px; font-weight: 600;
+}
+
+/* Tables */
+.pm-table-wrap {
+  background: #0a0a0a;
+  border: 1px solid #1a3a2a;
+  border-radius: 4px;
+  overflow-x: auto;
+  margin-bottom: 24px;
+}
+.pm-table {
+  width: 100%; border-collapse: collapse; font-size: 12px;
+  min-width: 550px;
+}
+.pm-table thead th {
+  text-align: left; padding: 10px 14px;
+  font-size: 10px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.5px; color: #1a6a4a;
+  background: #080808;
+  border-bottom: 1px solid #1a3a2a;
+  white-space: nowrap;
+}
+.pm-table tbody tr {
+  transition: background 0.12s ease;
+}
+.pm-table tbody tr:hover { background: rgba(0, 196, 140, 0.04); }
+.pm-table tbody td {
+  padding: 9px 14px;
+  border-bottom: 1px solid #0f1f18;
+  color: #ccc;
+  vertical-align: middle;
+}
+.pm-table tbody td.pm-mono {
+  font-family: var(--font-mono);
+  font-feature-settings: 'tnum';
+  color: #00C48C;
+  text-align: right;
+}
+.pm-table tbody td.pm-name {
+  color: #E8E8E8; font-weight: 600;
+  max-width: 300px; white-space: nowrap;
+  overflow: hidden; text-overflow: ellipsis;
+}
+.pm-cat-badge {
+  display: inline-block; padding: 2px 8px;
+  border-radius: 3px; font-size: 10px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.3px;
+}
+
+/* External links */
+.pm-links {
+  display: flex; gap: 10px; margin-top: 8px; flex-wrap: wrap;
+}
+.pm-link-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 18px; border-radius: 4px;
+  font-size: 12px; font-weight: 600; font-family: var(--font-sans);
+  cursor: pointer; transition: all 0.15s ease;
+  text-decoration: none; border: 1px solid #1a3a2a;
+  background: #0a0a0a; color: #888;
+}
+.pm-link-btn:hover {
+  background: #1a3a2a; color: #00C48C;
+  text-decoration: none;
+}
+.pm-link-btn svg { width: 14px; height: 14px; }
+
+.pm-empty {
+  padding: 24px; text-align: center;
+  color: #333; font-size: 13px; font-style: italic;
+}
+
+@media (max-width: 768px) {
+  .player-modal { width: 98vw; height: 95vh; }
+  .pm-header { padding: 14px 16px; }
+  .pm-title { font-size: 16px; }
+  .pm-body { padding: 16px; }
+  .pm-kpis { grid-template-columns: repeat(2, 1fr); }
 }
 
 /* ===================================================================
@@ -1182,8 +1364,7 @@ a:hover { text-decoration: underline; }
   max-width: 100%;
 }
 
-#home::before {
-  content: '';
+.home-watermark {
   position: fixed;
   top: 0; left: 0;
   width: 100vw; height: 100vh;
@@ -1192,6 +1373,7 @@ a:hover { text-decoration: underline; }
   opacity: 0.09;
   pointer-events: none;
   z-index: 0;
+  will-change: transform;
 }
 
 /* --- Hero Section (viewport 1) --- */
@@ -1254,14 +1436,21 @@ a:hover { text-decoration: underline; }
   padding: 80px 20px;
   position: relative;
   z-index: 1;
-  opacity: 0;
-  transform: translateY(30px);
-  transition: opacity 0.7s ease, transform 0.7s ease;
 }
-.home-info.visible {
+
+/* Staggered fade-in for child elements */
+.home-info .fade-up {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.home-info.visible .fade-up {
   opacity: 1;
   transform: translateY(0);
 }
+.home-info.visible .fade-up:nth-child(1) { transition-delay: 0s; }
+.home-info.visible .fade-up:nth-child(2) { transition-delay: 0.15s; }
+.home-info.visible .fade-up:nth-child(3) { transition-delay: 0.3s; }
 
 /* Stats bar */
 .home-stats {
@@ -1726,6 +1915,7 @@ a:hover { text-decoration: underline; }
 
   <!-- ====== HOME / LANDING ====== -->
   <section id="home" class="section active">
+    <div class="home-watermark" id="homeWatermark"></div>
     <!-- Hero (viewport 1) -->
     <div class="home-hero">
       <img src="logo-light.png" alt="DealFlow Perspectives" class="landing-logo" onerror="this.style.display='none'">
@@ -1738,29 +1928,29 @@ a:hover { text-decoration: underline; }
     </div>
     <!-- Info (viewport 2) -->
     <div class="home-info" id="homeInfo">
-      <div class="home-stats" id="homeStats">
+      <div class="home-stats fade-up" id="homeStats">
         <div class="home-stat">
-          <div class="home-stat-value" id="homeStatDeals">—</div>
+          <div class="home-stat-value" id="homeStatDeals" data-count-target="">—</div>
           <div class="home-stat-label">Deals Tracked</div>
         </div>
         <div class="home-stat-divider"></div>
         <div class="home-stat">
-          <div class="home-stat-value" id="homeStatValue">—</div>
+          <div class="home-stat-value" id="homeStatValue" data-count-target="">—</div>
           <div class="home-stat-label">Aggregate Value</div>
         </div>
         <div class="home-stat-divider"></div>
         <div class="home-stat">
-          <div class="home-stat-value" id="homeStatCountries">—</div>
+          <div class="home-stat-value" id="homeStatCountries" data-count-target="">—</div>
           <div class="home-stat-label">Countries</div>
         </div>
       </div>
-      <div class="landing-actions">
+      <div class="landing-actions fade-up">
         <a href="https://www.linkedin.com/company/dealflow-perspectives" target="_blank" rel="noopener" class="btn-landing btn-linkedin">
           <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
           Follow us on LinkedIn
         </a>
       </div>
-      <div class="landing-newsletter">
+      <div class="landing-newsletter fade-up">
         <p class="newsletter-label">Subscribe to our newsletter</p>
         <form class="newsletter-form" id="newsletterForm">
           <input type="email" id="newsletterEmail" placeholder="Enter your email" required>
@@ -2168,6 +2358,22 @@ a:hover { text-decoration: underline; }
 </div>
 
 <!-- ============================================================
+     PLAYER MODAL (Bloomberg DES)
+     ============================================================ -->
+<div class="player-modal-overlay" id="playerModal">
+  <div class="player-modal">
+    <div class="pm-header">
+      <div class="pm-header-left">
+        <span class="pm-title" id="pmTitle"></span>
+        <span class="pm-label">DES</span>
+      </div>
+      <button class="pm-close" id="pmClose">&times;</button>
+    </div>
+    <div class="pm-body" id="pmBody"></div>
+  </div>
+</div>
+
+<!-- ============================================================
      COUNTRY DEALS MODAL
      ============================================================ -->
 <div id="countryDealsModal">
@@ -2301,22 +2507,36 @@ a:hover { text-decoration: underline; }
   }
 
   function initHomeScroll() {
-    // Scroll arrow click
     const arrow = document.getElementById('scrollArrow');
     const homeInfo = document.getElementById('homeInfo');
+    const homeSection = document.getElementById('home');
+    const watermark = document.getElementById('homeWatermark');
+
+    // Scroll arrow click
     if (arrow && homeInfo) {
       arrow.addEventListener('click', () => {
         homeInfo.scrollIntoView({ behavior: 'smooth' });
       });
     }
 
-    // Fade-in observer for info section (root is #home since it's the scroll container)
+    // Parallax on watermark + fade-in observer
+    if (homeSection && watermark) {
+      homeSection.addEventListener('scroll', () => {
+        const scrollY = homeSection.scrollTop;
+        // Parallax: watermark moves at 30% of scroll speed
+        watermark.style.transform = 'translateY(' + (scrollY * 0.3) + 'px)';
+      }, { passive: true });
+    }
+
+    // Fade-in + counter trigger
     if (homeInfo) {
-      const homeSection = document.getElementById('home');
       const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
           if (entry.isIntersecting) {
             homeInfo.classList.add('visible');
+            // Trigger counter animations
+            animateHomeCounters();
+            observer.unobserve(homeInfo);
           }
         });
       }, { root: homeSection, threshold: 0.15 });
@@ -2324,17 +2544,77 @@ a:hover { text-decoration: underline; }
     }
   }
 
+  // easeOutExpo timing function
+  function easeOutExpo(t) {
+    return t === 1 ? 1 : 1 - Math.pow(2, -10 * t);
+  }
+
+  function animateCounter(element, target, duration, prefix, suffix) {
+    prefix = prefix || '';
+    suffix = suffix || '';
+    const start = performance.now();
+    function tick(now) {
+      const elapsed = now - start;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = easeOutExpo(progress);
+      const current = Math.round(target * eased);
+      element.textContent = prefix + current.toLocaleString('en-US') + suffix;
+      if (progress < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+
+  let homeCountersAnimated = false;
+  function animateHomeCounters() {
+    if (homeCountersAnimated) return;
+    homeCountersAnimated = true;
+
+    const dealsEl = document.getElementById('homeStatDeals');
+    const valueEl = document.getElementById('homeStatValue');
+    const countriesEl = document.getElementById('homeStatCountries');
+
+    if (!allDeals || !allDeals.length) return;
+
+    const total = allDeals.length;
+    const withValue = allDeals.filter(d => d.dealValueUSDM != null);
+    const totalVal = withValue.reduce((s, d) => s + d.dealValueUSDM, 0);
+    const countries = new Set(allDeals.map(d => d.country)).size;
+
+    // Animate deals count
+    if (dealsEl) animateCounter(dealsEl, total, 2000, '', '');
+
+    // Animate aggregate value (show in $B)
+    if (valueEl) {
+      const valB = totalVal / 1000; // convert M to B
+      const start = performance.now();
+      function tickVal(now) {
+        const elapsed = now - start;
+        const progress = Math.min(elapsed / 2000, 1);
+        const eased = easeOutExpo(progress);
+        const current = (valB * eased).toFixed(1).replace(/\.0$/, '');
+        valueEl.textContent = '$' + current + 'B';
+        if (progress < 1) requestAnimationFrame(tickVal);
+      }
+      requestAnimationFrame(tickVal);
+    }
+
+    // Animate countries count
+    if (countriesEl) animateCounter(countriesEl, countries, 2000, '', '');
+  }
+
   function updateHomeStats() {
+    // Stats are now set by counter animation; just store data attributes as fallback
     if (!allDeals || !allDeals.length) return;
     const total = allDeals.length;
     const withValue = allDeals.filter(d => d.dealValueUSDM != null);
     const totalVal = withValue.reduce((s, d) => s + d.dealValueUSDM, 0);
     const countries = new Set(allDeals.map(d => d.country)).size;
 
+    // Set static values as fallback (overwritten by animation when visible)
     const el = id => document.getElementById(id);
-    if (el('homeStatDeals')) el('homeStatDeals').textContent = total.toLocaleString('en-US');
-    if (el('homeStatValue')) el('homeStatValue').textContent = fmtValue(totalVal);
-    if (el('homeStatCountries')) el('homeStatCountries').textContent = countries;
+    if (el('homeStatDeals') && !homeCountersAnimated) el('homeStatDeals').textContent = total.toLocaleString('en-US');
+    if (el('homeStatValue') && !homeCountersAnimated) el('homeStatValue').textContent = fmtValue(totalVal);
+    if (el('homeStatCountries') && !homeCountersAnimated) el('homeStatCountries').textContent = countries;
   }
 
   /* ==============================================================
@@ -2909,7 +3189,13 @@ a:hover { text-decoration: underline; }
       if (e.target === $('#dealModal')) closeDealModal();
     });
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') closeDealModal();
+      if (e.key === 'Escape') { closeDealModal(); closePlayerModal(); }
+    });
+
+    // Player modal close
+    $('#pmClose').addEventListener('click', closePlayerModal);
+    $('#playerModal').addEventListener('click', (e) => {
+      if (e.target === $('#playerModal')) closePlayerModal();
     });
 
     // Category breakdown click — open drilldown
@@ -3771,11 +4057,10 @@ a:hover { text-decoration: underline; }
 
     let html = '';
     for (const p of page) {
-      const url = gpSearchUrl(p.name);
       const na = '<span style="color:var(--text-muted)">—</span>';
       const fmtNum = v => (v == null || v === 'N/A') ? na : Number(v).toLocaleString('en-US');
-      html += '<tr>' +
-        '<td class="gp-name-col" title="' + escapeHtml(p.name) + '"><a href="' + url + '" target="_blank" rel="noopener">' + escapeHtml(p.name) + '</a></td>' +
+      html += '<tr style="cursor:pointer" data-player="' + escapeHtml(p.name) + '">' +
+        '<td class="gp-name-col" title="' + escapeHtml(p.name) + '"><span class="gp-name-link">' + escapeHtml(p.name) + '</span></td>' +
         '<td class="aum-col">' + (p.aum_display && p.aum_display !== 'N/A' ? fmtAUM(p.aum_display, p.aum_numeric) : na) + '</td>' +
         '<td class="num-col">' + fmtNum(p.active_funds) + '</td>' +
         '<td class="num-col">' + fmtNum(p.total_funds) + '</td>' +
@@ -3784,6 +4069,24 @@ a:hover { text-decoration: underline; }
         '</tr>';
     }
     tbody.innerHTML = html;
+
+    // Click handler for player rows
+    tbody.querySelectorAll('tr[data-player]').forEach(tr => {
+      tr.addEventListener('click', () => {
+        const name = tr.dataset.player;
+        // Ensure PE funds data is loaded before opening modal
+        if (!pefLoaded) {
+          fetch('data/pe-funds.json').then(r => r.json()).then(data => {
+            allFunds = data;
+            allFunds.forEach(function(f) { f.size_num = parseSizeToM(f.size); });
+            pefLoaded = true;
+            openPlayerModal(name);
+          }).catch(() => openPlayerModal(name));
+        } else {
+          openPlayerModal(name);
+        }
+      });
+    });
 
     // Update sort header styles
     $$('#playersTable thead th').forEach(th => {
@@ -3817,6 +4120,110 @@ a:hover { text-decoration: underline; }
     const withAUM = filteredPlayers.filter(p => p.aum_numeric > 0);
     const sumAUM = withAUM.reduce((s, p) => s + p.aum_numeric, 0);
     $('#playersResultsInfo').textContent = total + ' GP' + (total !== 1 ? 's' : '') + ' \u00B7 ' + fmtAUMFull(sumAUM) + ' aggregate AUM';
+  }
+
+  /* ==============================================================
+     PLAYER MODAL (Bloomberg DES)
+     ============================================================== */
+  function openPlayerModal(playerName) {
+    const player = allPlayers.find(p => p.name === playerName);
+    if (!player) return;
+
+    const catColors = {
+      'Private Equity': '#7C3AED', 'Venture Capital': '#0066FF',
+      'M&A': '#F59E0B', 'Real Assets': '#10B981', 'Private Credit': '#EC4899'
+    };
+
+    // Find related deals
+    const nameLower = playerName.toLowerCase();
+    const relatedDeals = allDeals.filter(d => {
+      const inv = (d.investorBuyer || '').toLowerCase();
+      const tgt = (d.targetCompany || '').toLowerCase();
+      return inv.includes(nameLower) || tgt.includes(nameLower);
+    });
+
+    // Find PE funds (match against original GP names too)
+    const relatedFunds = allFunds.filter(f => {
+      const gp = (f.gp || '').toLowerCase();
+      return gp.includes(nameLower) || nameLower.includes(gp.replace(/\s+(llc|lp|ltd|inc|sa|corp|ltda|llp)$/i, '').trim().toLowerCase());
+    });
+
+    let html = '';
+
+    // KPIs (only if player has data from Excel)
+    const hasData = player.aum_display && player.aum_display !== 'N/A';
+    if (hasData) {
+      const na = '<span style="color:#333">—</span>';
+      const kv = (label, val) => '<div class="pm-kpi"><div class="pm-kpi-label">' + label + '</div><div class="pm-kpi-value">' + val + '</div></div>';
+      html += '<div class="pm-kpis">';
+      html += kv('AUM', player.aum_display ? '$' + player.aum_display : na);
+      html += kv('Active Funds', typeof player.active_funds === 'number' ? player.active_funds.toLocaleString() : na);
+      html += kv('Total Funds', typeof player.total_funds === 'number' ? player.total_funds.toLocaleString() : na);
+      html += kv('Active Holdings', typeof player.active_holdings === 'number' ? player.active_holdings.toLocaleString() : na);
+      html += kv('Total Holdings', typeof player.total_holdings === 'number' ? player.total_holdings.toLocaleString() : na);
+      html += '</div>';
+    }
+
+    // Deals table
+    html += '<div class="pm-section-title">Deals Involved <span class="pm-count">' + relatedDeals.length + '</span></div>';
+    if (relatedDeals.length > 0) {
+      html += '<div class="pm-table-wrap"><table class="pm-table"><thead><tr>';
+      html += '<th>Deal Name</th><th>Category</th><th>Country</th><th style="text-align:right">Value (USD M)</th><th>Period</th>';
+      html += '</tr></thead><tbody>';
+      relatedDeals.sort((a, b) => (b.dealValueUSDM || 0) - (a.dealValueUSDM || 0)).forEach(d => {
+        const color = catColors[d.category] || '#666';
+        html += '<tr>';
+        html += '<td class="pm-name" title="' + escapeHtml(d.dealName) + '">' + escapeHtml(d.dealName) + '</td>';
+        html += '<td><span class="pm-cat-badge" style="background:' + color + '20;color:' + color + ';border:1px solid ' + color + '40">' + escapeHtml(d.category || '') + '</span></td>';
+        html += '<td>' + escapeHtml(d.country || '') + '</td>';
+        html += '<td class="pm-mono">' + (d.dealValueUSDM != null ? '$' + d.dealValueUSDM.toLocaleString() : '—') + '</td>';
+        html += '<td>' + escapeHtml(d.period || '') + '</td>';
+        html += '</tr>';
+      });
+      html += '</tbody></table></div>';
+    } else {
+      html += '<div class="pm-empty">No deals found for this player.</div>';
+    }
+
+    // PE Funds table
+    html += '<div class="pm-section-title">PE Funds (as General Partner) <span class="pm-count">' + relatedFunds.length + '</span></div>';
+    if (relatedFunds.length > 0) {
+      html += '<div class="pm-table-wrap"><table class="pm-table"><thead><tr>';
+      html += '<th>Fund Name</th><th>Vintage</th><th style="text-align:right">Size</th><th>Status</th><th style="text-align:right">IRR (%)</th><th>Quartile</th>';
+      html += '</tr></thead><tbody>';
+      relatedFunds.sort((a, b) => (b.irr || 0) - (a.irr || 0)).forEach(f => {
+        const qColor = f.quartile === '1st' ? '#00C48C' : f.quartile === '2nd' ? '#3388FF' : f.quartile === '3rd' ? '#F59E0B' : '#666';
+        html += '<tr>';
+        html += '<td class="pm-name" title="' + escapeHtml(f.fund) + '">' + escapeHtml(f.fund) + '</td>';
+        html += '<td class="pm-mono">' + (f.vintage || '—') + '</td>';
+        html += '<td class="pm-mono">' + (f.size || '—') + '</td>';
+        html += '<td>' + escapeHtml(f.status || '—') + '</td>';
+        html += '<td class="pm-mono">' + (f.irr != null ? f.irr.toFixed(1) + '%' : '—') + '</td>';
+        html += '<td style="color:' + qColor + ';font-weight:700;font-family:var(--font-mono)">' + (f.quartile || '—') + '</td>';
+        html += '</tr>';
+      });
+      html += '</tbody></table></div>';
+    } else {
+      html += '<div class="pm-empty">No PE fund data available.</div>';
+    }
+
+    // External links
+    const linkedinUrl = 'https://www.linkedin.com/search/results/companies/?keywords=' + encodeURIComponent(playerName);
+    const webUrl = 'https://www.google.com/search?q=' + encodeURIComponent(playerName + ' official website');
+    html += '<div class="pm-links">';
+    html += '<a href="' + linkedinUrl + '" target="_blank" rel="noopener" class="pm-link-btn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg> LinkedIn</a>';
+    html += '<a href="' + webUrl + '" target="_blank" rel="noopener" class="pm-link-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg> Web</a>';
+    html += '</div>';
+
+    $('#pmTitle').textContent = playerName;
+    $('#pmBody').innerHTML = html;
+    $('#playerModal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closePlayerModal() {
+    $('#playerModal').classList.remove('open');
+    document.body.style.overflow = '';
   }
 
   /* ==============================================================
