@@ -821,6 +821,127 @@ a:hover { text-decoration: underline; }
 .empty-state p { font-size: 14px; }
 
 /* ===================================================================
+   PLAYERS SECTION
+   =================================================================== */
+.players-toolbar {
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 20px; flex-wrap: wrap;
+}
+
+.players-search {
+  flex: 1; min-width: 240px;
+  position: relative;
+}
+
+.players-search svg {
+  position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+  width: 16px; height: 16px; color: var(--text-muted);
+  pointer-events: none;
+}
+
+.players-search input {
+  width: 100%;
+  padding: 10px 14px 10px 40px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-size: 13px; font-family: var(--font-sans);
+  transition: border-color var(--transition);
+  outline: none;
+}
+
+.players-search input::placeholder { color: var(--text-muted); }
+.players-search input:focus { border-color: var(--accent); }
+
+.players-results-info {
+  font-size: 12px; color: var(--text-muted); margin-left: auto;
+  font-feature-settings: 'tnum';
+  white-space: nowrap;
+}
+
+.players-table-wrap {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow-x: auto;
+}
+
+.players-table {
+  width: 100%; border-collapse: collapse; font-size: 13px;
+  min-width: 700px;
+}
+
+.players-table thead th {
+  position: sticky; top: 0; z-index: 2;
+  text-align: left;
+  padding: 12px 14px;
+  font-size: 11px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.5px; color: var(--text-muted);
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border);
+  cursor: pointer; user-select: none;
+  transition: color var(--transition);
+  white-space: nowrap;
+}
+
+.players-table thead th:hover { color: var(--text-primary); }
+
+.players-table thead th .sort-icon {
+  display: inline-block; margin-left: 4px;
+  font-size: 10px; vertical-align: middle;
+  opacity: 0.4;
+}
+
+.players-table thead th.sort-asc .sort-icon,
+.players-table thead th.sort-desc .sort-icon {
+  opacity: 1; color: var(--accent-light);
+}
+
+.players-table tbody tr {
+  transition: background var(--transition);
+}
+
+.players-table tbody tr:hover { background: var(--accent-glow); }
+
+.players-table tbody td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-primary);
+  vertical-align: middle;
+}
+
+.players-table tbody td.gp-name-col {
+  font-weight: 600;
+  max-width: 320px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+.players-table tbody td.gp-name-col a {
+  color: var(--text-primary);
+  text-decoration: none;
+  transition: color var(--transition);
+}
+
+.players-table tbody td.gp-name-col a:hover {
+  color: var(--accent-light);
+  text-decoration: underline;
+}
+
+.players-table tbody td.num-col {
+  text-align: right;
+  font-feature-settings: 'tnum';
+  white-space: nowrap;
+}
+
+.players-table tbody td.aum-col {
+  font-weight: 700; color: var(--accent-light);
+  text-align: right;
+  font-feature-settings: 'tnum';
+  white-space: nowrap;
+}
+
+/* ===================================================================
    LANDING PAGE
    =================================================================== */
 #home {
@@ -1422,13 +1543,58 @@ a:hover { text-decoration: underline; }
     <div class="pagination" id="pagination"></div>
   </section>
 
-  <!-- ====== PLAYERS (placeholder) ====== -->
+  <!-- ====== PLAYERS ====== -->
   <section id="players" class="section">
     <div class="section-header">
       <h1>Players</h1>
-      <p>Key market participants — coming soon</p>
+      <p>General Partners — Key Market Participants</p>
     </div>
-    <div class="empty-state"><p>This section is under development.</p></div>
+
+    <!-- KPIs -->
+    <div class="kpi-grid" id="playersKpiGrid">
+      <div class="kpi-card accent-vc">
+        <div class="kpi-label">Total GPs</div>
+        <div class="kpi-value" id="playersKpiTotalGPs">—</div>
+        <div class="kpi-sub">General Partners tracked</div>
+      </div>
+      <div class="kpi-card accent-pe">
+        <div class="kpi-label">Total AUM</div>
+        <div class="kpi-value" id="playersKpiTotalAUM">—</div>
+        <div class="kpi-sub">Assets under management</div>
+      </div>
+      <div class="kpi-card accent-ma">
+        <div class="kpi-label">Avg Active Funds</div>
+        <div class="kpi-value" id="playersKpiAvgFunds">—</div>
+        <div class="kpi-sub">Per General Partner</div>
+      </div>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="players-toolbar">
+      <div class="players-search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+        <input type="text" id="playersSearch" placeholder="Search General Partners...">
+      </div>
+      <span class="players-results-info" id="playersResultsInfo"></span>
+    </div>
+
+    <!-- Table -->
+    <div class="players-table-wrap">
+      <table class="players-table" id="playersTable">
+        <thead><tr>
+          <th data-psort="name">General Partner <span class="sort-icon">&#9650;&#9660;</span></th>
+          <th data-psort="aum_numeric" style="text-align:right">AUM (USD) <span class="sort-icon">&#9650;&#9660;</span></th>
+          <th data-psort="active_funds" style="text-align:right">Active Funds <span class="sort-icon">&#9650;&#9660;</span></th>
+          <th data-psort="total_funds" style="text-align:right">Total Funds <span class="sort-icon">&#9650;&#9660;</span></th>
+          <th data-psort="active_holdings" style="text-align:right">Active Holdings <span class="sort-icon">&#9650;&#9660;</span></th>
+          <th data-psort="total_holdings" style="text-align:right">Total Holdings <span class="sort-icon">&#9650;&#9660;</span></th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination" id="playersPagination"></div>
   </section>
 
   <!-- ====== PE FUNDS (placeholder) ====== -->
@@ -2191,6 +2357,11 @@ a:hover { text-decoration: underline; }
     if (sectionId === 'heatmap' && !globeInitialized && allDeals.length > 0) {
       globeInitialized = true;
       setTimeout(initGlobe, 50);
+    }
+
+    // Lazy-load players data when section is first shown
+    if (sectionId === 'players' && !playersLoaded) {
+      loadPlayers();
     }
 
     // Close mobile nav
@@ -3001,6 +3172,181 @@ a:hover { text-decoration: underline; }
   function closeCountryDealsModal() {
     document.getElementById('countryDealsModal').classList.remove('open');
     document.body.style.overflow = '';
+  }
+
+  /* ==============================================================
+     PLAYERS SECTION
+     ============================================================== */
+  let allPlayers = [];
+  let filteredPlayers = [];
+  let playersSortCol = 'aum_numeric';
+  let playersSortDir = 'desc';
+  let playersPage = 1;
+  const PLAYERS_PER_PAGE = 25;
+  let playersLoaded = false;
+
+  function fmtAUM(display, numeric) {
+    if (display) return display;
+    if (numeric == null) return '—';
+    if (numeric >= 1e12) return (numeric / 1e12).toFixed(1).replace(/\.0$/, '') + 'T';
+    if (numeric >= 1e9) return (numeric / 1e9).toFixed(1).replace(/\.0$/, '') + 'B';
+    if (numeric >= 1e6) return (numeric / 1e6).toFixed(1).replace(/\.0$/, '') + 'M';
+    return numeric.toLocaleString('en-US');
+  }
+
+  function fmtAUMFull(numeric) {
+    if (numeric == null || numeric === 0) return '—';
+    if (numeric >= 1e12) return '$' + (numeric / 1e12).toFixed(2) + 'T';
+    if (numeric >= 1e9) return '$' + (numeric / 1e9).toFixed(1) + 'B';
+    if (numeric >= 1e6) return '$' + (numeric / 1e6).toFixed(0) + 'M';
+    return '$' + numeric.toLocaleString('en-US');
+  }
+
+  function gpSearchUrl(name) {
+    return 'https://www.google.com/search?q=' + encodeURIComponent(name + ' site:linkedin.com OR site:official');
+  }
+
+  async function loadPlayers() {
+    if (playersLoaded) return;
+    try {
+      const res = await fetch('data/players.json');
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      allPlayers = await res.json();
+      playersLoaded = true;
+      initPlayers();
+    } catch (err) {
+      $('#playersKpiGrid').innerHTML = '<div class="empty-state"><p>Failed to load players data.</p></div>';
+      console.error('Players load error:', err);
+    }
+  }
+
+  function initPlayers() {
+    // KPIs
+    const totalGPs = allPlayers.length;
+    const totalAUM = allPlayers.reduce((s, p) => s + (p.aum_numeric || 0), 0);
+    const avgActiveFunds = (allPlayers.reduce((s, p) => s + (p.active_funds || 0), 0) / totalGPs).toFixed(1);
+
+    $('#playersKpiTotalGPs').textContent = totalGPs.toLocaleString('en-US');
+    $('#playersKpiTotalAUM').textContent = fmtAUMFull(totalAUM);
+    $('#playersKpiAvgFunds').textContent = avgActiveFunds;
+
+    filteredPlayers = [...allPlayers];
+    applyPlayersSort();
+
+    // Events
+    let pSearchTimer;
+    $('#playersSearch').addEventListener('input', () => {
+      clearTimeout(pSearchTimer);
+      pSearchTimer = setTimeout(applyPlayersFilter, 200);
+    });
+
+    $$('#playersTable thead th').forEach(th => {
+      th.addEventListener('click', () => {
+        const col = th.dataset.psort;
+        if (!col) return;
+        if (playersSortCol === col) {
+          playersSortDir = playersSortDir === 'asc' ? 'desc' : 'asc';
+        } else {
+          playersSortCol = col;
+          playersSortDir = col === 'name' ? 'asc' : 'desc';
+        }
+        applyPlayersSort();
+      });
+    });
+
+    $('#playersPagination').addEventListener('click', (e) => {
+      const btn = e.target.closest('button');
+      if (!btn || btn.disabled) return;
+      if (btn.classList.contains('pg-prev')) { playersPage--; }
+      else if (btn.classList.contains('pg-next')) { playersPage++; }
+      else if (btn.dataset.page) { playersPage = +btn.dataset.page; }
+      renderPlayersTable();
+      renderPlayersPagination();
+    });
+  }
+
+  function applyPlayersFilter() {
+    const search = ($('#playersSearch').value || '').toLowerCase().trim();
+    filteredPlayers = allPlayers.filter(p => {
+      if (search && !p.name.toLowerCase().includes(search)) return false;
+      return true;
+    });
+    playersPage = 1;
+    applyPlayersSort();
+  }
+
+  function applyPlayersSort() {
+    filteredPlayers.sort((a, b) => {
+      let va = a[playersSortCol], vb = b[playersSortCol];
+      if (va == null) va = playersSortCol === 'name' ? '' : -Infinity;
+      if (vb == null) vb = playersSortCol === 'name' ? '' : -Infinity;
+      if (typeof va === 'string') va = va.toLowerCase();
+      if (typeof vb === 'string') vb = vb.toLowerCase();
+      if (va < vb) return playersSortDir === 'asc' ? -1 : 1;
+      if (va > vb) return playersSortDir === 'asc' ? 1 : -1;
+      return 0;
+    });
+    renderPlayersTable();
+    renderPlayersPagination();
+    updatePlayersInfo();
+  }
+
+  function renderPlayersTable() {
+    const start = (playersPage - 1) * PLAYERS_PER_PAGE;
+    const page = filteredPlayers.slice(start, start + PLAYERS_PER_PAGE);
+    const tbody = $('#playersTable tbody');
+
+    if (page.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="6" class="empty-state" style="padding:40px;"><p>No General Partners match your search.</p></td></tr>';
+      return;
+    }
+
+    let html = '';
+    for (const p of page) {
+      const url = gpSearchUrl(p.name);
+      html += '<tr>' +
+        '<td class="gp-name-col" title="' + escapeHtml(p.name) + '"><a href="' + url + '" target="_blank" rel="noopener">' + escapeHtml(p.name) + '</a></td>' +
+        '<td class="aum-col">' + (p.aum_display ? fmtAUM(p.aum_display, p.aum_numeric) : '<span style="color:var(--text-muted)">—</span>') + '</td>' +
+        '<td class="num-col">' + (p.active_funds || 0).toLocaleString('en-US') + '</td>' +
+        '<td class="num-col">' + (p.total_funds || 0).toLocaleString('en-US') + '</td>' +
+        '<td class="num-col">' + (p.active_holdings || 0).toLocaleString('en-US') + '</td>' +
+        '<td class="num-col">' + (p.total_holdings || 0).toLocaleString('en-US') + '</td>' +
+        '</tr>';
+    }
+    tbody.innerHTML = html;
+
+    // Update sort header styles
+    $$('#playersTable thead th').forEach(th => {
+      th.classList.remove('sort-asc', 'sort-desc');
+      if (th.dataset.psort === playersSortCol) {
+        th.classList.add(playersSortDir === 'asc' ? 'sort-asc' : 'sort-desc');
+      }
+    });
+  }
+
+  function renderPlayersPagination() {
+    const total = Math.ceil(filteredPlayers.length / PLAYERS_PER_PAGE);
+    const container = $('#playersPagination');
+    if (total <= 1) { container.innerHTML = ''; return; }
+
+    let html = '<button class="pg-prev" ' + (playersPage === 1 ? 'disabled' : '') + '>&laquo; Prev</button>';
+    const range = pagRange(playersPage, total);
+    for (const p of range) {
+      if (p === '...') {
+        html += '<button disabled style="border:none;background:none;color:var(--text-muted);cursor:default;">&hellip;</button>';
+      } else {
+        html += '<button class="pg-num ' + (p === playersPage ? 'active' : '') + '" data-page="' + p + '">' + p + '</button>';
+      }
+    }
+    html += '<button class="pg-next" ' + (playersPage === total ? 'disabled' : '') + '>Next &raquo;</button>';
+    container.innerHTML = html;
+  }
+
+  function updatePlayersInfo() {
+    const total = filteredPlayers.length;
+    const withAUM = filteredPlayers.filter(p => p.aum_numeric > 0);
+    const sumAUM = withAUM.reduce((s, p) => s + p.aum_numeric, 0);
+    $('#playersResultsInfo').textContent = total + ' GP' + (total !== 1 ? 's' : '') + ' \u00B7 ' + fmtAUMFull(sumAUM) + ' aggregate AUM';
   }
 
   /* ==============================================================

@@ -1,0 +1,2322 @@
+[
+  {
+    "name": "Goldman Sachs Group Inc/The",
+    "aum_display": "2.8T",
+    "aum_numeric": 2800000000000,
+    "active_funds": 94,
+    "total_funds": 161,
+    "active_holdings": 836,
+    "total_holdings": 1198,
+    "addresses": 1
+  },
+  {
+    "name": "Franklin Resources Inc",
+    "aum_display": "1.4T",
+    "aum_numeric": 1400000000000,
+    "active_funds": 65,
+    "total_funds": 94,
+    "active_holdings": 250,
+    "total_holdings": 336,
+    "addresses": 3
+  },
+  {
+    "name": "Prudential Real Estate Investors",
+    "aum_display": "1.3T",
+    "aum_numeric": 1300000000000,
+    "active_funds": 22,
+    "total_funds": 34,
+    "active_holdings": 85,
+    "total_holdings": 118,
+    "addresses": 1
+  },
+  {
+    "name": "Brookfield Corp",
+    "aum_display": "1.0T",
+    "aum_numeric": 1000000000000,
+    "active_funds": 132,
+    "total_funds": 178,
+    "active_holdings": 397,
+    "total_holdings": 619,
+    "addresses": 1
+  },
+  {
+    "name": "Hamilton Lane Advisors Inc",
+    "aum_display": "1.0T",
+    "aum_numeric": 1000000000000,
+    "active_funds": 57,
+    "total_funds": 71,
+    "active_holdings": 25,
+    "total_holdings": 38,
+    "addresses": 1
+  },
+  {
+    "name": "AllianceBernstein Holding LP",
+    "aum_display": "759.9B",
+    "aum_numeric": 759900000000,
+    "active_funds": 26,
+    "total_funds": 31,
+    "active_holdings": 40,
+    "total_holdings": 51,
+    "addresses": 1
+  },
+  {
+    "name": "Carlyle Group Inc/The",
+    "aum_display": "474.0B",
+    "aum_numeric": 474000000000,
+    "active_funds": 149,
+    "total_funds": 195,
+    "active_holdings": 579,
+    "total_holdings": 1277,
+    "addresses": 2
+  },
+  {
+    "name": "Stepstone Group LLC",
+    "aum_display": "314.0B",
+    "aum_numeric": 314000000000,
+    "active_funds": 36,
+    "total_funds": 58,
+    "active_holdings": 93,
+    "total_holdings": 106,
+    "addresses": 1
+  },
+  {
+    "name": "CVC Advisers Ltd",
+    "aum_display": "223.2B",
+    "aum_numeric": 223200000000,
+    "active_funds": 23,
+    "total_funds": 33,
+    "active_holdings": 217,
+    "total_holdings": 518,
+    "addresses": 1
+  },
+  {
+    "name": "TPG Capital LP/US",
+    "aum_display": "222.0B",
+    "aum_numeric": 222000000000,
+    "active_funds": 25,
+    "total_funds": 35,
+    "active_holdings": 329,
+    "total_holdings": 487,
+    "addresses": 1
+  },
+  {
+    "name": "Pramerica Real Estate Investors Ltd",
+    "aum_display": "204.4B",
+    "aum_numeric": 204400000000,
+    "active_funds": 30,
+    "total_funds": 42,
+    "active_holdings": 94,
+    "total_holdings": 128,
+    "addresses": 1
+  },
+  {
+    "name": "Partners Group Holding AG",
+    "aum_display": "174.0B",
+    "aum_numeric": 174000000000,
+    "active_funds": 87,
+    "total_funds": 105,
+    "active_holdings": 207,
+    "total_holdings": 283,
+    "addresses": 1
+  },
+  {
+    "name": "HarbourVest Partners LLC",
+    "aum_display": "146.7B",
+    "aum_numeric": 146700000000,
+    "active_funds": 96,
+    "total_funds": 140,
+    "active_holdings": 164,
+    "total_holdings": 270,
+    "addresses": 1
+  },
+  {
+    "name": "GLP Pte Ltd",
+    "aum_display": "115.0B",
+    "aum_numeric": 115000000000,
+    "active_funds": 37,
+    "total_funds": 37,
+    "active_holdings": 40,
+    "total_holdings": 42,
+    "addresses": 2
+  },
+  {
+    "name": "Apax Partners LLP",
+    "aum_display": "108.5B",
+    "aum_numeric": 108500000000,
+    "active_funds": 15,
+    "total_funds": 43,
+    "active_holdings": 183,
+    "total_holdings": 443,
+    "addresses": 1
+  },
+  {
+    "name": "General Atlantic LP",
+    "aum_display": "102.9B",
+    "aum_numeric": 102900000000,
+    "active_funds": 44,
+    "total_funds": 72,
+    "active_holdings": 461,
+    "total_holdings": 730,
+    "addresses": 2
+  },
+  {
+    "name": "Advent International LP",
+    "aum_display": "100.0B",
+    "aum_numeric": 100000000000,
+    "active_funds": 22,
+    "total_funds": 38,
+    "active_holdings": 272,
+    "total_holdings": 624,
+    "addresses": 3
+  },
+  {
+    "name": "Hines Interests LP",
+    "aum_display": "91.8B",
+    "aum_numeric": 91800000000,
+    "active_funds": 25,
+    "total_funds": 39,
+    "active_holdings": 218,
+    "total_holdings": 294,
+    "addresses": 2
+  },
+  {
+    "name": "Warburg Pincus LLC",
+    "aum_display": "84.0B",
+    "aum_numeric": 84000000000,
+    "active_funds": 20,
+    "total_funds": 32,
+    "active_holdings": 418,
+    "total_holdings": 721,
+    "addresses": 1
+  },
+  {
+    "name": "Tudor Investment Corp",
+    "aum_display": "83.6B",
+    "aum_numeric": 83600000000,
+    "active_funds": 1,
+    "total_funds": 3,
+    "active_holdings": 23,
+    "total_holdings": 38,
+    "addresses": 1
+  },
+  {
+    "name": "Lexington Partners Inc",
+    "aum_display": "79.3B",
+    "aum_numeric": 79300000000,
+    "active_funds": 17,
+    "total_funds": 31,
+    "active_holdings": 20,
+    "total_holdings": 24,
+    "addresses": 1
+  },
+  {
+    "name": "Pantheon Ventures Ltd",
+    "aum_display": "71.5B",
+    "aum_numeric": 71500000000,
+    "active_funds": 42,
+    "total_funds": 66,
+    "active_holdings": 21,
+    "total_holdings": 25,
+    "addresses": 1
+  },
+  {
+    "name": "HIG Capital LLC",
+    "aum_display": "70.0B",
+    "aum_numeric": 70000000000,
+    "active_funds": 49,
+    "total_funds": 52,
+    "active_holdings": 448,
+    "total_holdings": 651,
+    "addresses": 1
+  },
+  {
+    "name": "Vinci Partners Investimentos Ltda",
+    "aum_display": "69.0B",
+    "aum_numeric": 69000000000,
+    "active_funds": 9,
+    "total_funds": 10,
+    "active_holdings": 28,
+    "total_holdings": 32,
+    "addresses": 4
+  },
+  {
+    "name": "Farallon Capital Management LLC",
+    "aum_display": "39.0B",
+    "aum_numeric": 39000000000,
+    "active_funds": 12,
+    "total_funds": 12,
+    "active_holdings": 63,
+    "total_holdings": 75,
+    "addresses": 1
+  },
+  {
+    "name": "Patria Investimentos SA",
+    "aum_display": "28.2B",
+    "aum_numeric": 28200000000,
+    "active_funds": 27,
+    "total_funds": 30,
+    "active_holdings": 57,
+    "total_holdings": 79,
+    "addresses": 2
+  },
+  {
+    "name": "EIG Global Energy Partners LLC",
+    "aum_display": "23.1B",
+    "aum_numeric": 23100000000,
+    "active_funds": 14,
+    "total_funds": 15,
+    "active_holdings": 27,
+    "total_holdings": 34,
+    "addresses": 1
+  },
+  {
+    "name": "3G Capital Inc",
+    "aum_display": "21.7B",
+    "aum_numeric": 21700000000,
+    "active_funds": 6,
+    "total_funds": 6,
+    "active_holdings": 2,
+    "total_holdings": 4,
+    "addresses": 1
+  },
+  {
+    "name": "Riverstone Holdings LLC",
+    "aum_display": "16.8B",
+    "aum_numeric": 16800000000,
+    "active_funds": 13,
+    "total_funds": 16,
+    "active_holdings": 99,
+    "total_holdings": 162,
+    "addresses": 1
+  },
+  {
+    "name": "Actis LLP",
+    "aum_display": "16.7B",
+    "aum_numeric": 16700000000,
+    "active_funds": 26,
+    "total_funds": 54,
+    "active_holdings": 132,
+    "total_holdings": 252,
+    "addresses": 3
+  },
+  {
+    "name": "Fondsmaeglerselskabet Maj Invest A/S",
+    "aum_display": "16.2B",
+    "aum_numeric": 16200000000,
+    "active_funds": 8,
+    "total_funds": 12,
+    "active_holdings": 34,
+    "total_holdings": 101,
+    "addresses": 1
+  },
+  {
+    "name": "AB CarVal Investors LP",
+    "aum_display": "16.1B",
+    "aum_numeric": 16100000000.000002,
+    "active_funds": 17,
+    "total_funds": 20,
+    "active_holdings": 23,
+    "total_holdings": 32,
+    "addresses": 1
+  },
+  {
+    "name": "Tishman Speyer Properties LP",
+    "aum_display": "16.1B",
+    "aum_numeric": 16100000000.000002,
+    "active_funds": 16,
+    "total_funds": 24,
+    "active_holdings": 75,
+    "total_holdings": 122,
+    "addresses": 2
+  },
+  {
+    "name": "Siguler Guff Gem IV GP LLC",
+    "aum_display": "16.0B",
+    "aum_numeric": 16000000000,
+    "active_funds": 36,
+    "total_funds": 48,
+    "active_holdings": 28,
+    "total_holdings": 46,
+    "addresses": 1
+  },
+  {
+    "name": "TRG Management LP",
+    "aum_display": "8.2B",
+    "aum_numeric": 8199999999.999999,
+    "active_funds": 17,
+    "total_funds": 35,
+    "active_holdings": 94,
+    "total_holdings": 165,
+    "addresses": 5
+  },
+  {
+    "name": "Gramercy Funds Management LLC",
+    "aum_display": "7.7B",
+    "aum_numeric": 7700000000,
+    "active_funds": 7,
+    "total_funds": 9,
+    "active_holdings": 3,
+    "total_holdings": 3,
+    "addresses": 1
+  },
+  {
+    "name": "Denham Capital Management LP",
+    "aum_display": "7.5B",
+    "aum_numeric": 7500000000,
+    "active_funds": 10,
+    "total_funds": 12,
+    "active_holdings": 53,
+    "total_holdings": 88,
+    "addresses": 1
+  },
+  {
+    "name": "GTIS Partners LP",
+    "aum_display": "4.7B",
+    "aum_numeric": 4700000000,
+    "active_funds": 9,
+    "total_funds": 12,
+    "active_holdings": 17,
+    "total_holdings": 23,
+    "addresses": 1
+  },
+  {
+    "name": "Gavea Investimentos Ltda",
+    "aum_display": "3.7B",
+    "aum_numeric": 3700000000,
+    "active_funds": 5,
+    "total_funds": 5,
+    "active_holdings": 27,
+    "total_holdings": 37,
+    "addresses": 4
+  },
+  {
+    "name": "NCH Capital Inc",
+    "aum_display": "2.9B",
+    "aum_numeric": 2900000000,
+    "active_funds": 4,
+    "total_funds": 7,
+    "active_holdings": 13,
+    "total_holdings": 33,
+    "addresses": 2
+  },
+  {
+    "name": "Southern Cross Group",
+    "aum_display": "2.9B",
+    "aum_numeric": 2900000000,
+    "active_funds": 3,
+    "total_funds": 5,
+    "active_holdings": 24,
+    "total_holdings": 40,
+    "addresses": 1
+  },
+  {
+    "name": "Sentient Group Ltd/The",
+    "aum_display": "2.7B",
+    "aum_numeric": 2700000000,
+    "active_funds": 3,
+    "total_funds": 4,
+    "active_holdings": 23,
+    "total_holdings": 27,
+    "addresses": 1
+  },
+  {
+    "name": "HSI Ltd/Brazil",
+    "aum_display": "2.3B",
+    "aum_numeric": 2300000000,
+    "active_funds": 7,
+    "total_funds": 10,
+    "active_holdings": 21,
+    "total_holdings": 26,
+    "addresses": 1
+  },
+  {
+    "name": "GEF Capital Partners LLC",
+    "aum_display": "2.2B",
+    "aum_numeric": 2200000000,
+    "active_funds": 8,
+    "total_funds": 8,
+    "active_holdings": 20,
+    "total_holdings": 27,
+    "addresses": 1
+  },
+  {
+    "name": "Qualcomm Ventures LLC",
+    "aum_display": "2.0B",
+    "aum_numeric": 2000000000,
+    "active_funds": 7,
+    "total_funds": 7,
+    "active_holdings": 223,
+    "total_holdings": 292,
+    "addresses": 1
+  },
+  {
+    "name": "Darby Overseas Investments Ltd",
+    "aum_display": "1.9B",
+    "aum_numeric": 1900000000,
+    "active_funds": 11,
+    "total_funds": 19,
+    "active_holdings": 54,
+    "total_holdings": 123,
+    "addresses": 1
+  },
+  {
+    "name": "Black River Asset Management LLC",
+    "aum_display": "1.8B",
+    "aum_numeric": 1800000000,
+    "active_funds": 0,
+    "total_funds": 0,
+    "active_holdings": 6,
+    "total_holdings": 7,
+    "addresses": 4
+  },
+  {
+    "name": "SCL Energia Activa SA",
+    "aum_display": "1.5B",
+    "aum_numeric": 1500000000,
+    "active_funds": 3,
+    "total_funds": 3,
+    "active_holdings": 3,
+    "total_holdings": 5,
+    "addresses": 1
+  },
+  {
+    "name": "Mantiq Investimentos Ltda",
+    "aum_display": "1.3B",
+    "aum_numeric": 1300000000,
+    "active_funds": 2,
+    "total_funds": 3,
+    "active_holdings": 3,
+    "total_holdings": 3,
+    "addresses": 1
+  },
+  {
+    "name": "Victoria Capital Partners LP",
+    "aum_display": "1.2B",
+    "aum_numeric": 1200000000,
+    "active_funds": 2,
+    "total_funds": 3,
+    "active_holdings": 8,
+    "total_holdings": 20,
+    "addresses": 2
+  },
+  {
+    "name": "Gemcorp Capital LLP",
+    "aum_display": "1.2B",
+    "aum_numeric": 1200000000,
+    "active_funds": 1,
+    "total_funds": 1,
+    "active_holdings": 3,
+    "total_holdings": 3,
+    "addresses": 1
+  },
+  {
+    "name": "Aqua Capital Partners",
+    "aum_display": "1.1B",
+    "aum_numeric": 1100000000,
+    "active_funds": 3,
+    "total_funds": 3,
+    "active_holdings": 17,
+    "total_holdings": 20,
+    "addresses": 1
+  },
+  {
+    "name": "Discovery Americas",
+    "aum_display": "1.0B",
+    "aum_numeric": 1000000000,
+    "active_funds": 1,
+    "total_funds": 2,
+    "active_holdings": 1,
+    "total_holdings": 1,
+    "addresses": 1
+  },
+  {
+    "name": "INCE GP Ltd",
+    "aum_display": "1.0B",
+    "aum_numeric": 1000000000,
+    "active_funds": 3,
+    "total_funds": 3,
+    "active_holdings": 36,
+    "total_holdings": 36,
+    "addresses": 1
+  },
+  {
+    "name": "Nexxus Capital SC",
+    "aum_display": "1.0B",
+    "aum_numeric": 1000000000,
+    "active_funds": 5,
+    "total_funds": 8,
+    "active_holdings": 23,
+    "total_holdings": 38,
+    "addresses": 1
+  },
+  {
+    "name": "Enfoca Inversiones",
+    "aum_display": "1.0B",
+    "aum_numeric": 1000000000,
+    "active_funds": 4,
+    "total_funds": 5,
+    "active_holdings": 3,
+    "total_holdings": 4,
+    "addresses": 1
+  },
+  {
+    "name": "GEF Management Corp",
+    "aum_display": "847.0M",
+    "aum_numeric": 847000000,
+    "active_funds": 3,
+    "total_funds": 7,
+    "active_holdings": 21,
+    "total_holdings": 42,
+    "addresses": 1
+  },
+  {
+    "name": "HM Capital Partners LLC",
+    "aum_display": "759.9M",
+    "aum_numeric": 759900000,
+    "active_funds": 0,
+    "total_funds": 10,
+    "active_holdings": 21,
+    "total_holdings": 99,
+    "addresses": 1
+  },
+  {
+    "name": "Crescera Investimentos Ltda",
+    "aum_display": "755.8M",
+    "aum_numeric": 755800000,
+    "active_funds": 10,
+    "total_funds": 16,
+    "active_holdings": 16,
+    "total_holdings": 19,
+    "addresses": 1
+  },
+  {
+    "name": "Claritas Capital LLC",
+    "aum_display": "729.6M",
+    "aum_numeric": 729600000,
+    "active_funds": 18,
+    "total_funds": 19,
+    "active_holdings": 23,
+    "total_holdings": 29,
+    "addresses": 1
+  },
+  {
+    "name": "Linzor Capital Partners LP",
+    "aum_display": "725.0M",
+    "aum_numeric": 725000000,
+    "active_funds": 3,
+    "total_funds": 4,
+    "active_holdings": 15,
+    "total_holdings": 23,
+    "addresses": 1
+  },
+  {
+    "name": "Terranum Capital",
+    "aum_display": "500.0M",
+    "aum_numeric": 500000000,
+    "active_funds": 3,
+    "total_funds": 3,
+    "active_holdings": 2,
+    "total_holdings": 2,
+    "addresses": 1
+  },
+  {
+    "name": "Kuramo Capital Management LLC",
+    "aum_display": "430.1M",
+    "aum_numeric": 430100000,
+    "active_funds": 3,
+    "total_funds": 3,
+    "active_holdings": 5,
+    "total_holdings": 5,
+    "addresses": 1
+  },
+  {
+    "name": "Arias Resource Capital Management LP",
+    "aum_display": "429.1M",
+    "aum_numeric": 429100000,
+    "active_funds": 1,
+    "total_funds": 2,
+    "active_holdings": 1,
+    "total_holdings": 2,
+    "addresses": 2
+  },
+  {
+    "name": "Kandeo Private Equity",
+    "aum_display": "377.0M",
+    "aum_numeric": 377000000,
+    "active_funds": 3,
+    "total_funds": 3,
+    "active_holdings": 3,
+    "total_holdings": 3,
+    "addresses": 1
+  },
+  {
+    "name": "IGNIA Partners LLC",
+    "aum_display": "310.0M",
+    "aum_numeric": 310000000,
+    "active_funds": 2,
+    "total_funds": 3,
+    "active_holdings": 45,
+    "total_holdings": 51,
+    "addresses": 1
+  },
+  {
+    "name": "iTech Capital",
+    "aum_display": "300.0M",
+    "aum_numeric": 300000000,
+    "active_funds": 3,
+    "total_funds": 3,
+    "active_holdings": 12,
+    "total_holdings": 16,
+    "addresses": 1
+  },
+  {
+    "name": "Inverlink Estructuras Inmobiliarias",
+    "aum_display": "212.0M",
+    "aum_numeric": 212000000,
+    "active_funds": 0,
+    "total_funds": 1,
+    "active_holdings": 0,
+    "total_holdings": 0,
+    "addresses": 1
+  },
+  {
+    "name": "DXA Gestao de Investimentos Ltda",
+    "aum_display": "200.0M",
+    "aum_numeric": 200000000,
+    "active_funds": 2,
+    "total_funds": 2,
+    "active_holdings": 7,
+    "total_holdings": 9,
+    "addresses": 1
+  },
+  {
+    "name": "Paladin Realty Partners LLC",
+    "aum_display": "181.3M",
+    "aum_numeric": 181300000,
+    "active_funds": 6,
+    "total_funds": 9,
+    "active_holdings": 1,
+    "total_holdings": 1,
+    "addresses": 1
+  },
+  {
+    "name": "DGF Investimentos SA",
+    "aum_display": "150.0M",
+    "aum_numeric": 150000000,
+    "active_funds": 5,
+    "total_funds": 7,
+    "active_holdings": 32,
+    "total_holdings": 52,
+    "addresses": 1
+  },
+  {
+    "name": "SP Ventures",
+    "aum_display": "18.0M",
+    "aum_numeric": 18000000,
+    "active_funds": 3,
+    "total_funds": 3,
+    "active_holdings": 24,
+    "total_holdings": 29,
+    "addresses": 1
+  },
+  {
+    "name": "Alta Ventures Mexico SC",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 2,
+    "total_funds": 2,
+    "active_holdings": 19,
+    "total_holdings": 20,
+    "addresses": 1
+  },
+  {
+    "name": "Banco Santander SA",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 7,
+    "total_funds": 9,
+    "active_holdings": 78,
+    "total_holdings": 98,
+    "addresses": 4
+  },
+  {
+    "name": "Patria Infraestrutura Gestao de Recursos Ltda",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 1,
+    "total_funds": 2,
+    "active_holdings": 1,
+    "total_holdings": 2,
+    "addresses": 1
+  },
+  {
+    "name": "Temasek Holdings Pte Ltd",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 61,
+    "total_funds": 86,
+    "active_holdings": 801,
+    "total_holdings": 938,
+    "addresses": 1
+  },
+  {
+    "name": "Monashees Gestao de Investimentos Ltda",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 11,
+    "total_funds": 12,
+    "active_holdings": 106,
+    "total_holdings": 119,
+    "addresses": 1
+  },
+  {
+    "name": "Eurazeo SE",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 49,
+    "total_funds": 56,
+    "active_holdings": 363,
+    "total_holdings": 474,
+    "addresses": 1
+  },
+  {
+    "name": "Exxel Group SA/The",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 1,
+    "total_funds": 7,
+    "active_holdings": 9,
+    "total_holdings": 16,
+    "addresses": 1
+  },
+  {
+    "name": "Redpoint eVentures LP",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 2,
+    "total_funds": 2,
+    "active_holdings": 50,
+    "total_holdings": 60,
+    "addresses": 1
+  },
+  {
+    "name": "Nexus Group EIRL",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 2,
+    "total_funds": 2,
+    "active_holdings": 28,
+    "total_holdings": 32,
+    "addresses": 1
+  },
+  {
+    "name": "Evercore Capital Partners LP",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 3,
+    "total_funds": 8,
+    "active_holdings": 11,
+    "total_holdings": 26,
+    "addresses": 2
+  },
+  {
+    "name": "Macquarie Group Ltd",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 49,
+    "total_funds": 73,
+    "active_holdings": 263,
+    "total_holdings": 359,
+    "addresses": 2
+  },
+  {
+    "name": "BNP Paribas Capital Partners SAS",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 15,
+    "total_funds": 16,
+    "active_holdings": 40,
+    "total_holdings": 44,
+    "addresses": 1
+  },
+  {
+    "name": "e.Bricks Digital",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 1,
+    "total_funds": 1,
+    "active_holdings": 18,
+    "total_holdings": 18,
+    "addresses": 1
+  },
+  {
+    "name": "Aurus SA",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 2,
+    "total_funds": 2,
+    "active_holdings": 9,
+    "total_holdings": 9,
+    "addresses": 1
+  },
+  {
+    "name": "Spe Confrapar Adm E Gestao De Recursos",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 4,
+    "total_funds": 4,
+    "active_holdings": 19,
+    "total_holdings": 26,
+    "addresses": 1
+  },
+  {
+    "name": "Buysse & Partners Investment Fund",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 0,
+    "total_funds": 0,
+    "active_holdings": 0,
+    "total_holdings": 0,
+    "addresses": 2
+  },
+  {
+    "name": "Edmond de Rothschild Suisse SA",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 19,
+    "total_funds": 21,
+    "active_holdings": 24,
+    "total_holdings": 31,
+    "addresses": 2
+  },
+  {
+    "name": "NanoDimension Management Ltd",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 1,
+    "total_funds": 1,
+    "active_holdings": 21,
+    "total_holdings": 29,
+    "addresses": 1
+  },
+  {
+    "name": "GP Investments Ltd",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 9,
+    "total_funds": 15,
+    "active_holdings": 19,
+    "total_holdings": 65,
+    "addresses": 3
+  },
+  {
+    "name": "BRZ Investimentos Ltda",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 6,
+    "total_funds": 8,
+    "active_holdings": 6,
+    "total_holdings": 6,
+    "addresses": 1
+  },
+  {
+    "name": "Alta Growth Capital SC",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 3,
+    "total_funds": 3,
+    "active_holdings": 7,
+    "total_holdings": 13,
+    "addresses": 1
+  },
+  {
+    "name": "Kinea Investimentos Ltda / Parent",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 2,
+    "total_funds": 2,
+    "active_holdings": 23,
+    "total_holdings": 25,
+    "addresses": 1
+  },
+  {
+    "name": "Kreditanstalt fuer Wiederaufbau",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 2,
+    "total_funds": 2,
+    "active_holdings": 59,
+    "total_holdings": 74,
+    "addresses": 1
+  },
+  {
+    "name": "Societe Generale SA",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 1,
+    "total_funds": 2,
+    "active_holdings": 55,
+    "total_holdings": 73,
+    "addresses": 1
+  },
+  {
+    "name": "Astella Investimentos",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 0,
+    "total_funds": 0,
+    "active_holdings": 26,
+    "total_holdings": 28,
+    "addresses": 1
+  },
+  {
+    "name": "NIBC Bank NV",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 1,
+    "total_funds": 2,
+    "active_holdings": 11,
+    "total_holdings": 17,
+    "addresses": 1
+  },
+  {
+    "name": "Yuantai Investment Partners LLC",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 2,
+    "total_funds": 2,
+    "active_holdings": 6,
+    "total_holdings": 6,
+    "addresses": 1
+  },
+  {
+    "name": "BNDES Participacoes SA",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 0,
+    "total_funds": 0,
+    "active_holdings": 10,
+    "total_holdings": 11,
+    "addresses": 1
+  },
+  {
+    "name": "Cedro Asset Management Ltda",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 0,
+    "total_funds": 0,
+    "active_holdings": 11,
+    "total_holdings": 12,
+    "addresses": 1
+  },
+  {
+    "name": "AZ Quest Investimentos Ltda",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 0,
+    "total_funds": 0,
+    "active_holdings": 2,
+    "total_holdings": 2,
+    "addresses": 3
+  },
+  {
+    "name": "BTG Pactual Asset Management SA DTVM",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 3,
+    "total_funds": 3,
+    "active_holdings": 10,
+    "total_holdings": 11,
+    "addresses": 1
+  },
+  {
+    "name": "Oria Gestao de Recursos Ltda",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 4,
+    "total_funds": 4,
+    "active_holdings": 4,
+    "total_holdings": 6,
+    "addresses": 1
+  },
+  {
+    "name": "GP Investimentos SA",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 3,
+    "total_funds": 7,
+    "active_holdings": 15,
+    "total_holdings": 61,
+    "addresses": 1
+  },
+  {
+    "name": "Altra Asset Management",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 4,
+    "total_funds": 5,
+    "active_holdings": 12,
+    "total_holdings": 18,
+    "addresses": 1
+  },
+  {
+    "name": "MSW Capital Gestao de Recursos Ltda",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 0,
+    "total_funds": 0,
+    "active_holdings": 10,
+    "total_holdings": 10,
+    "addresses": 1
+  },
+  {
+    "name": "Vox Capital Consultoria e Assessoria Ltda",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 0,
+    "total_funds": 0,
+    "active_holdings": 10,
+    "total_holdings": 10,
+    "addresses": 1
+  },
+  {
+    "name": "Banco Modal SA",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 3,
+    "total_funds": 3,
+    "active_holdings": 6,
+    "total_holdings": 7,
+    "addresses": 4
+  },
+  {
+    "name": "Grupo Carso SAB de CV",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 1,
+    "total_funds": 1,
+    "active_holdings": 1,
+    "total_holdings": 1,
+    "addresses": 1
+  },
+  {
+    "name": "Hancock Natural Resource Group Inc",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 0,
+    "total_funds": 0,
+    "active_holdings": 4,
+    "total_holdings": 4,
+    "addresses": 1
+  },
+  {
+    "name": "Adobe Capital",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 2,
+    "total_funds": 2,
+    "active_holdings": 2,
+    "total_holdings": 2,
+    "addresses": 1
+  },
+  {
+    "name": "Mubadala Infrastructure Partners Ltd",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 3,
+    "total_funds": 3,
+    "active_holdings": 17,
+    "total_holdings": 20,
+    "addresses": 1
+  },
+  {
+    "name": "A5 Capital Partners SA",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 3,
+    "total_funds": 4,
+    "active_holdings": 26,
+    "total_holdings": 33,
+    "addresses": 1
+  },
+  {
+    "name": "GIC Group",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 0,
+    "total_funds": 1,
+    "active_holdings": 5,
+    "total_holdings": 6,
+    "addresses": 1
+  },
+  {
+    "name": "AB Seed Investimentos Ltda",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 0,
+    "total_funds": 0,
+    "active_holdings": 6,
+    "total_holdings": 7,
+    "addresses": 1
+  },
+  {
+    "name": "Auven Therapeutics Management LLLP",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 1,
+    "total_funds": 3,
+    "active_holdings": 1,
+    "total_holdings": 6,
+    "addresses": 1
+  },
+  {
+    "name": "FIR Capital Partners Gestao de Investimentos SA",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 10,
+    "total_funds": 10,
+    "active_holdings": 11,
+    "total_holdings": 11,
+    "addresses": 1
+  },
+  {
+    "name": "Triaxis Capital",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 0,
+    "total_funds": 0,
+    "active_holdings": 3,
+    "total_holdings": 3,
+    "addresses": 1
+  },
+  {
+    "name": "ArpexCapital",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 0,
+    "total_funds": 0,
+    "active_holdings": 4,
+    "total_holdings": 4,
+    "addresses": 1
+  },
+  {
+    "name": "TreeCorp Investimentos",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 1,
+    "total_funds": 1,
+    "active_holdings": 9,
+    "total_holdings": 9,
+    "addresses": 1
+  },
+  {
+    "name": "Banco Genial SA",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 0,
+    "total_funds": 0,
+    "active_holdings": 3,
+    "total_holdings": 3,
+    "addresses": 1
+  },
+  {
+    "name": "Rio Bravo Investimentos SA DTVM",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 4,
+    "total_funds": 8,
+    "active_holdings": 7,
+    "total_holdings": 8,
+    "addresses": 1
+  },
+  {
+    "name": "Portland Private Equity LP",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 3,
+    "total_funds": 3,
+    "active_holdings": 8,
+    "total_holdings": 11,
+    "addresses": 1
+  },
+  {
+    "name": "Grupo Stratus",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 2,
+    "total_funds": 4,
+    "active_holdings": 4,
+    "total_holdings": 17,
+    "addresses": 1
+  },
+  {
+    "name": "Fundepar Gestao De Investimentos Ltda",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 0,
+    "total_funds": 0,
+    "active_holdings": 1,
+    "total_holdings": 1,
+    "addresses": 1
+  },
+  {
+    "name": "Oliveira Trust Distribuidora de Titulos e Valores Mobiliarios SA",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 0,
+    "total_funds": 1,
+    "active_holdings": 1,
+    "total_holdings": 1,
+    "addresses": 1
+  },
+  {
+    "name": "InverSur Capital",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 1,
+    "total_funds": 1,
+    "active_holdings": 4,
+    "total_holdings": 4,
+    "addresses": 1
+  },
+  {
+    "name": "Tribeca Asset Management SAS",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 4,
+    "total_funds": 5,
+    "active_holdings": 3,
+    "total_holdings": 13,
+    "addresses": 1
+  },
+  {
+    "name": "Capital Indigo",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 2,
+    "total_funds": 2,
+    "active_holdings": 1,
+    "total_holdings": 1,
+    "addresses": 1
+  },
+  {
+    "name": "Axxon Group",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 2,
+    "total_funds": 3,
+    "active_holdings": 10,
+    "total_holdings": 18,
+    "addresses": 1
+  },
+  {
+    "name": "WAMEX Private Equity Management",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 2,
+    "total_funds": 3,
+    "active_holdings": 7,
+    "total_holdings": 15,
+    "addresses": 1
+  },
+  {
+    "name": "Ax Ventures Srl",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 0,
+    "total_funds": 1,
+    "active_holdings": 1,
+    "total_holdings": 2,
+    "addresses": 1
+  },
+  {
+    "name": "Gerbera Capital Asesores SC",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 0,
+    "total_funds": 0,
+    "active_holdings": 2,
+    "total_holdings": 2,
+    "addresses": 1
+  },
+  {
+    "name": "Neo Gestao de Recursos Ltda",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 2,
+    "total_funds": 2,
+    "active_holdings": 3,
+    "total_holdings": 3,
+    "addresses": 4
+  },
+  {
+    "name": "AEM Capital",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 0,
+    "total_funds": 0,
+    "active_holdings": 1,
+    "total_holdings": 1,
+    "addresses": 1
+  },
+  {
+    "name": "CRP Cia de Participacoes",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 5,
+    "total_funds": 11,
+    "active_holdings": 3,
+    "total_holdings": 3,
+    "addresses": 1
+  },
+  {
+    "name": "Promotora Venture Capital",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 3,
+    "total_funds": 3,
+    "active_holdings": 1,
+    "total_holdings": 2,
+    "addresses": 1
+  },
+  {
+    "name": "Tarpon Investimentos SA",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 0,
+    "total_funds": 0,
+    "active_holdings": 3,
+    "total_holdings": 3,
+    "addresses": 1
+  },
+  {
+    "name": "Padtec Holding SA",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 0,
+    "total_funds": 0,
+    "active_holdings": 2,
+    "total_holdings": 2,
+    "addresses": 1
+  },
+  {
+    "name": "Caixa Economica Federal",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 4,
+    "total_funds": 6,
+    "active_holdings": 2,
+    "total_holdings": 4,
+    "addresses": 7
+  },
+  {
+    "name": "TMG Capital",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 1,
+    "total_funds": 2,
+    "active_holdings": 4,
+    "total_holdings": 10,
+    "addresses": 1
+  },
+  {
+    "name": "Nordea Bank AB",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 1,
+    "total_funds": 5,
+    "active_holdings": 1,
+    "total_holdings": 2,
+    "addresses": 1
+  },
+  {
+    "name": "Sophia Capital",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 0,
+    "total_funds": 0,
+    "active_holdings": 8,
+    "total_holdings": 8,
+    "addresses": 1
+  },
+  {
+    "name": "Al Masah Capital Ltd",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 1,
+    "total_funds": 1,
+    "active_holdings": 0,
+    "total_holdings": 0,
+    "addresses": 1
+  },
+  {
+    "name": "Grupo ECOS SA",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 2,
+    "total_funds": 2,
+    "active_holdings": 1,
+    "total_holdings": 5,
+    "addresses": 1
+  },
+  {
+    "name": "Vision Brazil Gestao De Investimentos E Participacoes Ltda",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 3,
+    "total_funds": 3,
+    "active_holdings": 1,
+    "total_holdings": 1,
+    "addresses": 3
+  },
+  {
+    "name": "Mineria Activa SA",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 9,
+    "total_funds": 10,
+    "active_holdings": 0,
+    "total_holdings": 0,
+    "addresses": 1
+  },
+  {
+    "name": "Angra Partners Gestao de Recursos Ltda",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 3,
+    "total_funds": 8,
+    "active_holdings": 5,
+    "total_holdings": 7,
+    "addresses": 1
+  },
+  {
+    "name": "Corp Mexicana de Inversiones de Capital SA de CV",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 2,
+    "total_funds": 3,
+    "active_holdings": 0,
+    "total_holdings": 1,
+    "addresses": 1
+  },
+  {
+    "name": "Omtrix Inc",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 1,
+    "total_funds": 1,
+    "active_holdings": 0,
+    "total_holdings": 0,
+    "addresses": 1
+  },
+  {
+    "name": "Alothon Group LLC",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 3,
+    "total_funds": 3,
+    "active_holdings": 7,
+    "total_holdings": 8,
+    "addresses": 1
+  },
+  {
+    "name": "BB DTVM SA/Brazil",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 3,
+    "total_funds": 3,
+    "active_holdings": 0,
+    "total_holdings": 0,
+    "addresses": 1
+  },
+  {
+    "name": "Planner Corretora de Valores SA",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 5,
+    "total_funds": 5,
+    "active_holdings": 1,
+    "total_holdings": 1,
+    "addresses": 3
+  },
+  {
+    "name": "Janos Comercio Administracao e Participacoes Ltda",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 0,
+    "total_funds": 1,
+    "active_holdings": 0,
+    "total_holdings": 0,
+    "addresses": 1
+  },
+  {
+    "name": "GRP Investimentos Ltda-EPP",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 1,
+    "total_funds": 1,
+    "active_holdings": 0,
+    "total_holdings": 0,
+    "addresses": 1
+  },
+  {
+    "name": "SP Ventures Gestora de Recursos Ltda",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 0,
+    "total_funds": 0,
+    "active_holdings": 4,
+    "total_holdings": 4,
+    "addresses": 1
+  },
+  {
+    "name": "Embraer SA",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 0,
+    "total_funds": 0,
+    "active_holdings": 2,
+    "total_holdings": 2,
+    "addresses": 2
+  },
+  {
+    "name": "REAG Gestora de Recursos SA",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 0,
+    "total_funds": 0,
+    "active_holdings": 4,
+    "total_holdings": 4,
+    "addresses": 1
+  },
+  {
+    "name": "Chromo Investimentos Ltda",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 0,
+    "total_funds": 0,
+    "active_holdings": 6,
+    "total_holdings": 6,
+    "addresses": 1
+  },
+  {
+    "name": "Latour Capital do Brasil Ltda",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 0,
+    "total_funds": 0,
+    "active_holdings": 0,
+    "total_holdings": 0,
+    "addresses": 1
+  },
+  {
+    "name": "Performa Investimentos Ltda",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 3,
+    "total_funds": 3,
+    "active_holdings": 12,
+    "total_holdings": 16,
+    "addresses": 2
+  },
+  {
+    "name": "CVentures Empreendimentos Inovadores e Participacoes SA",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 1,
+    "total_funds": 1,
+    "active_holdings": 1,
+    "total_holdings": 1,
+    "addresses": 1
+  },
+  {
+    "name": "Napkn Ventures",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 0,
+    "total_funds": 0,
+    "active_holdings": 2,
+    "total_holdings": 2,
+    "addresses": 1
+  },
+  {
+    "name": "Mexico Ventures",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 0,
+    "total_funds": 0,
+    "active_holdings": 6,
+    "total_holdings": 8,
+    "addresses": 1
+  },
+  {
+    "name": "Laplace Financas",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 0,
+    "total_funds": 0,
+    "active_holdings": 0,
+    "total_holdings": 0,
+    "addresses": 3
+  },
+  {
+    "name": "Infra Asset Management Ltda",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 0,
+    "total_funds": 0,
+    "active_holdings": 1,
+    "total_holdings": 1,
+    "addresses": 1
+  },
+  {
+    "name": "Teka Capital Inc",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 1,
+    "total_funds": 1,
+    "active_holdings": 4,
+    "total_holdings": 4,
+    "addresses": 1
+  },
+  {
+    "name": "Sniper Investments",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 0,
+    "total_funds": 0,
+    "active_holdings": 1,
+    "total_holdings": 1,
+    "addresses": 1
+  },
+  {
+    "name": "2bCapital SA",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 1,
+    "total_funds": 1,
+    "active_holdings": 0,
+    "total_holdings": 1,
+    "addresses": 1
+  },
+  {
+    "name": "Institut Pasteur de Montevideo",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 1,
+    "total_funds": 1,
+    "active_holdings": 0,
+    "total_holdings": 0,
+    "addresses": 1
+  },
+  {
+    "name": "Davinci Capital SAPI de CV",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 0,
+    "total_funds": 0,
+    "active_holdings": 1,
+    "total_holdings": 2,
+    "addresses": 1
+  },
+  {
+    "name": "CVC Opportunity Equity Partners Ltd",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 0,
+    "total_funds": 1,
+    "active_holdings": 0,
+    "total_holdings": 0,
+    "addresses": 1
+  },
+  {
+    "name": "Vila Rica Capital Gestora de Recursos Ltda",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 0,
+    "total_funds": 0,
+    "active_holdings": 1,
+    "total_holdings": 1,
+    "addresses": 1
+  },
+  {
+    "name": "LIV Capital",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 3,
+    "total_funds": 5,
+    "active_holdings": 4,
+    "total_holdings": 5,
+    "addresses": 1
+  },
+  {
+    "name": "Ventura Capital Privado SA de CV",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 0,
+    "total_funds": 0,
+    "active_holdings": 2,
+    "total_holdings": 2,
+    "addresses": 1
+  },
+  {
+    "name": "North Sea Capital A/S",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 0,
+    "total_funds": 0,
+    "active_holdings": 1,
+    "total_holdings": 2,
+    "addresses": 1
+  },
+  {
+    "name": "EMX Capital",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 1,
+    "total_funds": 1,
+    "active_holdings": 6,
+    "total_holdings": 9,
+    "addresses": 1
+  },
+  {
+    "name": "SOMMA Investimentos SA",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 0,
+    "total_funds": 0,
+    "active_holdings": 0,
+    "total_holdings": 0,
+    "addresses": 1
+  },
+  {
+    "name": "Principia Capital Partners Investimentos Ltda",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 0,
+    "total_funds": 0,
+    "active_holdings": 0,
+    "total_holdings": 0,
+    "addresses": 1
+  },
+  {
+    "name": "Otinga Investimentos EIRELI",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 0,
+    "total_funds": 0,
+    "active_holdings": 0,
+    "total_holdings": 0,
+    "addresses": 1
+  },
+  {
+    "name": "Portcapital Gestora de Recursos Ltda",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 1,
+    "total_funds": 1,
+    "active_holdings": 0,
+    "total_holdings": 0,
+    "addresses": 1
+  },
+  {
+    "name": "Queluz Gestao de Recursos Financeiros Ltda",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 0,
+    "total_funds": 0,
+    "active_holdings": 0,
+    "total_holdings": 0,
+    "addresses": 1
+  },
+  {
+    "name": "Nexto Investimentos e Participacoes Ltda",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 0,
+    "total_funds": 0,
+    "active_holdings": 0,
+    "total_holdings": 0,
+    "addresses": 1
+  },
+  {
+    "name": "InfraVestor Capital Gestao de Investimentos Ltda",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 0,
+    "total_funds": 0,
+    "active_holdings": 0,
+    "total_holdings": 0,
+    "addresses": 1
+  },
+  {
+    "name": "FinHealth Gestao de Recursos SA/F family",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 0,
+    "total_funds": 0,
+    "active_holdings": 0,
+    "total_holdings": 0,
+    "addresses": 1
+  },
+  {
+    "name": "Cypress Associates Gestao e Participacoes Ltda",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 0,
+    "total_funds": 0,
+    "active_holdings": 0,
+    "total_holdings": 0,
+    "addresses": 1
+  },
+  {
+    "name": "Citybell Gestao de Investimentos Ltda",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 0,
+    "total_funds": 0,
+    "active_holdings": 0,
+    "total_holdings": 0,
+    "addresses": 1
+  },
+  {
+    "name": "BR Opportunities Gestora de Fundos Ltda",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 0,
+    "total_funds": 0,
+    "active_holdings": 0,
+    "total_holdings": 0,
+    "addresses": 1
+  },
+  {
+    "name": "Investimage Administradora de Recursos Ltda",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 0,
+    "total_funds": 0,
+    "active_holdings": 0,
+    "total_holdings": 0,
+    "addresses": 1
+  },
+  {
+    "name": "Bratus Capital Ltda",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 0,
+    "total_funds": 0,
+    "active_holdings": 0,
+    "total_holdings": 0,
+    "addresses": 1
+  },
+  {
+    "name": "BRKB Participacoes SA",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 0,
+    "total_funds": 0,
+    "active_holdings": 0,
+    "total_holdings": 0,
+    "addresses": 1
+  },
+  {
+    "name": "Dynamo Internacional Gestao de Recursos Ltda",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 0,
+    "total_funds": 0,
+    "active_holdings": 0,
+    "total_holdings": 0,
+    "addresses": 1
+  },
+  {
+    "name": "Bela Vista Investimentos Administradora de Recursos Ltda",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 0,
+    "total_funds": 0,
+    "active_holdings": 0,
+    "total_holdings": 0,
+    "addresses": 1
+  },
+  {
+    "name": "Algar Ventures",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 0,
+    "total_funds": 0,
+    "active_holdings": 0,
+    "total_holdings": 0,
+    "addresses": 1
+  },
+  {
+    "name": "Mare Investimentos Ltda",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 3,
+    "total_funds": 3,
+    "active_holdings": 0,
+    "total_holdings": 0,
+    "addresses": 1
+  },
+  {
+    "name": "Atlantica Investimentos",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 0,
+    "total_funds": 0,
+    "active_holdings": 0,
+    "total_holdings": 0,
+    "addresses": 1
+  },
+  {
+    "name": "Global Equity Administradora de Recursos SA",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 3,
+    "total_funds": 3,
+    "active_holdings": 0,
+    "total_holdings": 0,
+    "addresses": 1
+  },
+  {
+    "name": "Votorantim Participacoes SA",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 1,
+    "total_funds": 1,
+    "active_holdings": 0,
+    "total_holdings": 0,
+    "addresses": 1
+  },
+  {
+    "name": "Empresas Penta SA",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 1,
+    "total_funds": 1,
+    "active_holdings": 1,
+    "total_holdings": 2,
+    "addresses": 2
+  },
+  {
+    "name": "Green Capital Investimentos Ltda",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 2,
+    "total_funds": 2,
+    "active_holdings": 1,
+    "total_holdings": 1,
+    "addresses": 1
+  },
+  {
+    "name": "Ecus Private Equity",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 2,
+    "total_funds": 3,
+    "active_holdings": 1,
+    "total_holdings": 5,
+    "addresses": 1
+  },
+  {
+    "name": "Governanca & Gestao Investimentos Ltda",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 0,
+    "total_funds": 0,
+    "active_holdings": 0,
+    "total_holdings": 1,
+    "addresses": 1
+  },
+  {
+    "name": "Leopard Capital LP",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 3,
+    "total_funds": 4,
+    "active_holdings": 5,
+    "total_holdings": 8,
+    "addresses": 1
+  },
+  {
+    "name": "Astra Investimentos Ltda",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 2,
+    "total_funds": 2,
+    "active_holdings": 0,
+    "total_holdings": 0,
+    "addresses": 2
+  },
+  {
+    "name": "Teak Ventures do Brasil SA",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 0,
+    "total_funds": 0,
+    "active_holdings": 0,
+    "total_holdings": 0,
+    "addresses": 1
+  },
+  {
+    "name": "PineBridge Investments Holdings US LLC",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 0,
+    "total_funds": 0,
+    "active_holdings": 0,
+    "total_holdings": 0,
+    "addresses": 1
+  },
+  {
+    "name": "Mercatto Gestao de Recursos Ltda",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 0,
+    "total_funds": 0,
+    "active_holdings": 0,
+    "total_holdings": 0,
+    "addresses": 3
+  },
+  {
+    "name": "Banco Patrimonio de Investment SA",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 0,
+    "total_funds": 0,
+    "active_holdings": 0,
+    "total_holdings": 0,
+    "addresses": 1
+  },
+  {
+    "name": "Pinheiro Neto Advogados",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 0,
+    "total_funds": 0,
+    "active_holdings": 0,
+    "total_holdings": 0,
+    "addresses": 2
+  },
+  {
+    "name": "Ludwig Investments",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 0,
+    "total_funds": 0,
+    "active_holdings": 0,
+    "total_holdings": 0,
+    "addresses": 1
+  },
+  {
+    "name": "Latintech Capital SA",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 0,
+    "total_funds": 0,
+    "active_holdings": 0,
+    "total_holdings": 0,
+    "addresses": 1
+  },
+  {
+    "name": "Ifincorp SA",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 0,
+    "total_funds": 1,
+    "active_holdings": 2,
+    "total_holdings": 4,
+    "addresses": 1
+  },
+  {
+    "name": "Ictineo Capital",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 0,
+    "total_funds": 1,
+    "active_holdings": 0,
+    "total_holdings": 0,
+    "addresses": 1
+  },
+  {
+    "name": "Casaforte Investimentos SA",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 2,
+    "total_funds": 2,
+    "active_holdings": 0,
+    "total_holdings": 0,
+    "addresses": 1
+  },
+  {
+    "name": "Venture Institute Partners SAPI de CV",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 0,
+    "total_funds": 0,
+    "active_holdings": 1,
+    "total_holdings": 1,
+    "addresses": 1
+  },
+  {
+    "name": "Southern Bridge Capital Peru SAC",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 1,
+    "total_funds": 1,
+    "active_holdings": 0,
+    "total_holdings": 0,
+    "addresses": 1
+  },
+  {
+    "name": "CoreCo Holdings LLC",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 1,
+    "total_funds": 1,
+    "active_holdings": 0,
+    "total_holdings": 0,
+    "addresses": 1
+  },
+  {
+    "name": "Stratus Gestao de Carteiras Ltda",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 0,
+    "total_funds": 0,
+    "active_holdings": 1,
+    "total_holdings": 1,
+    "addresses": 1
+  },
+  {
+    "name": "Artesia Gestao de Recursos SA",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 0,
+    "total_funds": 1,
+    "active_holdings": 0,
+    "total_holdings": 0,
+    "addresses": 1
+  },
+  {
+    "name": "e-Platform Venture Partners",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 0,
+    "total_funds": 0,
+    "active_holdings": 0,
+    "total_holdings": 0,
+    "addresses": 1
+  },
+  {
+    "name": "Bioenergy Development Management Ltd",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 0,
+    "total_funds": 1,
+    "active_holdings": 0,
+    "total_holdings": 0,
+    "addresses": 1
+  },
+  {
+    "name": "Centras Capital Ltd",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 0,
+    "total_funds": 2,
+    "active_holdings": 0,
+    "total_holdings": 0,
+    "addresses": 1
+  },
+  {
+    "name": "Prosperitas Investimentos SA",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 1,
+    "total_funds": 3,
+    "active_holdings": 1,
+    "total_holdings": 1,
+    "addresses": 2
+  },
+  {
+    "name": "NSG Capital Administracao de Recursos SA",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 2,
+    "total_funds": 3,
+    "active_holdings": 0,
+    "total_holdings": 0,
+    "addresses": 1
+  },
+  {
+    "name": "G5 Partners Consultoria e Participacoes LTDA",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 3,
+    "total_funds": 3,
+    "active_holdings": 0,
+    "total_holdings": 0,
+    "addresses": 2
+  },
+  {
+    "name": "Lacan Investimentos e Participacoes Ltda",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 1,
+    "total_funds": 1,
+    "active_holdings": 0,
+    "total_holdings": 0,
+    "addresses": 1
+  },
+  {
+    "name": "Lagoa Asset Management Ltda",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 0,
+    "total_funds": 0,
+    "active_holdings": 0,
+    "total_holdings": 0,
+    "addresses": 1
+  },
+  {
+    "name": "Araujo Fontes Consultoria e Administracao de Recursos Ltda",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 0,
+    "total_funds": 0,
+    "active_holdings": 0,
+    "total_holdings": 0,
+    "addresses": 1
+  },
+  {
+    "name": "Jardim Botanico Partners Investimentos Ltda",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 0,
+    "total_funds": 0,
+    "active_holdings": 0,
+    "total_holdings": 0,
+    "addresses": 4
+  },
+  {
+    "name": "Artis Gestora de Recursos SA",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 0,
+    "total_funds": 0,
+    "active_holdings": 0,
+    "total_holdings": 0,
+    "addresses": 1
+  },
+  {
+    "name": "Corredores Davivivienda SA Comisionista de Bolsa",
+    "aum_display": null,
+    "aum_numeric": null,
+    "active_funds": 1,
+    "total_funds": 1,
+    "active_holdings": 0,
+    "total_holdings": 0,
+    "addresses": 5
+  }
+]

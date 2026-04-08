@@ -8,7 +8,8 @@
       "Bash(python3:*)",
       "Bash(py --version)",
       "Bash(npm install:*)",
-      "Bash(node -e ':*)"
+      "Bash(node -e ':*)",
+      "Bash(node -e \"const d = require\\('./data/players.json'\\); console.log\\('Records:', d.length\\); console.log\\('First:', d[0]\\); console.log\\('Keys:', Object.keys\\(d[0]\\)\\);\")"
     ]
   }
 }
