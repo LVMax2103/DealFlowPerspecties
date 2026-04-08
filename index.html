@@ -833,10 +833,10 @@ a:hover { text-decoration: underline; }
   position: absolute;
   top: 50%; left: 50%;
   transform: translate(-50%, -50%);
-  width: 85vw; height: 85vh;
+  width: 100vw; height: 100vh;
   background: url('logo-light.png') no-repeat center center;
-  background-size: contain;
-  opacity: 0.05;
+  background-size: 100% auto;
+  opacity: 0.035;
   pointer-events: none;
   z-index: 0;
 }
@@ -851,7 +851,7 @@ a:hover { text-decoration: underline; }
 }
 
 .landing-logo {
-  height: 100px; width: auto; margin-bottom: 32px;
+  width: 550px; max-width: 90vw; height: auto; margin-bottom: 32px;
   filter: drop-shadow(0 0 30px rgba(0, 102, 255, 0.15));
 }
 
@@ -1005,7 +1005,7 @@ a:hover { text-decoration: underline; }
   .navbar-brand .brand-divider,
   .navbar-brand .brand-sub { display: none; }
   .landing-title { font-size: 24px; }
-  .landing-logo { height: 72px; }
+  .landing-logo { width: 300px; }
 }
 
 /* ===================================================================
