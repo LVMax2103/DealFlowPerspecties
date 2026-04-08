@@ -942,6 +942,235 @@ a:hover { text-decoration: underline; }
 }
 
 /* ===================================================================
+   PE FUNDS SECTION
+   =================================================================== */
+.pef-disclaimer {
+  background: rgba(124,58,237,0.08);
+  border: 1px solid rgba(124,58,237,0.25);
+  border-radius: var(--radius-md);
+  padding: 16px 20px;
+  margin-bottom: 24px;
+  font-size: 12px; line-height: 1.7;
+  color: var(--text-secondary);
+}
+
+.pef-disclaimer strong { color: var(--text-primary); }
+
+.pef-tabs {
+  display: flex; gap: 4px; margin-bottom: 20px; flex-wrap: wrap;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 6px;
+}
+
+.pef-tab {
+  padding: 8px 16px;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-size: 12px; font-weight: 600; font-family: var(--font-sans);
+  cursor: pointer; transition: all var(--transition);
+  white-space: nowrap;
+}
+
+.pef-tab:hover { color: var(--text-primary); background: var(--bg-secondary); }
+.pef-tab.active { background: var(--pe-color); color: #fff; }
+
+.pef-toolbar {
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 20px; flex-wrap: wrap;
+}
+
+.pef-search {
+  flex: 1; min-width: 240px;
+  position: relative;
+}
+
+.pef-search svg {
+  position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+  width: 16px; height: 16px; color: var(--text-muted);
+  pointer-events: none;
+}
+
+.pef-search input {
+  width: 100%;
+  padding: 10px 14px 10px 40px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-size: 13px; font-family: var(--font-sans);
+  transition: border-color var(--transition);
+  outline: none;
+}
+
+.pef-search input::placeholder { color: var(--text-muted); }
+.pef-search input:focus { border-color: var(--accent); }
+
+.pef-results-info {
+  font-size: 12px; color: var(--text-muted); margin-left: auto;
+  font-feature-settings: 'tnum'; white-space: nowrap;
+}
+
+.pef-table-wrap {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow-x: auto;
+}
+
+.pef-table {
+  width: 100%; border-collapse: collapse; font-size: 13px;
+  min-width: 850px;
+}
+
+.pef-table thead th {
+  position: sticky; top: 0; z-index: 2;
+  text-align: left;
+  padding: 12px 14px;
+  font-size: 11px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.5px; color: var(--text-muted);
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border);
+  cursor: pointer; user-select: none;
+  transition: color var(--transition);
+  white-space: nowrap;
+}
+
+.pef-table thead th:hover { color: var(--text-primary); }
+
+.pef-table thead th .sort-icon {
+  display: inline-block; margin-left: 4px;
+  font-size: 10px; vertical-align: middle;
+  opacity: 0.4;
+}
+
+.pef-table thead th.sort-asc .sort-icon,
+.pef-table thead th.sort-desc .sort-icon {
+  opacity: 1; color: var(--accent-light);
+}
+
+.pef-table tbody tr {
+  transition: background var(--transition);
+}
+
+.pef-table tbody tr:hover { background: var(--accent-glow); }
+
+.pef-table tbody td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-primary);
+  vertical-align: middle;
+}
+
+.pef-table tbody td.fund-col {
+  font-weight: 600;
+  max-width: 280px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+.pef-table tbody td.gp-col {
+  max-width: 220px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  color: var(--text-secondary);
+}
+
+.pef-table tbody td.num-col {
+  text-align: right;
+  font-feature-settings: 'tnum';
+  white-space: nowrap;
+}
+
+.pef-table tbody td.irr-col {
+  font-weight: 700;
+  text-align: right;
+  font-feature-settings: 'tnum';
+  white-space: nowrap;
+}
+
+.pef-table tbody td.irr-col.positive { color: var(--success); }
+.pef-table tbody td.irr-col.negative { color: var(--danger); }
+
+.pef-quartile {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 100px;
+  font-size: 10px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.3px;
+}
+
+.pef-quartile.q1 { background: rgba(0,196,140,0.15); color: #00C48C; }
+.pef-quartile.q2 { background: rgba(0,102,255,0.15); color: #60A5FA; }
+.pef-quartile.q3 { background: rgba(255,184,0,0.15); color: #FBBF24; }
+.pef-quartile.q4 { background: rgba(255,77,106,0.15); color: #FF4D6A; }
+
+.pef-status-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 100px;
+  font-size: 10px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.3px;
+}
+
+.pef-status-badge.investing { background: rgba(0,196,140,0.15); color: #00C48C; }
+.pef-status-badge.fundraising { background: rgba(0,102,255,0.15); color: #60A5FA; }
+.pef-status-badge.harvesting { background: rgba(255,184,0,0.15); color: #FBBF24; }
+.pef-status-badge.liquidated { background: rgba(102,102,102,0.2); color: #888; }
+.pef-status-badge.withdrawn { background: rgba(255,77,106,0.15); color: #FF4D6A; }
+
+.pef-charts-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-top: 28px;
+  margin-bottom: 28px;
+}
+
+.pef-chart-panel {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.pef-chart-panel .chart-header {
+  padding: 16px 20px 0;
+  font-size: 13px; font-weight: 600; color: var(--text-primary);
+  letter-spacing: -0.2px;
+}
+
+.pef-chart-panel canvas {
+  display: block;
+  width: 100%;
+}
+
+.pef-chart-full {
+  grid-column: 1 / -1;
+}
+
+.pef-report-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 10px 20px;
+  background: rgba(124,58,237,0.15);
+  border: 1px solid rgba(124,58,237,0.3);
+  border-radius: var(--radius-sm);
+  color: #A78BFA;
+  font-size: 13px; font-weight: 600; font-family: var(--font-sans);
+  cursor: pointer; transition: all var(--transition);
+  text-decoration: none; margin-bottom: 24px;
+}
+
+.pef-report-btn:hover {
+  background: rgba(124,58,237,0.25);
+  border-color: rgba(124,58,237,0.5);
+  text-decoration: none; color: #C4B5FD;
+}
+
+.pef-report-btn svg { width: 16px; height: 16px; }
+
+/* ===================================================================
    LANDING PAGE
    =================================================================== */
 #home {
@@ -1597,13 +1826,108 @@ a:hover { text-decoration: underline; }
     <div class="pagination" id="playersPagination"></div>
   </section>
 
-  <!-- ====== PE FUNDS (placeholder) ====== -->
+  <!-- ====== PE FUNDS ====== -->
   <section id="pefunds" class="section">
     <div class="section-header">
       <h1>PE Funds</h1>
-      <p>Private Equity fund tracker — coming soon</p>
+      <p>Private Equity Fund Tracker — Latin America</p>
     </div>
-    <div class="empty-state"><p>This section is under development.</p></div>
+
+    <!-- Disclaimer -->
+    <div class="pef-disclaimer">
+      <strong>Disclaimer:</strong> Data sourced from Bloomberg Terminal. Information valid as of 2025. IRR and fund size data may be incomplete as not all funds publicly disclose performance metrics. Gray areas exist due to the private nature of these investments.
+    </div>
+
+    <!-- Bloomberg Report Button -->
+    <a href="Top-Performing Private Equity Funds (IRR) — Active Investing Status (1).pdf" target="_blank" rel="noopener" class="pef-report-btn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+      View Full Bloomberg Report (PDF)
+    </a>
+
+    <!-- KPIs -->
+    <div class="kpi-grid" id="pefKpiGrid">
+      <div class="kpi-card accent-pe">
+        <div class="kpi-label">Total Funds</div>
+        <div class="kpi-value" id="pefKpiTotal">—</div>
+        <div class="kpi-sub">Tracked in database</div>
+      </div>
+      <div class="kpi-card accent-vc">
+        <div class="kpi-label">Funds with IRR</div>
+        <div class="kpi-value" id="pefKpiIRR">—</div>
+        <div class="kpi-sub">Performance data available</div>
+      </div>
+      <div class="kpi-card accent-ma">
+        <div class="kpi-label">Average Net IRR</div>
+        <div class="kpi-value" id="pefKpiAvgIRR">—</div>
+        <div class="kpi-sub">Across funds with data</div>
+      </div>
+      <div class="kpi-card accent-ra">
+        <div class="kpi-label">Total AUM Tracked</div>
+        <div class="kpi-value" id="pefKpiAUM">—</div>
+        <div class="kpi-sub">Aggregate fund size</div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="pef-tabs" id="pefTabs">
+      <button class="pef-tab active" data-filter="all">All Funds</button>
+      <button class="pef-tab" data-filter="best-irr">Best IRR</button>
+      <button class="pef-tab" data-filter="by-size">By Size</button>
+      <button class="pef-tab" data-filter="country-Mexico">Mexico</button>
+      <button class="pef-tab" data-filter="country-Brazil">Brazil</button>
+      <button class="pef-tab" data-filter="country-Chile">Chile</button>
+      <button class="pef-tab" data-filter="country-Colombia">Colombia</button>
+      <button class="pef-tab" data-filter="country-Argentina">Argentina</button>
+      <button class="pef-tab" data-filter="status-Investing">Investing</button>
+      <button class="pef-tab" data-filter="status-Fundraising">Fundraising</button>
+      <button class="pef-tab" data-filter="status-Harvesting">Harvesting</button>
+      <button class="pef-tab" data-filter="status-Liquidated">Liquidated</button>
+      <button class="pef-tab" data-filter="status-Withdrawn">Withdrawn</button>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="pef-toolbar">
+      <div class="pef-search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+        <input type="text" id="pefSearch" placeholder="Search funds, general partners...">
+      </div>
+      <span class="pef-results-info" id="pefResultsInfo"></span>
+    </div>
+
+    <!-- Table -->
+    <div class="pef-table-wrap">
+      <table class="pef-table" id="pefTable">
+        <thead><tr>
+          <th data-pefsort="fund">Fund <span class="sort-icon">&#9650;&#9660;</span></th>
+          <th data-pefsort="gp">General Partner <span class="sort-icon">&#9650;&#9660;</span></th>
+          <th data-pefsort="vintage">Vintage <span class="sort-icon">&#9650;&#9660;</span></th>
+          <th data-pefsort="size_num" style="text-align:right">Size (USD) <span class="sort-icon">&#9650;&#9660;</span></th>
+          <th data-pefsort="status">Status <span class="sort-icon">&#9650;&#9660;</span></th>
+          <th data-pefsort="irr" style="text-align:right">Net IRR (%) <span class="sort-icon">&#9650;&#9660;</span></th>
+          <th data-pefsort="quartile">Quartile <span class="sort-icon">&#9650;&#9660;</span></th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination" id="pefPagination"></div>
+
+    <!-- Charts -->
+    <div class="pef-charts-grid">
+      <div class="pef-chart-panel pef-chart-full">
+        <div class="chart-header">Top 20 Funds by IRR</div>
+        <canvas id="pefChartIRR" height="350"></canvas>
+      </div>
+      <div class="pef-chart-panel">
+        <div class="chart-header">Fund Size vs IRR</div>
+        <canvas id="pefChartScatter" height="320"></canvas>
+      </div>
+      <div class="pef-chart-panel">
+        <div class="chart-header">Distribution by Status</div>
+        <canvas id="pefChartStatus" height="320"></canvas>
+      </div>
+    </div>
   </section>
 
   <!-- ====== HEATMAP — 3D GLOBE / 2D MAP ====== -->
@@ -2362,6 +2686,11 @@ a:hover { text-decoration: underline; }
     // Lazy-load players data when section is first shown
     if (sectionId === 'players' && !playersLoaded) {
       loadPlayers();
+    }
+
+    // Lazy-load PE Funds data when section is first shown
+    if (sectionId === 'pefunds' && !pefLoaded) {
+      loadPEFunds();
     }
 
     // Close mobile nav
@@ -3347,6 +3676,542 @@ a:hover { text-decoration: underline; }
     const withAUM = filteredPlayers.filter(p => p.aum_numeric > 0);
     const sumAUM = withAUM.reduce((s, p) => s + p.aum_numeric, 0);
     $('#playersResultsInfo').textContent = total + ' GP' + (total !== 1 ? 's' : '') + ' \u00B7 ' + fmtAUMFull(sumAUM) + ' aggregate AUM';
+  }
+
+  /* ==============================================================
+     PE FUNDS SECTION
+     ============================================================== */
+  let allFunds = [];
+  let filteredFunds = [];
+  let pefSortCol = 'irr';
+  let pefSortDir = 'desc';
+  let pefPage = 1;
+  const PEF_PER_PAGE = 25;
+  let pefLoaded = false;
+  let pefActiveTab = 'all';
+
+  function parseSizeToM(s) {
+    if (!s) return 0;
+    var str = s.toString().replace(/,/g, '');
+    var num = parseFloat(str);
+    if (isNaN(num)) return 0;
+    if (str.toUpperCase().includes('B')) return num * 1000;
+    if (str.toUpperCase().includes('K')) return num / 1000;
+    return num;
+  }
+
+  async function loadPEFunds() {
+    if (pefLoaded) return;
+    try {
+      var res = await fetch('data/pe-funds.json');
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      allFunds = await res.json();
+      // Pre-compute numeric size
+      allFunds.forEach(function(f) {
+        f.size_num = parseSizeToM(f.size);
+      });
+      pefLoaded = true;
+      initPEFunds();
+    } catch (err) {
+      $('#pefKpiGrid').innerHTML = '<div class="empty-state"><p>Failed to load PE Funds data.</p></div>';
+      console.error('PE Funds load error:', err);
+    }
+  }
+
+  function initPEFunds() {
+    // KPIs
+    var totalFunds = allFunds.length;
+    var fundsWithIRR = allFunds.filter(function(f) { return f.irr != null; });
+    var avgIRR = fundsWithIRR.length > 0 ? (fundsWithIRR.reduce(function(s, f) { return s + f.irr; }, 0) / fundsWithIRR.length).toFixed(1) : '—';
+    var totalAUM = allFunds.reduce(function(s, f) { return s + f.size_num; }, 0);
+
+    $('#pefKpiTotal').textContent = totalFunds.toLocaleString('en-US');
+    $('#pefKpiIRR').textContent = fundsWithIRR.length.toLocaleString('en-US');
+    $('#pefKpiAvgIRR').textContent = avgIRR !== '—' ? avgIRR + '%' : '—';
+
+    // Format AUM
+    if (totalAUM >= 1e6) {
+      $('#pefKpiAUM').textContent = '$' + (totalAUM / 1e6).toFixed(2) + 'T';
+    } else if (totalAUM >= 1000) {
+      $('#pefKpiAUM').textContent = '$' + (totalAUM / 1000).toFixed(1) + 'B';
+    } else {
+      $('#pefKpiAUM').textContent = '$' + totalAUM.toFixed(0) + 'M';
+    }
+
+    filteredFunds = allFunds.slice();
+    applyPefSort();
+
+    // Tab events
+    $$('#pefTabs .pef-tab').forEach(function(tab) {
+      tab.addEventListener('click', function() {
+        $$('#pefTabs .pef-tab').forEach(function(t) { t.classList.remove('active'); });
+        tab.classList.add('active');
+        pefActiveTab = tab.dataset.filter;
+        pefPage = 1;
+        applyPefFilter();
+      });
+    });
+
+    // Search
+    var pefSearchTimer;
+    $('#pefSearch').addEventListener('input', function() {
+      clearTimeout(pefSearchTimer);
+      pefSearchTimer = setTimeout(applyPefFilter, 200);
+    });
+
+    // Sort headers
+    $$('#pefTable thead th').forEach(function(th) {
+      th.addEventListener('click', function() {
+        var col = th.dataset.pefsort;
+        if (!col) return;
+        if (pefSortCol === col) {
+          pefSortDir = pefSortDir === 'asc' ? 'desc' : 'asc';
+        } else {
+          pefSortCol = col;
+          pefSortDir = (col === 'fund' || col === 'gp' || col === 'status' || col === 'quartile') ? 'asc' : 'desc';
+        }
+        applyPefSort();
+      });
+    });
+
+    // Pagination
+    $('#pefPagination').addEventListener('click', function(e) {
+      var btn = e.target.closest('button');
+      if (!btn || btn.disabled) return;
+      if (btn.classList.contains('pg-prev')) { pefPage--; }
+      else if (btn.classList.contains('pg-next')) { pefPage++; }
+      else if (btn.dataset.page) { pefPage = +btn.dataset.page; }
+      renderPefTable();
+      renderPefPagination();
+    });
+
+    // Charts
+    drawPefCharts();
+  }
+
+  function applyPefFilter() {
+    var search = ($('#pefSearch').value || '').toLowerCase().trim();
+    var tab = pefActiveTab;
+
+    filteredFunds = allFunds.filter(function(f) {
+      // Tab filter
+      if (tab === 'best-irr' && f.irr == null) return false;
+      if (tab === 'by-size' && !f.size_num) return false;
+      if (tab.startsWith('country-')) {
+        var country = tab.replace('country-', '');
+        if (!f.countries || f.countries.indexOf(country) === -1) return false;
+      }
+      if (tab.startsWith('status-')) {
+        var status = tab.replace('status-', '');
+        if (!f.status) return false;
+        var fStatus = f.status.toLowerCase();
+        if (status === 'Fundraising') {
+          if (fStatus.indexOf('fundraising') === -1) return false;
+        } else {
+          if (fStatus !== status.toLowerCase()) return false;
+        }
+      }
+      // Search filter
+      if (search) {
+        var haystack = (f.fund + ' ' + f.gp + ' ' + (f.status || '') + ' ' + (f.countries || []).join(' ')).toLowerCase();
+        if (haystack.indexOf(search) === -1) return false;
+      }
+      return true;
+    });
+
+    // Force sort for specific tabs
+    if (tab === 'best-irr') { pefSortCol = 'irr'; pefSortDir = 'desc'; }
+    if (tab === 'by-size') { pefSortCol = 'size_num'; pefSortDir = 'desc'; }
+
+    pefPage = 1;
+    applyPefSort();
+  }
+
+  function applyPefSort() {
+    filteredFunds.sort(function(a, b) {
+      var va = a[pefSortCol], vb = b[pefSortCol];
+      if (pefSortCol === 'quartile') {
+        var qo = {'1st': 1, '2nd': 2, '3rd': 3, '4th': 4};
+        va = qo[va] || 99;
+        vb = qo[vb] || 99;
+      }
+      if (va == null) va = (typeof a[pefSortCol] === 'string' || pefSortCol === 'fund' || pefSortCol === 'gp' || pefSortCol === 'status') ? '' : -Infinity;
+      if (vb == null) vb = (typeof b[pefSortCol] === 'string' || pefSortCol === 'fund' || pefSortCol === 'gp' || pefSortCol === 'status') ? '' : -Infinity;
+      if (typeof va === 'string') va = va.toLowerCase();
+      if (typeof vb === 'string') vb = vb.toLowerCase();
+      if (va < vb) return pefSortDir === 'asc' ? -1 : 1;
+      if (va > vb) return pefSortDir === 'asc' ? 1 : -1;
+      return 0;
+    });
+    renderPefTable();
+    renderPefPagination();
+    updatePefInfo();
+  }
+
+  function pefStatusClass(status) {
+    if (!status) return '';
+    var s = status.toLowerCase();
+    if (s.indexOf('investing') !== -1) return 'investing';
+    if (s.indexOf('fundraising') !== -1) return 'fundraising';
+    if (s === 'harvesting') return 'harvesting';
+    if (s === 'liquidated') return 'liquidated';
+    if (s === 'withdrawn') return 'withdrawn';
+    return '';
+  }
+
+  function renderPefTable() {
+    var start = (pefPage - 1) * PEF_PER_PAGE;
+    var page = filteredFunds.slice(start, start + PEF_PER_PAGE);
+    var tbody = $('#pefTable tbody');
+
+    if (page.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="7" class="empty-state" style="padding:40px;"><p>No funds match your search.</p></td></tr>';
+      return;
+    }
+
+    var html = '';
+    for (var i = 0; i < page.length; i++) {
+      var f = page[i];
+      var irrClass = f.irr != null ? (f.irr >= 0 ? 'positive' : 'negative') : '';
+      var irrText = f.irr != null ? f.irr.toFixed(1) + '%' : '<span style="color:var(--text-muted)">—</span>';
+      var qClass = '';
+      if (f.quartile === '1st') qClass = 'q1';
+      else if (f.quartile === '2nd') qClass = 'q2';
+      else if (f.quartile === '3rd') qClass = 'q3';
+      else if (f.quartile === '4th') qClass = 'q4';
+      var qHtml = f.quartile ? '<span class="pef-quartile ' + qClass + '">' + escapeHtml(f.quartile) + '</span>' : '<span style="color:var(--text-muted)">—</span>';
+      var statusCls = pefStatusClass(f.status);
+      var statusHtml = f.status ? '<span class="pef-status-badge ' + statusCls + '">' + escapeHtml(f.status) + '</span>' : '<span style="color:var(--text-muted)">—</span>';
+
+      html += '<tr>' +
+        '<td class="fund-col" title="' + escapeHtml(f.fund) + '">' + escapeHtml(f.fund) + '</td>' +
+        '<td class="gp-col" title="' + escapeHtml(f.gp) + '">' + escapeHtml(f.gp) + '</td>' +
+        '<td class="num-col">' + (f.vintage || '<span style="color:var(--text-muted)">—</span>') + '</td>' +
+        '<td class="num-col">' + (f.size ? escapeHtml(f.size) : '<span style="color:var(--text-muted)">—</span>') + '</td>' +
+        '<td>' + statusHtml + '</td>' +
+        '<td class="irr-col ' + irrClass + '">' + irrText + '</td>' +
+        '<td style="text-align:center">' + qHtml + '</td>' +
+        '</tr>';
+    }
+    tbody.innerHTML = html;
+
+    // Update sort header styles
+    $$('#pefTable thead th').forEach(function(th) {
+      th.classList.remove('sort-asc', 'sort-desc');
+      if (th.dataset.pefsort === pefSortCol) {
+        th.classList.add(pefSortDir === 'asc' ? 'sort-asc' : 'sort-desc');
+      }
+    });
+  }
+
+  function renderPefPagination() {
+    var total = Math.ceil(filteredFunds.length / PEF_PER_PAGE);
+    var container = $('#pefPagination');
+    if (total <= 1) { container.innerHTML = ''; return; }
+
+    var html = '<button class="pg-prev" ' + (pefPage === 1 ? 'disabled' : '') + '>&laquo; Prev</button>';
+    var range = pagRange(pefPage, total);
+    for (var i = 0; i < range.length; i++) {
+      var p = range[i];
+      if (p === '...') {
+        html += '<button disabled style="border:none;background:none;color:var(--text-muted);cursor:default;">&hellip;</button>';
+      } else {
+        html += '<button class="pg-num ' + (p === pefPage ? 'active' : '') + '" data-page="' + p + '">' + p + '</button>';
+      }
+    }
+    html += '<button class="pg-next" ' + (pefPage === total ? 'disabled' : '') + '>Next &raquo;</button>';
+    container.innerHTML = html;
+  }
+
+  function updatePefInfo() {
+    var total = filteredFunds.length;
+    var withIRR = filteredFunds.filter(function(f) { return f.irr != null; }).length;
+    var totalSize = filteredFunds.reduce(function(s, f) { return s + f.size_num; }, 0);
+    var sizeStr;
+    if (totalSize >= 1e6) sizeStr = '$' + (totalSize / 1e6).toFixed(2) + 'T';
+    else if (totalSize >= 1000) sizeStr = '$' + (totalSize / 1000).toFixed(1) + 'B';
+    else sizeStr = '$' + totalSize.toFixed(0) + 'M';
+    $('#pefResultsInfo').textContent = total + ' fund' + (total !== 1 ? 's' : '') + ' \u00B7 ' + withIRR + ' with IRR \u00B7 ' + sizeStr + ' AUM';
+  }
+
+  /* ---- PE Funds Charts (pure canvas) ---- */
+  function drawPefCharts() {
+    drawIRRBarChart();
+    drawScatterChart();
+    drawStatusDonut();
+  }
+
+  function drawIRRBarChart() {
+    var canvas = document.getElementById('pefChartIRR');
+    if (!canvas) return;
+    var ctx = canvas.getContext('2d');
+    var dpr = window.devicePixelRatio || 1;
+
+    var top20 = allFunds.filter(function(f) { return f.irr != null; })
+      .sort(function(a, b) { return b.irr - a.irr; })
+      .slice(0, 20);
+
+    if (top20.length === 0) return;
+
+    var W = canvas.parentElement.clientWidth;
+    var H = 350;
+    canvas.width = W * dpr;
+    canvas.height = H * dpr;
+    canvas.style.width = W + 'px';
+    canvas.style.height = H + 'px';
+    ctx.scale(dpr, dpr);
+
+    var padL = 60, padR = 20, padT = 20, padB = 120;
+    var chartW = W - padL - padR;
+    var chartH = H - padT - padB;
+    var barW = Math.min(chartW / top20.length * 0.7, 40);
+    var gap = chartW / top20.length;
+
+    var maxIRR = Math.max.apply(null, top20.map(function(f) { return f.irr; }));
+    var minIRR = Math.min.apply(null, top20.map(function(f) { return f.irr; }));
+    var yMin = Math.min(0, minIRR);
+    var yMax = maxIRR * 1.1;
+    var yRange = yMax - yMin;
+
+    // Background
+    ctx.fillStyle = '#0A0A0A';
+    ctx.fillRect(0, 0, W, H);
+
+    // Grid lines
+    ctx.strokeStyle = '#1A1A1A';
+    ctx.lineWidth = 1;
+    var steps = 5;
+    for (var i = 0; i <= steps; i++) {
+      var yVal = yMin + (yRange * i / steps);
+      var y = padT + chartH - (yVal - yMin) / yRange * chartH;
+      ctx.beginPath();
+      ctx.moveTo(padL, y);
+      ctx.lineTo(W - padR, y);
+      ctx.stroke();
+      ctx.fillStyle = '#666';
+      ctx.font = '10px Inter, sans-serif';
+      ctx.textAlign = 'right';
+      ctx.fillText(yVal.toFixed(0) + '%', padL - 8, y + 3);
+    }
+
+    // Zero line
+    if (yMin < 0) {
+      var zeroY = padT + chartH - (0 - yMin) / yRange * chartH;
+      ctx.strokeStyle = '#444';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(padL, zeroY);
+      ctx.lineTo(W - padR, zeroY);
+      ctx.stroke();
+    }
+
+    // Bars
+    var zeroY2 = padT + chartH - (0 - yMin) / yRange * chartH;
+    for (var j = 0; j < top20.length; j++) {
+      var f = top20[j];
+      var x = padL + j * gap + (gap - barW) / 2;
+      var valY = padT + chartH - (f.irr - yMin) / yRange * chartH;
+      var barY, barH;
+      if (f.irr >= 0) {
+        barY = valY;
+        barH = zeroY2 - valY;
+      } else {
+        barY = zeroY2;
+        barH = valY - zeroY2;
+      }
+
+      // Gradient
+      var grad = ctx.createLinearGradient(x, barY, x, barY + barH);
+      if (f.irr >= 0) {
+        grad.addColorStop(0, '#7C3AED');
+        grad.addColorStop(1, 'rgba(124,58,237,0.4)');
+      } else {
+        grad.addColorStop(0, 'rgba(255,77,106,0.4)');
+        grad.addColorStop(1, '#FF4D6A');
+      }
+      ctx.fillStyle = grad;
+      ctx.fillRect(x, barY, barW, barH);
+
+      // Value on top
+      ctx.fillStyle = f.irr >= 0 ? '#A78BFA' : '#FF4D6A';
+      ctx.font = 'bold 9px Inter, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(f.irr.toFixed(1) + '%', x + barW / 2, (f.irr >= 0 ? barY - 4 : barY + barH + 12));
+
+      // Label
+      ctx.save();
+      ctx.translate(x + barW / 2, H - padB + 8);
+      ctx.rotate(-Math.PI / 3);
+      ctx.fillStyle = '#888';
+      ctx.font = '9px Inter, sans-serif';
+      ctx.textAlign = 'right';
+      var label = f.fund.length > 25 ? f.fund.substring(0, 22) + '...' : f.fund;
+      ctx.fillText(label, 0, 0);
+      ctx.restore();
+    }
+  }
+
+  function drawScatterChart() {
+    var canvas = document.getElementById('pefChartScatter');
+    if (!canvas) return;
+    var ctx = canvas.getContext('2d');
+    var dpr = window.devicePixelRatio || 1;
+
+    var data = allFunds.filter(function(f) { return f.irr != null && f.size_num > 0; });
+    if (data.length === 0) return;
+
+    var W = canvas.parentElement.clientWidth;
+    var H = 320;
+    canvas.width = W * dpr;
+    canvas.height = H * dpr;
+    canvas.style.width = W + 'px';
+    canvas.style.height = H + 'px';
+    ctx.scale(dpr, dpr);
+
+    var padL = 60, padR = 20, padT = 20, padB = 50;
+    var chartW = W - padL - padR;
+    var chartH = H - padT - padB;
+
+    var sizes = data.map(function(f) { return f.size_num; });
+    var irrs = data.map(function(f) { return f.irr; });
+    var maxSize = Math.max.apply(null, sizes);
+    var minIRR = Math.min.apply(null, irrs);
+    var maxIRR = Math.max.apply(null, irrs);
+    var irrRange = maxIRR - minIRR || 1;
+
+    ctx.fillStyle = '#0A0A0A';
+    ctx.fillRect(0, 0, W, H);
+
+    // Grid
+    ctx.strokeStyle = '#1A1A1A';
+    ctx.lineWidth = 1;
+    for (var i = 0; i <= 4; i++) {
+      var y = padT + (chartH * i / 4);
+      ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(W - padR, y); ctx.stroke();
+      var irrVal = maxIRR - (irrRange * i / 4);
+      ctx.fillStyle = '#666'; ctx.font = '10px Inter, sans-serif'; ctx.textAlign = 'right';
+      ctx.fillText(irrVal.toFixed(0) + '%', padL - 8, y + 3);
+    }
+    for (var j = 0; j <= 4; j++) {
+      var x = padL + (chartW * j / 4);
+      ctx.beginPath(); ctx.moveTo(x, padT); ctx.lineTo(x, padT + chartH); ctx.stroke();
+      var sizeVal = maxSize * j / 4;
+      ctx.fillStyle = '#666'; ctx.font = '10px Inter, sans-serif'; ctx.textAlign = 'center';
+      var sLabel = sizeVal >= 1000 ? (sizeVal / 1000).toFixed(1) + 'B' : sizeVal.toFixed(0) + 'M';
+      ctx.fillText(sLabel, x, H - padB + 16);
+    }
+
+    // Axis labels
+    ctx.fillStyle = '#555'; ctx.font = '10px Inter, sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText('Fund Size (USD)', padL + chartW / 2, H - 8);
+    ctx.save();
+    ctx.translate(14, padT + chartH / 2);
+    ctx.rotate(-Math.PI / 2);
+    ctx.fillText('Net IRR (%)', 0, 0);
+    ctx.restore();
+
+    // Points
+    for (var k = 0; k < data.length; k++) {
+      var f = data[k];
+      var px = padL + (f.size_num / maxSize) * chartW;
+      var py = padT + ((maxIRR - f.irr) / irrRange) * chartH;
+      ctx.beginPath();
+      ctx.arc(px, py, 4, 0, Math.PI * 2);
+      ctx.fillStyle = f.irr >= 0 ? 'rgba(124,58,237,0.7)' : 'rgba(255,77,106,0.7)';
+      ctx.fill();
+    }
+  }
+
+  function drawStatusDonut() {
+    var canvas = document.getElementById('pefChartStatus');
+    if (!canvas) return;
+    var ctx = canvas.getContext('2d');
+    var dpr = window.devicePixelRatio || 1;
+
+    var W = canvas.parentElement.clientWidth;
+    var H = 320;
+    canvas.width = W * dpr;
+    canvas.height = H * dpr;
+    canvas.style.width = W + 'px';
+    canvas.style.height = H + 'px';
+    ctx.scale(dpr, dpr);
+
+    ctx.fillStyle = '#0A0A0A';
+    ctx.fillRect(0, 0, W, H);
+
+    // Count statuses
+    var statusMap = {};
+    allFunds.forEach(function(f) {
+      var s = f.status || 'Unknown';
+      // Normalize fundraising variants
+      if (s.toLowerCase().indexOf('fundraising') !== -1) s = 'Fundraising';
+      statusMap[s] = (statusMap[s] || 0) + 1;
+    });
+
+    var entries = Object.entries(statusMap).sort(function(a, b) { return b[1] - a[1]; });
+    var total = allFunds.length;
+
+    var colors = {
+      'Investing': '#00C48C',
+      'Fundraising': '#3388FF',
+      'Harvesting': '#FFB800',
+      'Liquidated': '#888888',
+      'Withdrawn': '#FF4D6A',
+      'Unknown': '#444444'
+    };
+
+    var cx = W * 0.35, cy = H / 2;
+    var outerR = Math.min(cx - 20, cy - 30, 110);
+    var innerR = outerR * 0.55;
+
+    var startAngle = -Math.PI / 2;
+    for (var i = 0; i < entries.length; i++) {
+      var s = entries[i][0], count = entries[i][1];
+      var sweep = (count / total) * Math.PI * 2;
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.arc(cx, cy, outerR, startAngle, startAngle + sweep);
+      ctx.closePath();
+      ctx.fillStyle = colors[s] || '#555';
+      ctx.fill();
+      startAngle += sweep;
+    }
+
+    // Inner circle (donut hole)
+    ctx.beginPath();
+    ctx.arc(cx, cy, innerR, 0, Math.PI * 2);
+    ctx.fillStyle = '#0A0A0A';
+    ctx.fill();
+
+    // Center text
+    ctx.fillStyle = '#E8E8E8';
+    ctx.font = 'bold 22px Inter, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(total.toLocaleString('en-US'), cx, cy + 2);
+    ctx.fillStyle = '#666';
+    ctx.font = '10px Inter, sans-serif';
+    ctx.fillText('Total Funds', cx, cy + 18);
+
+    // Legend
+    var legendX = W * 0.65;
+    var legendY = 40;
+    for (var j = 0; j < entries.length; j++) {
+      var name = entries[j][0], cnt = entries[j][1];
+      var pct = ((cnt / total) * 100).toFixed(1);
+      var ly = legendY + j * 28;
+
+      ctx.fillStyle = colors[name] || '#555';
+      ctx.fillRect(legendX, ly, 12, 12);
+
+      ctx.fillStyle = '#E8E8E8';
+      ctx.font = '12px Inter, sans-serif';
+      ctx.textAlign = 'left';
+      ctx.fillText(name, legendX + 20, ly + 10);
+
+      ctx.fillStyle = '#888';
+      ctx.font = '11px Inter, sans-serif';
+      ctx.fillText(cnt + ' (' + pct + '%)', legendX + 20, ly + 24);
+    }
   }
 
   /* ==============================================================
