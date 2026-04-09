@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://s3.tradingview.com https://www.tradingview.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; frame-src https://s3.tradingview.com https://www.tradingview.com; connect-src 'self';">
 <title>DealFlow Perspectives — Latin America Deal Intelligence</title>
 <style>
 /* ===================================================================
@@ -1624,6 +1625,84 @@ a:hover { text-decoration: underline; }
 .btn-login-submit:hover { background: #0052CC; }
 
 /* ===================================================================
+   MARKETS SECTION
+   =================================================================== */
+.markets-group { margin-bottom: 32px; }
+.markets-group-title {
+  font-size: 16px; font-weight: 700; letter-spacing: -0.3px;
+  color: var(--text-primary); margin-bottom: 16px;
+  display: flex; align-items: center; gap: 10px;
+}
+.markets-group-title::after {
+  content: ''; flex: 1; height: 1px; background: var(--border);
+}
+.markets-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+.market-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  position: relative;
+  transition: border-color var(--transition);
+}
+.market-card:hover { border-color: var(--border-light); }
+.market-card-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 14px 0;
+}
+.market-card-label {
+  font-size: 12px; font-weight: 600; color: var(--text-secondary);
+  letter-spacing: 0.3px;
+}
+.market-card-widget {
+  height: 200px;
+  position: relative;
+}
+.market-card-widget .tradingview-widget-container,
+.market-card-widget iframe { width: 100% !important; height: 100% !important; }
+.btn-fav {
+  background: none; border: none; cursor: pointer; padding: 4px;
+  color: var(--text-muted); font-size: 18px; line-height: 1;
+  transition: all var(--transition);
+}
+.btn-fav:hover { color: var(--warning); }
+.btn-fav.active { color: var(--warning); }
+
+/* Watchlist panel in Dashboard */
+.watchlist-panel { margin-bottom: 28px; }
+.watchlist-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
+}
+.watchlist-empty {
+  padding: 24px; text-align: center;
+  color: var(--text-muted); font-size: 13px; font-style: italic;
+}
+
+/* Login lockout message */
+.login-lockout {
+  background: rgba(255,77,106,0.1);
+  border: 1px solid rgba(255,77,106,0.3);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px; margin-bottom: 12px;
+  font-size: 12px; color: var(--danger);
+  text-align: center; display: none;
+}
+
+/* Data integrity alert */
+.integrity-alert {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 9999;
+  background: var(--danger); color: #fff;
+  padding: 12px 24px; text-align: center;
+  font-size: 14px; font-weight: 600;
+}
+
+/* ===================================================================
    RESPONSIVE
    =================================================================== */
 @media (max-width: 1024px) {
@@ -1664,6 +1743,8 @@ a:hover { text-decoration: underline; }
   .home-stats { gap: 24px; }
   .home-stat-value { font-size: 36px; letter-spacing: -1px; }
   .home-stat-divider { display: none; }
+  .markets-grid { grid-template-columns: 1fr; }
+  .watchlist-grid { grid-template-columns: 1fr; }
 }
 
 /* ===================================================================
@@ -1943,6 +2024,10 @@ a:hover { text-decoration: underline; }
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
       PE Funds
     </a></li>
+    <li><a href="#markets" data-section="markets">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      Markets
+    </a></li>
     <li><a href="#heatmap" data-section="heatmap">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><rect x="7" y="7" width="3" height="3"/><rect x="14" y="7" width="3" height="3"/><rect x="7" y="14" width="3" height="3"/><rect x="14" y="14" width="3" height="3"/></svg>
       Heatmap
@@ -2060,6 +2145,19 @@ a:hover { text-decoration: underline; }
       </div>
       <div class="panel-body">
         <div class="country-grid" id="countryGrid"></div>
+      </div>
+    </div>
+
+    <!-- Market Watchlist -->
+    <div class="panel watchlist-panel" data-panel-id="watchlist">
+      <div class="panel-header">
+        <h2>Market Watchlist</h2>
+        <span class="panel-badge" id="watchlistCount">0</span>
+      </div>
+      <div class="panel-body">
+        <div id="watchlistContainer">
+          <div class="watchlist-empty">No favorites yet. Star charts in the Markets section to add them here.</div>
+        </div>
       </div>
     </div>
   </section>
@@ -2297,6 +2395,26 @@ a:hover { text-decoration: underline; }
     </div>
   </section>
 
+  <!-- ====== MARKETS ====== -->
+  <section id="markets" class="section">
+    <div class="section-header">
+      <h1>Markets</h1>
+      <p>Live LATAM market data powered by TradingView</p>
+    </div>
+
+    <!-- MSCI LATAM Indices -->
+    <div class="markets-group">
+      <div class="markets-group-title">MSCI LATAM Indices (ETFs)</div>
+      <div class="markets-grid" id="marketsIndicesGrid"></div>
+    </div>
+
+    <!-- Currency Pairs -->
+    <div class="markets-group">
+      <div class="markets-group-title">Currency Pairs</div>
+      <div class="markets-grid" id="marketsCurrencyGrid"></div>
+    </div>
+  </section>
+
   <!-- ====== CATEGORY DRILLDOWN (injected by JS) ====== -->
   <div id="categoryDrilldown">
     <div class="drilldown-header">
@@ -2337,6 +2455,7 @@ a:hover { text-decoration: underline; }
     </div>
     <div class="modal-body" style="padding-top:0;">
       <form id="loginForm" class="login-form">
+        <div class="login-lockout" id="loginLockout"></div>
         <div class="login-field">
           <label for="loginFirstName">First Name</label>
           <input type="text" id="loginFirstName" required>
@@ -2467,27 +2586,88 @@ a:hover { text-decoration: underline; }
   'use strict';
 
   /* ==============================================================
-     AUTH — localStorage user session
+     SECURITY UTILITIES
      ============================================================== */
-  function getUser() {
-    try { return JSON.parse(localStorage.getItem('dfp_user')); } catch { return null; }
+  async function sha256(message) {
+    var msgBuffer = new TextEncoder().encode(message);
+    var hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+    var hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(function(b) { return b.toString(16).padStart(2, '0'); }).join('');
   }
 
-  function setUser(user) {
+  function sanitizeInput(str) {
+    if (!str) return '';
+    var div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  /* ==============================================================
+     RATE LIMITING — Login attempts
+     ============================================================== */
+  var _RL_KEY = 'dfp_login_rl';
+  var _RL_MAX = 5;
+  var _RL_WINDOW = 5 * 60 * 1000; // 5 minutes
+
+  function getRateLimitState() {
+    try { return JSON.parse(localStorage.getItem(_RL_KEY)) || { attempts: 0, lockedUntil: 0 }; }
+    catch(e) { return { attempts: 0, lockedUntil: 0 }; }
+  }
+
+  function setRateLimitState(state) {
+    localStorage.setItem(_RL_KEY, JSON.stringify(state));
+  }
+
+  function isLoginLocked() {
+    var state = getRateLimitState();
+    if (state.lockedUntil && Date.now() < state.lockedUntil) {
+      return Math.ceil((state.lockedUntil - Date.now()) / 1000);
+    }
+    if (state.lockedUntil && Date.now() >= state.lockedUntil) {
+      setRateLimitState({ attempts: 0, lockedUntil: 0 });
+    }
+    return 0;
+  }
+
+  function recordFailedLogin() {
+    var state = getRateLimitState();
+    state.attempts += 1;
+    if (state.attempts >= _RL_MAX) {
+      state.lockedUntil = Date.now() + _RL_WINDOW;
+      state.attempts = 0;
+    }
+    setRateLimitState(state);
+  }
+
+  function resetLoginAttempts() {
+    setRateLimitState({ attempts: 0, lockedUntil: 0 });
+  }
+
+  /* ==============================================================
+     AUTH — localStorage user session (SHA-256 secure)
+     ============================================================== */
+  function _getUser() {
+    try { return JSON.parse(localStorage.getItem('dfp_user')); } catch(e) { return null; }
+  }
+  function getUser() { return _getUser(); }
+
+  function _setUser(user) {
     localStorage.setItem('dfp_user', JSON.stringify(user));
   }
+  function setUser(user) { _setUser(user); }
 
-  function clearUser() {
+  function _clearUser() {
     localStorage.removeItem('dfp_user');
   }
+  function clearUser() { _clearUser(); }
 
-  function updateNavBrand() {
-    const user = getUser();
-    const brandText = document.getElementById('navBrandText');
-    const btnSignIn = document.getElementById('btnSignIn');
-    const navLogout = document.getElementById('navLogout');
+  function _updateNavBrand() {
+    var user = _getUser();
+    var brandText = document.getElementById('navBrandText');
+    var btnSignIn = document.getElementById('btnSignIn');
+    var navLogout = document.getElementById('navLogout');
     if (user) {
-      brandText.textContent = 'Welcome ' + user.firstName + ' ' + user.lastName + ' v1.0';
+      brandText.textContent = 'Welcome ' + sanitizeInput(user.firstName) + ' ' + sanitizeInput(user.lastName) + ' v1.0';
       btnSignIn.style.display = 'none';
       navLogout.style.display = '';
     } else {
@@ -2496,58 +2676,126 @@ a:hover { text-decoration: underline; }
       navLogout.style.display = 'none';
     }
   }
+  function updateNavBrand() { _updateNavBrand(); }
 
-  function initAuth() {
-    const loginModal = document.getElementById('loginModal');
-    const loginForm = document.getElementById('loginForm');
-    const btnSignIn = document.getElementById('btnSignIn');
-    const btnLogout = document.getElementById('btnLogout');
-    const loginModalClose = document.getElementById('loginModalClose');
-
-    btnSignIn.addEventListener('click', () => {
-      loginModal.classList.add('open');
-    });
-
-    loginModalClose.addEventListener('click', () => {
-      loginModal.classList.remove('open');
-    });
-
-    loginModal.addEventListener('click', (e) => {
-      if (e.target === loginModal) loginModal.classList.remove('open');
-    });
-
-    loginForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const user = {
-        firstName: document.getElementById('loginFirstName').value.trim(),
-        lastName: document.getElementById('loginLastName').value.trim(),
-        email: document.getElementById('loginEmail').value.trim(),
-      };
-      setUser(user);
-      updateNavBrand();
-      loginModal.classList.remove('open');
-      loginForm.reset();
-    });
-
-    btnLogout.addEventListener('click', () => {
-      clearUser();
-      updateNavBrand();
-    });
-
-    updateNavBrand();
+  function updateLockoutUI() {
+    var lockoutEl = document.getElementById('loginLockout');
+    var seconds = isLoginLocked();
+    if (seconds > 0) {
+      var mins = Math.floor(seconds / 60);
+      var secs = seconds % 60;
+      lockoutEl.textContent = 'Too many failed attempts. Try again in ' + mins + 'm ' + secs + 's';
+      lockoutEl.style.display = 'block';
+      return true;
+    }
+    lockoutEl.style.display = 'none';
+    return false;
   }
 
+  function _initAuth() {
+    var loginModal = document.getElementById('loginModal');
+    var loginForm = document.getElementById('loginForm');
+    var btnSignIn = document.getElementById('btnSignIn');
+    var btnLogout = document.getElementById('btnLogout');
+    var loginModalClose = document.getElementById('loginModalClose');
+    var lockoutTimer = null;
+
+    btnSignIn.addEventListener('click', function() {
+      loginModal.classList.add('open');
+      updateLockoutUI();
+    });
+
+    loginModalClose.addEventListener('click', function() {
+      loginModal.classList.remove('open');
+      if (lockoutTimer) clearInterval(lockoutTimer);
+    });
+
+    loginModal.addEventListener('click', function(e) {
+      if (e.target === loginModal) {
+        loginModal.classList.remove('open');
+        if (lockoutTimer) clearInterval(lockoutTimer);
+      }
+    });
+
+    loginForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      // Check rate limit
+      if (updateLockoutUI()) {
+        if (lockoutTimer) clearInterval(lockoutTimer);
+        lockoutTimer = setInterval(function() {
+          if (!updateLockoutUI()) clearInterval(lockoutTimer);
+        }, 1000);
+        return;
+      }
+
+      var firstName = sanitizeInput(document.getElementById('loginFirstName').value.trim());
+      var lastName = sanitizeInput(document.getElementById('loginLastName').value.trim());
+      var email = sanitizeInput(document.getElementById('loginEmail').value.trim());
+      var password = document.getElementById('loginPassword').value;
+
+      if (!firstName || !lastName || !email || !password) return;
+
+      // Hash the password with SHA-256
+      var passwordHash = await sha256(password);
+      var storedUsers = {};
+      try { storedUsers = JSON.parse(localStorage.getItem('dfp_users_secure')) || {}; } catch(e) {}
+
+      var existingUser = storedUsers[email];
+      if (existingUser) {
+        // Login: verify password hash
+        if (existingUser.passwordHash !== passwordHash) {
+          recordFailedLogin();
+          updateLockoutUI();
+          if (lockoutTimer) clearInterval(lockoutTimer);
+          lockoutTimer = setInterval(function() {
+            if (!updateLockoutUI()) clearInterval(lockoutTimer);
+          }, 1000);
+          var lockoutEl = document.getElementById('loginLockout');
+          var state = getRateLimitState();
+          if (!isLoginLocked()) {
+            lockoutEl.textContent = 'Invalid password. ' + (_RL_MAX - state.attempts) + ' attempts remaining.';
+            lockoutEl.style.display = 'block';
+          }
+          return;
+        }
+      } else {
+        // New registration: store hashed password
+        storedUsers[email] = { firstName: firstName, lastName: lastName, passwordHash: passwordHash };
+        localStorage.setItem('dfp_users_secure', JSON.stringify(storedUsers));
+      }
+
+      // Success
+      resetLoginAttempts();
+      var user = { firstName: firstName, lastName: lastName, email: email };
+      _setUser(user);
+      _updateNavBrand();
+      loginModal.classList.remove('open');
+      loginForm.reset();
+      document.getElementById('loginLockout').style.display = 'none';
+      renderWatchlist();
+    });
+
+    btnLogout.addEventListener('click', function() {
+      _clearUser();
+      _updateNavBrand();
+    });
+
+    _updateNavBrand();
+  }
+  function initAuth() { _initAuth(); }
+
   /* ==============================================================
-     NEWSLETTER
+     NEWSLETTER (sanitized)
      ============================================================== */
   function initNewsletter() {
-    const form = document.getElementById('newsletterForm');
-    const msg = document.getElementById('newsletterMsg');
-    form.addEventListener('submit', (e) => {
+    var form = document.getElementById('newsletterForm');
+    var msg = document.getElementById('newsletterMsg');
+    form.addEventListener('submit', function(e) {
       e.preventDefault();
-      const email = document.getElementById('newsletterEmail').value.trim();
+      var email = sanitizeInput(document.getElementById('newsletterEmail').value.trim());
       if (!email) return;
-      const subs = JSON.parse(localStorage.getItem('dfp_newsletter') || '[]');
+      var subs = JSON.parse(localStorage.getItem('dfp_newsletter') || '[]');
       if (!subs.includes(email)) { subs.push(email); localStorage.setItem('dfp_newsletter', JSON.stringify(subs)); }
       msg.textContent = 'Thank you! ' + email + ' has been subscribed.';
       form.reset();
@@ -2764,13 +3012,40 @@ a:hover { text-decoration: underline; }
   }
 
   /* ==============================================================
-     DATA LOADING
+     DATA INTEGRITY — SHA-256 hash verification
+     ============================================================== */
+  var DATA_HASHES = {
+    'deals':    '11c3c04f8858c5e6716434277d647fc420b908474adb6a4af087c2ec5db6b17f',
+    'pefunds':  'd30ac6f0d0cf527d54ce50deb9cf1cdd488c80b9a93a4b7b2520462e2afe9798'
+  };
+
+  async function verifyDataIntegrity(rawText, expectedHash) {
+    var computedHash = await sha256(rawText);
+    return computedHash === expectedHash;
+  }
+
+  function showIntegrityAlert(source) {
+    var alert = document.createElement('div');
+    alert.className = 'integrity-alert';
+    alert.textContent = 'Data integrity compromised — ' + source + ' has been modified in transit. Data will not be rendered.';
+    document.body.insertBefore(alert, document.body.firstChild);
+  }
+
+  /* ==============================================================
+     DATA LOADING (integrity-verified)
      ============================================================== */
   async function loadData() {
     try {
-      const res = await fetch('data/deals.json');
+      var res = await fetch('data/deals.json');
       if (!res.ok) throw new Error('HTTP ' + res.status);
-      allDeals = await res.json();
+      var rawText = await res.text();
+      var hashOk = await verifyDataIntegrity(rawText, DATA_HASHES.deals);
+      if (!hashOk) {
+        showIntegrityAlert('deals.json');
+        console.error('Data integrity check failed for deals.json');
+        return;
+      }
+      allDeals = JSON.parse(rawText);
       init();
     } catch (err) {
       $('#kpiGrid').innerHTML = '<div class="empty-state"><p>Failed to load deals data. Make sure data/deals.json is accessible.</p></div>';
@@ -3152,6 +3427,16 @@ a:hover { text-decoration: underline; }
     // Lazy-load PE Funds data when section is first shown
     if (sectionId === 'pefunds' && !pefLoaded) {
       loadPEFunds();
+    }
+
+    // Lazy-load Markets widgets when section is first shown
+    if (sectionId === 'markets' && !marketsLoaded) {
+      initMarkets();
+    }
+
+    // Refresh watchlist when returning to dashboard
+    if (sectionId === 'dashboard') {
+      renderWatchlist();
     }
 
     // Close mobile nav
@@ -4301,7 +4586,14 @@ a:hover { text-decoration: underline; }
     try {
       var res = await fetch('data/pe-funds.json');
       if (!res.ok) throw new Error('HTTP ' + res.status);
-      allFunds = await res.json();
+      var rawText = await res.text();
+      var hashOk = await verifyDataIntegrity(rawText, DATA_HASHES.pefunds);
+      if (!hashOk) {
+        showIntegrityAlert('pe-funds.json');
+        console.error('Data integrity check failed for pe-funds.json');
+        return;
+      }
+      allFunds = JSON.parse(rawText);
       // Pre-compute numeric size
       allFunds.forEach(function(f) {
         f.size_num = parseSizeToM(f.size);
@@ -4811,6 +5103,278 @@ a:hover { text-decoration: underline; }
   }
 
   /* ==============================================================
+     MARKETS — TradingView widgets + Favorites
+     ============================================================== */
+  var marketsLoaded = false;
+  var FAVORITES_KEY = 'dfp_market_favorites';
+
+  var MARKET_INDICES = [
+    { symbol: 'AMEX:EWZ',  label: 'iShares MSCI Brazil (EWZ)' },
+    { symbol: 'AMEX:EWW',  label: 'iShares MSCI Mexico (EWW)' },
+    { symbol: 'AMEX:GXG',  label: 'Global X MSCI Colombia (GXG)' },
+    { symbol: 'AMEX:ECH',  label: 'iShares MSCI Chile (ECH)' },
+    { symbol: 'AMEX:ARGT', label: 'Global X MSCI Argentina (ARGT)' }
+  ];
+
+  var MARKET_CURRENCIES = [
+    { symbol: 'FX:USDMXN', label: 'USD/MXN' },
+    { symbol: 'FX:USDBRL', label: 'USD/BRL' },
+    { symbol: 'FX:USDPEN', label: 'USD/PEN' },
+    { symbol: 'FX:USDCOP', label: 'USD/COP' },
+    { symbol: 'FX:USDCLP', label: 'USD/CLP' },
+    { symbol: 'FX:USDARS', label: 'USD/ARS' },
+    { symbol: 'FX:EURMXN', label: 'EUR/MXN' },
+    { symbol: 'FX:EURBRL', label: 'EUR/BRL' },
+    { symbol: 'FX:GBPMXN', label: 'GBP/MXN' },
+    { symbol: 'FX:GBPBRL', label: 'GBP/BRL' },
+    { symbol: 'FX:JPYMXN', label: 'JPY/MXN' },
+    { symbol: 'FX:JPYBRL', label: 'JPY/BRL' }
+  ];
+
+  function getFavorites() {
+    try { return JSON.parse(localStorage.getItem(FAVORITES_KEY)) || []; }
+    catch(e) { return []; }
+  }
+
+  function setFavorites(favs) {
+    localStorage.setItem(FAVORITES_KEY, JSON.stringify(favs));
+  }
+
+  function toggleFavorite(symbol) {
+    var favs = getFavorites();
+    var idx = favs.indexOf(symbol);
+    if (idx > -1) { favs.splice(idx, 1); } else { favs.push(symbol); }
+    setFavorites(favs);
+    // Update all star buttons for this symbol
+    document.querySelectorAll('.btn-fav[data-symbol="' + symbol + '"]').forEach(function(btn) {
+      btn.classList.toggle('active', favs.indexOf(symbol) > -1);
+      btn.innerHTML = favs.indexOf(symbol) > -1 ? '&#9733;' : '&#9734;';
+    });
+    renderWatchlist();
+  }
+
+  function createMarketCard(item, container) {
+    var favs = getFavorites();
+    var isFav = favs.indexOf(item.symbol) > -1;
+
+    var card = document.createElement('div');
+    card.className = 'market-card';
+
+    var header = document.createElement('div');
+    header.className = 'market-card-header';
+
+    var label = document.createElement('span');
+    label.className = 'market-card-label';
+    label.textContent = item.label;
+
+    var favBtn = document.createElement('button');
+    favBtn.className = 'btn-fav' + (isFav ? ' active' : '');
+    favBtn.setAttribute('data-symbol', item.symbol);
+    favBtn.innerHTML = isFav ? '&#9733;' : '&#9734;';
+    favBtn.title = 'Toggle favorite';
+    favBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      toggleFavorite(item.symbol);
+    });
+
+    header.appendChild(label);
+    header.appendChild(favBtn);
+    card.appendChild(header);
+
+    var widgetWrap = document.createElement('div');
+    widgetWrap.className = 'market-card-widget';
+
+    // TradingView Mini Chart Widget
+    var tvContainer = document.createElement('div');
+    tvContainer.className = 'tradingview-widget-container';
+    tvContainer.style.height = '100%';
+    tvContainer.style.width = '100%';
+
+    var tvInner = document.createElement('div');
+    tvInner.className = 'tradingview-widget-container__widget';
+    tvContainer.appendChild(tvInner);
+
+    var script = document.createElement('script');
+    script.type = 'text/javascript';
+    script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js';
+    script.async = true;
+    script.textContent = JSON.stringify({
+      symbol: item.symbol,
+      width: '100%',
+      height: '100%',
+      locale: 'en',
+      dateRange: '12M',
+      colorTheme: 'dark',
+      isTransparent: true,
+      autosize: true,
+      largeChartUrl: ''
+    });
+    tvContainer.appendChild(script);
+    widgetWrap.appendChild(tvContainer);
+    card.appendChild(widgetWrap);
+
+    container.appendChild(card);
+  }
+
+  function initMarkets() {
+    if (marketsLoaded) return;
+    marketsLoaded = true;
+
+    var indicesGrid = document.getElementById('marketsIndicesGrid');
+    var currencyGrid = document.getElementById('marketsCurrencyGrid');
+
+    MARKET_INDICES.forEach(function(item) {
+      createMarketCard(item, indicesGrid);
+    });
+
+    MARKET_CURRENCIES.forEach(function(item) {
+      createMarketCard(item, currencyGrid);
+    });
+  }
+
+  function renderWatchlist() {
+    var container = document.getElementById('watchlistContainer');
+    var badge = document.getElementById('watchlistCount');
+    if (!container) return;
+
+    var favs = getFavorites();
+    badge.textContent = favs.length;
+
+    if (favs.length === 0) {
+      container.innerHTML = '<div class="watchlist-empty">No favorites yet. Star charts in the Markets section to add them here.</div>';
+      return;
+    }
+
+    container.innerHTML = '';
+    var grid = document.createElement('div');
+    grid.className = 'watchlist-grid';
+
+    var allItems = MARKET_INDICES.concat(MARKET_CURRENCIES);
+    favs.forEach(function(symbol) {
+      var item = allItems.find(function(i) { return i.symbol === symbol; });
+      if (item) {
+        createMarketCard(item, grid);
+      }
+    });
+
+    container.appendChild(grid);
+  }
+
+  /* ==============================================================
+     ANTI-TAMPERING — HTML checksum validation
+     ============================================================== */
+  var _TAMPER_CHECK_ELEMENTS = ['navMenu', 'loginForm', 'loginModal'];
+
+  function computePageChecksum() {
+    var content = '';
+    _TAMPER_CHECK_ELEMENTS.forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el) content += el.innerHTML;
+    });
+    return sha256(content);
+  }
+
+  var _initialChecksum = null;
+
+  async function initAntiTampering() {
+    _initialChecksum = await computePageChecksum();
+
+    // Periodically verify DOM integrity of critical elements
+    setInterval(async function() {
+      var current = await computePageChecksum();
+      if (_initialChecksum && current !== _initialChecksum) {
+        // Only alert on unexpected changes to auth-related elements
+        var loginModal = document.getElementById('loginModal');
+        var loginForm = document.getElementById('loginForm');
+        if (loginModal && loginForm) {
+          // Re-check — form might have changed due to user interaction
+          var formFields = loginForm.querySelectorAll('input');
+          var hasUnexpectedFields = false;
+          formFields.forEach(function(f) {
+            if (['loginFirstName','loginLastName','loginEmail','loginPassword','loginLockout'].indexOf(f.id) === -1 &&
+                f.type !== 'submit') {
+              hasUnexpectedFields = true;
+            }
+          });
+          if (hasUnexpectedFields) {
+            console.warn('Anti-tampering: unexpected form fields detected');
+          }
+        }
+        // Update checksum after legitimate DOM changes
+        _initialChecksum = current;
+      }
+    }, 30000); // Check every 30 seconds
+  }
+
+  /* ==============================================================
+     INPUT SANITIZATION — bind to all search inputs
+     ============================================================== */
+  function initInputSanitization() {
+    // Sanitize database search on input
+    var dbSearch = document.getElementById('dbSearch');
+    if (dbSearch) {
+      var origHandler = dbSearch.oninput;
+      dbSearch.addEventListener('input', function() {
+        var val = dbSearch.value;
+        var sanitized = sanitizeInput(val);
+        if (val !== sanitized) {
+          dbSearch.value = sanitized;
+        }
+      });
+    }
+
+    // Sanitize players search
+    var playersSearch = document.getElementById('playersSearch');
+    if (playersSearch) {
+      playersSearch.addEventListener('input', function() {
+        var val = playersSearch.value;
+        var sanitized = sanitizeInput(val);
+        if (val !== sanitized) {
+          playersSearch.value = sanitized;
+        }
+      });
+    }
+
+    // Sanitize PE funds search
+    var pefSearch = document.getElementById('pefSearch');
+    if (pefSearch) {
+      pefSearch.addEventListener('input', function() {
+        var val = pefSearch.value;
+        var sanitized = sanitizeInput(val);
+        if (val !== sanitized) {
+          pefSearch.value = sanitized;
+        }
+      });
+    }
+
+    // Sanitize newsletter email
+    var newsletterEmail = document.getElementById('newsletterEmail');
+    if (newsletterEmail) {
+      newsletterEmail.addEventListener('input', function() {
+        var val = newsletterEmail.value;
+        var sanitized = sanitizeInput(val);
+        if (val !== sanitized) {
+          newsletterEmail.value = sanitized;
+        }
+      });
+    }
+
+    // Sanitize login fields
+    ['loginFirstName', 'loginLastName', 'loginEmail'].forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el) {
+        el.addEventListener('input', function() {
+          var val = el.value;
+          var sanitized = sanitizeInput(val);
+          if (val !== sanitized) {
+            el.value = sanitized;
+          }
+        });
+      }
+    });
+  }
+
+  /* ==============================================================
      BOOT
      ============================================================== */
   // Brand logo click → home
@@ -4836,6 +5400,9 @@ a:hover { text-decoration: underline; }
   initNewsletter();
   initHomeScroll();
   initHeatmapToggle();
+  initInputSanitization();
+  initAntiTampering();
+  renderWatchlist();
 
   // Country deals modal — close handlers
   document.getElementById('countryModalClose').addEventListener('click', closeCountryDealsModal);

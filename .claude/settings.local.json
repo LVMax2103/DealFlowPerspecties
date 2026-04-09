@@ -11,7 +11,9 @@
       "Bash(node -e ':*)",
       "Bash(node -e \"const d = require\\('./data/players.json'\\); console.log\\('Records:', d.length\\); console.log\\('First:', d[0]\\); console.log\\('Keys:', Object.keys\\(d[0]\\)\\);\")",
       "Bash(node process_players.js)",
-      "Bash(node -e \"const p = require\\('./data/players.json'\\); console.log\\('Total players:', p.length\\); console.log\\('With AUM:', p.filter\\(x => x.aum_numeric > 0\\).length\\); console.log\\('From deals \\(N/A\\):', p.filter\\(x => x.aum_display === 'N/A'\\).length\\); console.log\\('First 5:', p.slice\\(0,5\\).map\\(x => x.name\\)\\); console.log\\('Last 5:', p.slice\\(-5\\).map\\(x => x.name\\)\\);\")"
+      "Bash(node -e \"const p = require\\('./data/players.json'\\); console.log\\('Total players:', p.length\\); console.log\\('With AUM:', p.filter\\(x => x.aum_numeric > 0\\).length\\); console.log\\('From deals \\(N/A\\):', p.filter\\(x => x.aum_display === 'N/A'\\).length\\); console.log\\('First 5:', p.slice\\(0,5\\).map\\(x => x.name\\)\\); console.log\\('Last 5:', p.slice\\(-5\\).map\\(x => x.name\\)\\);\")",
+      "Bash(openssl dgst:*)",
+      "Bash(certutil -hashfile data/deals.json SHA256)"
     ]
   }
 }
