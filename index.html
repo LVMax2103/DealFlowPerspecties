@@ -1772,27 +1772,27 @@ a:hover { text-decoration: underline; }
 #globeTooltip {
   position: absolute;
   pointer-events: none;
-  background: rgba(10, 10, 10, 0.92);
-  backdrop-filter: blur(8px);
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius-sm);
-  padding: 8px 14px;
-  font-size: 13px;
-  color: var(--text-primary);
+  background: #000;
+  border: 1.5px solid #2196F3;
+  border-radius: 6px;
+  padding: 10px 16px;
+  font-size: 14px;
+  color: #fff;
   white-space: nowrap;
   opacity: 0;
-  transition: opacity 0.15s ease;
+  transition: opacity 0.1s ease;
   z-index: 10;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.6);
 }
 
 #globeTooltip.visible { opacity: 1; }
 
 #globeTooltip .tt-country {
-  font-weight: 700; margin-bottom: 2px;
+  font-weight: 700; font-size: 14px; margin-bottom: 4px;
 }
 
 #globeTooltip .tt-deals {
-  font-size: 12px; color: var(--accent-light);
+  font-size: 13px; color: #64B5F6;
   font-feature-settings: 'tnum';
 }
 
@@ -3638,6 +3638,8 @@ a:hover { text-decoration: underline; }
   let globeAnimFrame;
   let isDragging = false, prevMouse = { x: 0, y: 0 };
   let autoRotateSpeed = 0.002;
+  let globeHovered = false;
+  let globeResumeTimer = null;
   let globeCountryMeshes = [];
 
   function latLngToVec3(lat, lng, radius) {
@@ -3813,7 +3815,15 @@ a:hover { text-decoration: underline; }
     container.addEventListener('mousedown', onGlobeMouseDown);
     container.addEventListener('mousemove', onGlobeMouseMove);
     container.addEventListener('mouseup', onGlobeMouseUp);
-    container.addEventListener('mouseleave', onGlobeMouseUp);
+    container.addEventListener('mouseleave', function(e) {
+      onGlobeMouseUp(e);
+      clearTimeout(globeResumeTimer);
+      globeResumeTimer = setTimeout(function() { globeHovered = false; }, 2000);
+    });
+    container.addEventListener('mouseenter', function() {
+      clearTimeout(globeResumeTimer);
+      globeHovered = true;
+    });
     container.addEventListener('touchstart', onGlobeTouchStart, { passive: false });
     container.addEventListener('touchmove', onGlobeTouchMove, { passive: false });
     container.addEventListener('touchend', onGlobeMouseUp);
@@ -3824,7 +3834,7 @@ a:hover { text-decoration: underline; }
 
   function animateGlobe() {
     globeAnimFrame = requestAnimationFrame(animateGlobe);
-    if (!isDragging) globeGroup.rotation.y += autoRotateSpeed;
+    if (!isDragging && !globeHovered) globeGroup.rotation.y += autoRotateSpeed;
     globeRenderer.render(globeScene, globeCamera);
   }
 
@@ -5076,26 +5086,24 @@ a:hover { text-decoration: underline; }
   var MARKET_INDICES = [
     { symbol: 'AMEX:EWZ',  label: 'iShares MSCI Brazil (EWZ)' },
     { symbol: 'AMEX:EWW',  label: 'iShares MSCI Mexico (EWW)' },
-    { symbol: 'BATS:COLO', label: 'Global X MSCI Colombia (COLO)' },
-    { symbol: 'BATS:ECH',  label: 'iShares MSCI Chile (ECH)' },
+    { symbol: 'AMEX:ECH',  label: 'iShares MSCI Chile (ECH)' },
     { symbol: 'AMEX:ARGT', label: 'Global X MSCI Argentina (ARGT)' },
-    { symbol: 'AMEX:ILF',  label: 'iShares Latin America 40 (ILF)' },
-    { symbol: 'TVC:MILA0000PUS', label: 'MSCI EM Latin America Index' }
+    { symbol: 'AMEX:ILF',  label: 'iShares Latin America 40 (ILF)' }
   ];
 
   var MARKET_CURRENCIES = [
-    { symbol: 'OANDA:USDMXN', label: 'USD/MXN' },
-    { symbol: 'OANDA:USDBRL', label: 'USD/BRL' },
-    { symbol: 'OANDA:USDPEN', label: 'USD/PEN' },
-    { symbol: 'OANDA:USDCOP', label: 'USD/COP' },
-    { symbol: 'OANDA:USDCLP', label: 'USD/CLP' },
-    { symbol: 'FX_IDC:USDARS', label: 'USD/ARS' },
-    { symbol: 'OANDA:EURMXN', label: 'EUR/MXN' },
-    { symbol: 'OANDA:EURBRL', label: 'EUR/BRL' },
-    { symbol: 'FX_IDC:GBPMXN', label: 'GBP/MXN' },
-    { symbol: 'FX_IDC:GBPBRL', label: 'GBP/BRL' },
-    { symbol: 'FX_IDC:JPYMXN', label: 'JPY/MXN' },
-    { symbol: 'FX_IDC:JPYBRL', label: 'JPY/BRL' }
+    { symbol: 'USDMXN', label: 'USD/MXN' },
+    { symbol: 'USDBRL', label: 'USD/BRL' },
+    { symbol: 'USDPEN', label: 'USD/PEN' },
+    { symbol: 'USDCOP', label: 'USD/COP' },
+    { symbol: 'USDCLP', label: 'USD/CLP' },
+    { symbol: 'USDARS', label: 'USD/ARS' },
+    { symbol: 'EURMXN', label: 'EUR/MXN' },
+    { symbol: 'EURBRL', label: 'EUR/BRL' },
+    { symbol: 'GBPMXN', label: 'GBP/MXN' },
+    { symbol: 'GBPBRL', label: 'GBP/BRL' },
+    { symbol: 'JPYMXN', label: 'JPY/MXN' },
+    { symbol: 'JPYBRL', label: 'JPY/BRL' }
   ];
 
   function getFavorites() {
