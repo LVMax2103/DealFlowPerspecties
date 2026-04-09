@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://unpkg.com https://s3.tradingview.com https://www.tradingview.com https://tv-static.tradingview.com https://*.tradingview.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; frame-src https://*.tradingview.com https://s3.tradingview.com https://www.tradingview.com; connect-src 'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://unpkg.com;">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://unpkg.com https://s3.tradingview.com https://www.tradingview.com https://tv-static.tradingview.com https://*.tradingview.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; frame-src https://*.tradingview.com https://s3.tradingview.com https://www.tradingview.com; connect-src 'self' https://cdn.jsdelivr.net https://data.jsdelivr.com https://cdnjs.cloudflare.com https://unpkg.com https://raw.githubusercontent.com;">
 <link rel="icon" type="image/png" href="logo-light.png">
 <title>DealFlow Perspectives — Latin America Deal Intelligence</title>
 <style>
@@ -3774,6 +3774,41 @@ a:hover { text-decoration: underline; }
       }
     }
 
+    // Load country borders from GeoJSON and draw as lines on globe surface
+    fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json')
+      .then(function(resp) { return resp.json(); })
+      .then(function(topology) {
+        var geojson = topojson.feature(topology, topology.objects.countries);
+        var borderMat = new THREE.LineBasicMaterial({ color: 0x1a3a5a, transparent: true, opacity: 0.35 });
+
+        geojson.features.forEach(function(feature) {
+          if (!feature.geometry) return;
+          var coords = [];
+          if (feature.geometry.type === 'Polygon') {
+            coords = feature.geometry.coordinates;
+          } else if (feature.geometry.type === 'MultiPolygon') {
+            feature.geometry.coordinates.forEach(function(poly) {
+              coords = coords.concat(poly);
+            });
+          }
+          coords.forEach(function(ring) {
+            var points = [];
+            for (var i = 0; i < ring.length; i++) {
+              var lng = ring[i][0];
+              var lat = ring[i][1];
+              var v = latLngToVec3(lat, lng, 1.003);
+              points.push(v);
+            }
+            if (points.length > 1) {
+              var geom = new THREE.BufferGeometry().setFromPoints(points);
+              var line = new THREE.Line(geom, borderMat);
+              globeGroup.add(line);
+            }
+          });
+        });
+      })
+      .catch(function(e) { console.warn('Could not load country borders for globe', e); });
+
     // Mouse interaction
     container.addEventListener('mousedown', onGlobeMouseDown);
     container.addEventListener('mousemove', onGlobeMouseMove);
@@ -3948,8 +3983,19 @@ a:hover { text-decoration: underline; }
     const container = document.getElementById('map2dContainer');
     if (!container) return;
 
+    // Ensure libraries are available
+    if (typeof d3 === 'undefined' || typeof topojson === 'undefined') {
+      console.warn('2D Map: d3 or topojson library not loaded');
+      return;
+    }
+
     const w = container.clientWidth;
     const h = container.clientHeight;
+    if (w === 0 || h === 0) {
+      console.warn('2D Map: container has zero dimensions, retrying...');
+      setTimeout(init2dMap, 200);
+      return;
+    }
 
     // Build deal counts
     map2dCountryCounts = {};
@@ -3985,14 +4031,27 @@ a:hover { text-decoration: underline; }
       .attr('height', h)
       .attr('viewBox', '0 0 ' + w + ' ' + h);
 
-    // Load TopoJSON
-    try {
-      const resp = await fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json');
-      const topology = await resp.json();
-      map2dGeojson = topojson.feature(topology, topology.objects.countries);
-      render2dMap(w, h);
-    } catch (e) {
-      console.warn('Could not load world borders for 2D map', e);
+    // Load TopoJSON with fallback URLs
+    var topoUrls = [
+      'https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json',
+      'https://unpkg.com/world-atlas@2/countries-110m.json'
+    ];
+
+    var loaded = false;
+    for (var i = 0; i < topoUrls.length && !loaded; i++) {
+      try {
+        var resp = await fetch(topoUrls[i]);
+        if (!resp.ok) throw new Error('HTTP ' + resp.status);
+        var topology = await resp.json();
+        map2dGeojson = topojson.feature(topology, topology.objects.countries);
+        render2dMap(w, h);
+        loaded = true;
+      } catch (e) {
+        console.warn('2D Map: failed to load from ' + topoUrls[i], e);
+      }
+    }
+    if (!loaded) {
+      console.error('2D Map: could not load world borders from any source');
     }
 
     window.addEventListener('resize', on2dResize);
@@ -5017,24 +5076,26 @@ a:hover { text-decoration: underline; }
   var MARKET_INDICES = [
     { symbol: 'AMEX:EWZ',  label: 'iShares MSCI Brazil (EWZ)' },
     { symbol: 'AMEX:EWW',  label: 'iShares MSCI Mexico (EWW)' },
-    { symbol: 'AMEX:GXG',  label: 'Global X MSCI Colombia (GXG)' },
+    { symbol: 'BATS:COLO', label: 'Global X MSCI Colombia (COLO)' },
     { symbol: 'BATS:ECH',  label: 'iShares MSCI Chile (ECH)' },
-    { symbol: 'AMEX:ARGT', label: 'Global X MSCI Argentina (ARGT)' }
+    { symbol: 'AMEX:ARGT', label: 'Global X MSCI Argentina (ARGT)' },
+    { symbol: 'AMEX:ILF',  label: 'iShares Latin America 40 (ILF)' },
+    { symbol: 'TVC:MILA0000PUS', label: 'MSCI EM Latin America Index' }
   ];
 
   var MARKET_CURRENCIES = [
-    { symbol: 'FX:USDMXN', label: 'USD/MXN' },
-    { symbol: 'FX:USDBRL', label: 'USD/BRL' },
-    { symbol: 'FX:USDPEN', label: 'USD/PEN' },
-    { symbol: 'FX:USDCOP', label: 'USD/COP' },
-    { symbol: 'FX:USDCLP', label: 'USD/CLP' },
-    { symbol: 'FX:USDARS', label: 'USD/ARS' },
-    { symbol: 'FX:EURMXN', label: 'EUR/MXN' },
-    { symbol: 'FX:EURBRL', label: 'EUR/BRL' },
-    { symbol: 'FX:GBPMXN', label: 'GBP/MXN' },
-    { symbol: 'FX:GBPBRL', label: 'GBP/BRL' },
-    { symbol: 'FX:JPYMXN', label: 'JPY/MXN' },
-    { symbol: 'FX:JPYBRL', label: 'JPY/BRL' }
+    { symbol: 'OANDA:USDMXN', label: 'USD/MXN' },
+    { symbol: 'OANDA:USDBRL', label: 'USD/BRL' },
+    { symbol: 'OANDA:USDPEN', label: 'USD/PEN' },
+    { symbol: 'OANDA:USDCOP', label: 'USD/COP' },
+    { symbol: 'OANDA:USDCLP', label: 'USD/CLP' },
+    { symbol: 'FX_IDC:USDARS', label: 'USD/ARS' },
+    { symbol: 'OANDA:EURMXN', label: 'EUR/MXN' },
+    { symbol: 'OANDA:EURBRL', label: 'EUR/BRL' },
+    { symbol: 'FX_IDC:GBPMXN', label: 'GBP/MXN' },
+    { symbol: 'FX_IDC:GBPBRL', label: 'GBP/BRL' },
+    { symbol: 'FX_IDC:JPYMXN', label: 'JPY/MXN' },
+    { symbol: 'FX_IDC:JPYBRL', label: 'JPY/BRL' }
   ];
 
   function getFavorites() {
