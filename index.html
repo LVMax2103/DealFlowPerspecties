@@ -784,6 +784,34 @@ a:hover { text-decoration: underline; }
   width: 14px; height: 14px; margin-left: auto; color: var(--text-muted);
 }
 
+/* Auth modal tabs */
+.auth-tabs {
+  display: flex; gap: 0; margin-bottom: 20px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+.auth-tab {
+  flex: 1; padding: 10px; border: none;
+  background: transparent; color: var(--text-secondary);
+  font-size: 13px; font-weight: 600; font-family: var(--font-sans);
+  cursor: pointer; transition: all var(--transition);
+  text-align: center;
+}
+.auth-tab:hover { color: var(--text-primary); }
+.auth-tab.active {
+  background: var(--accent); color: #fff;
+}
+.auth-switch-link {
+  text-align: center; margin-top: 12px;
+  font-size: 12px; color: var(--text-muted);
+}
+.auth-switch-link a {
+  color: var(--accent-light); cursor: pointer;
+  text-decoration: underline;
+}
+
 /* ===================================================================
    FOOTER
    =================================================================== */
@@ -2452,30 +2480,50 @@ a:hover { text-decoration: underline; }
   <div class="modal" style="max-width:420px;">
     <button class="modal-close" id="loginModalClose">&times;</button>
     <div class="modal-top-accent"></div>
-    <div class="modal-header" style="padding-bottom:16px;">
-      <div class="modal-deal-name" style="font-size:18px;">Sign In</div>
-      <p style="font-size:13px;color:var(--text-secondary);margin-top:4px;">Create your account or sign in</p>
+    <div class="modal-header" style="padding-bottom:8px;">
+      <div class="modal-deal-name" style="font-size:18px;" id="authModalTitle">Sign In</div>
     </div>
     <div class="modal-body" style="padding-top:0;">
-      <form id="loginForm" class="login-form">
-        <div class="login-lockout" id="loginLockout"></div>
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tabSignIn" data-auth-mode="signin">Sign In</button>
+        <button class="auth-tab" id="tabSignUp" data-auth-mode="signup">Create Account</button>
+      </div>
+      <div class="login-lockout" id="loginLockout"></div>
+
+      <!-- SIGN IN FORM -->
+      <form id="signInForm" class="login-form">
         <div class="login-field">
-          <label for="loginFirstName">First Name</label>
-          <input type="text" id="loginFirstName" required>
+          <label for="siEmail">Email</label>
+          <input type="email" id="siEmail" required>
         </div>
         <div class="login-field">
-          <label for="loginLastName">Last Name</label>
-          <input type="text" id="loginLastName" required>
-        </div>
-        <div class="login-field">
-          <label for="loginEmail">Email</label>
-          <input type="email" id="loginEmail" required>
-        </div>
-        <div class="login-field">
-          <label for="loginPassword">Password</label>
-          <input type="password" id="loginPassword" required>
+          <label for="siPassword">Password</label>
+          <input type="password" id="siPassword" required>
         </div>
         <button type="submit" class="btn-login-submit">Sign In</button>
+        <div class="auth-switch-link">Don't have an account? <a id="switchToSignUp">Create one</a></div>
+      </form>
+
+      <!-- SIGN UP FORM -->
+      <form id="signUpForm" class="login-form" style="display:none;">
+        <div class="login-field">
+          <label for="suFirstName">First Name</label>
+          <input type="text" id="suFirstName" required>
+        </div>
+        <div class="login-field">
+          <label for="suLastName">Last Name</label>
+          <input type="text" id="suLastName" required>
+        </div>
+        <div class="login-field">
+          <label for="suEmail">Email</label>
+          <input type="email" id="suEmail" required>
+        </div>
+        <div class="login-field">
+          <label for="suPassword">Password</label>
+          <input type="password" id="suPassword" required minlength="6">
+        </div>
+        <button type="submit" class="btn-login-submit">Create Account</button>
+        <div class="auth-switch-link">Already have an account? <a id="switchToSignIn">Sign in</a></div>
       </form>
     </div>
   </div>
@@ -2589,12 +2637,37 @@ a:hover { text-decoration: underline; }
 (function () {
   'use strict';
 
+  // Suppress console output in production to prevent data leaks
+  if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+    var _noop = function() {};
+    window.console.log = _noop;
+    window.console.table = _noop;
+    window.console.dir = _noop;
+  }
+
   /* ==============================================================
      SUPABASE CLIENT
      ============================================================== */
   const SUPABASE_URL = 'https://hmrtcvxcdgcuvbmvpetd.supabase.co';
   const SUPABASE_ANON_KEY = 'sb_publishable_RQ5bD4HwpHERVo4mqWRQKA_ovVrYAgM';
   const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  function renderAuthGate(containerId) {
+    var el = document.getElementById(containerId);
+    if (!el) return;
+    el.innerHTML = '<div class="empty-state" style="padding:80px 20px;"><svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" style="opacity:0.3;margin-bottom:12px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><p style="font-size:15px;color:var(--text-secondary);margin-bottom:8px;">Sign in to access this data</p><p style="font-size:12px;color:var(--text-muted);">Create an account or log in to view deal intelligence.</p></div>';
+  }
+
+  // Client-side rate limiting for API calls
+  var _apiCallTimestamps = {};
+  function rateLimitCheck(key, cooldownMs) {
+    var now = Date.now();
+    if (_apiCallTimestamps[key] && (now - _apiCallTimestamps[key]) < cooldownMs) {
+      return false;
+    }
+    _apiCallTimestamps[key] = now;
+    return true;
+  }
 
   /* ==============================================================
      SECURITY UTILITIES
@@ -2639,120 +2712,177 @@ a:hover { text-decoration: underline; }
 
   function _initAuth() {
     var loginModal = document.getElementById('loginModal');
-    var loginForm = document.getElementById('loginForm');
+    var signInForm = document.getElementById('signInForm');
+    var signUpForm = document.getElementById('signUpForm');
     var btnSignIn = document.getElementById('btnSignIn');
     var btnLogout = document.getElementById('btnLogout');
     var loginModalClose = document.getElementById('loginModalClose');
     var lockoutEl = document.getElementById('loginLockout');
+    var tabSignIn = document.getElementById('tabSignIn');
+    var tabSignUp = document.getElementById('tabSignUp');
+    var authModalTitle = document.getElementById('authModalTitle');
+
+    function showSignInMode() {
+      tabSignIn.classList.add('active');
+      tabSignUp.classList.remove('active');
+      signInForm.style.display = '';
+      signUpForm.style.display = 'none';
+      authModalTitle.textContent = 'Sign In';
+      lockoutEl.style.display = 'none';
+      lockoutEl.textContent = '';
+      lockoutEl.style.background = '';
+      lockoutEl.style.borderColor = '';
+      lockoutEl.style.color = '';
+    }
+
+    function showSignUpMode() {
+      tabSignUp.classList.add('active');
+      tabSignIn.classList.remove('active');
+      signUpForm.style.display = '';
+      signInForm.style.display = 'none';
+      authModalTitle.textContent = 'Create Account';
+      lockoutEl.style.display = 'none';
+      lockoutEl.textContent = '';
+      lockoutEl.style.background = '';
+      lockoutEl.style.borderColor = '';
+      lockoutEl.style.color = '';
+    }
+
+    tabSignIn.addEventListener('click', showSignInMode);
+    tabSignUp.addEventListener('click', showSignUpMode);
+    document.getElementById('switchToSignUp').addEventListener('click', showSignUpMode);
+    document.getElementById('switchToSignIn').addEventListener('click', showSignInMode);
 
     // Listen for auth state changes
     supabase.auth.onAuthStateChange(function(event, session) {
       _updateNavBrand();
       if (event === 'SIGNED_IN') {
         loginModal.classList.remove('open');
-        loginForm.reset();
+        signInForm.reset();
+        signUpForm.reset();
         lockoutEl.style.display = 'none';
-        // Reload data now that user is authenticated
         loadData();
-        loadPreferencesFromSupabase();
+        if (typeof loadPreferencesFromSupabase === 'function') loadPreferencesFromSupabase();
         renderWatchlist();
       }
       if (event === 'SIGNED_OUT') {
         currentUser = null;
+        // Clear user-specific data from localStorage
+        localStorage.removeItem(FAVORITES_KEY);
+        localStorage.removeItem(getDashboardLayoutKey());
         // Clear data from memory
         allDeals = [];
         allPlayers = [];
         allFunds = [];
         playersLoaded = false;
         pefLoaded = false;
-        // Navigate to home
         navigateTo('home');
+        renderWatchlist();
+        updateHomeStats();
       }
     });
 
     btnSignIn.addEventListener('click', function() {
+      showSignInMode();
       loginModal.classList.add('open');
     });
 
     loginModalClose.addEventListener('click', function() {
       loginModal.classList.remove('open');
     });
-
     loginModal.addEventListener('click', function(e) {
-      if (e.target === loginModal) {
-        loginModal.classList.remove('open');
-      }
+      if (e.target === loginModal) loginModal.classList.remove('open');
     });
 
-    loginForm.addEventListener('submit', async function(e) {
+    // SIGN IN submit
+    signInForm.addEventListener('submit', async function(e) {
       e.preventDefault();
       lockoutEl.style.display = 'none';
 
-      var firstName = document.getElementById('loginFirstName').value.trim();
-      var lastName = document.getElementById('loginLastName').value.trim();
-      var email = document.getElementById('loginEmail').value.trim();
-      var password = document.getElementById('loginPassword').value;
+      var email = document.getElementById('siEmail').value.trim();
+      var password = document.getElementById('siPassword').value;
+
+      if (!email || !password) return;
+
+      var { data, error } = await supabase.auth.signInWithPassword({
+        email: email,
+        password: password
+      });
+
+      if (error) {
+        lockoutEl.style.background = 'rgba(255,77,106,0.1)';
+        lockoutEl.style.borderColor = 'rgba(255,77,106,0.3)';
+        lockoutEl.style.color = '#FF4D6A';
+
+        if (error.message.includes('Invalid login credentials')) {
+          lockoutEl.textContent = 'Invalid email or password. If you don\'t have an account, create one.';
+        } else {
+          lockoutEl.textContent = error.message;
+        }
+        lockoutEl.style.display = 'block';
+        return;
+      }
+      // Success handled by onAuthStateChange
+    });
+
+    // SIGN UP submit
+    signUpForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      lockoutEl.style.display = 'none';
+
+      var firstName = document.getElementById('suFirstName').value.trim();
+      var lastName = document.getElementById('suLastName').value.trim();
+      var email = document.getElementById('suEmail').value.trim();
+      var password = document.getElementById('suPassword').value;
 
       if (!firstName || !lastName || !email || !password) return;
+
       if (password.length < 6) {
+        lockoutEl.style.background = 'rgba(255,77,106,0.1)';
+        lockoutEl.style.borderColor = 'rgba(255,77,106,0.3)';
+        lockoutEl.style.color = '#FF4D6A';
         lockoutEl.textContent = 'Password must be at least 6 characters.';
         lockoutEl.style.display = 'block';
         return;
       }
 
-      // Try to sign in first
-      var { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+      var { data, error } = await supabase.auth.signUp({
         email: email,
-        password: password
+        password: password,
+        options: {
+          data: {
+            first_name: firstName,
+            last_name: lastName
+          }
+        }
       });
 
-      if (signInData && signInData.user) {
-        // Success — signed in
+      if (error) {
+        lockoutEl.style.background = 'rgba(255,77,106,0.1)';
+        lockoutEl.style.borderColor = 'rgba(255,77,106,0.3)';
+        lockoutEl.style.color = '#FF4D6A';
+        lockoutEl.textContent = error.message;
+        lockoutEl.style.display = 'block';
         return;
       }
 
-      if (signInError && signInError.message.includes('Invalid login credentials')) {
-        // Could be a new user — try to sign up
-        var { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-          email: email,
-          password: password,
-          options: {
-            data: {
-              first_name: firstName,
-              last_name: lastName
-            }
-          }
-        });
-
-        if (signUpError) {
-          lockoutEl.textContent = signUpError.message;
+      if (data && data.user) {
+        if (data.user.identities && data.user.identities.length === 0) {
+          lockoutEl.style.background = 'rgba(255,184,0,0.1)';
+          lockoutEl.style.borderColor = 'rgba(255,184,0,0.3)';
+          lockoutEl.style.color = '#FFB800';
+          lockoutEl.textContent = 'This email is already registered. Switch to Sign In.';
           lockoutEl.style.display = 'block';
           return;
         }
-
-        if (signUpData && signUpData.user) {
-          // Check if email confirmation is required
-          if (signUpData.user.identities && signUpData.user.identities.length === 0) {
-            lockoutEl.textContent = 'This email is already registered. Check your password.';
-            lockoutEl.style.display = 'block';
-          } else if (!signUpData.session) {
-            lockoutEl.style.display = 'none';
-            lockoutEl.textContent = '';
-            // Show confirmation message
-            var msgDiv = lockoutEl;
-            msgDiv.style.display = 'block';
-            msgDiv.style.background = 'rgba(0,196,140,0.1)';
-            msgDiv.style.borderColor = 'rgba(0,196,140,0.3)';
-            msgDiv.style.color = '#00C48C';
-            msgDiv.textContent = 'Check your email to confirm your account.';
-          }
-          // If session exists, onAuthStateChange will handle it
+        if (!data.session) {
+          lockoutEl.style.background = 'rgba(0,196,140,0.1)';
+          lockoutEl.style.borderColor = 'rgba(0,196,140,0.3)';
+          lockoutEl.style.color = '#00C48C';
+          lockoutEl.textContent = 'Account created! Check your email to confirm.';
+          lockoutEl.style.display = 'block';
           return;
         }
-      } else if (signInError) {
-        lockoutEl.textContent = signInError.message;
-        lockoutEl.style.display = 'block';
-        return;
       }
     });
 
@@ -2848,7 +2978,24 @@ a:hover { text-decoration: underline; }
     const valueEl = document.getElementById('homeStatValue');
     const countriesEl = document.getElementById('homeStatCountries');
 
-    if (!allDeals || !allDeals.length) return;
+    if (!allDeals || !allDeals.length) {
+      // Show teaser stats with animation even when logged out
+      if (dealsEl) animateCounter(dealsEl, 217, 2500, '', '');
+      if (valueEl) {
+        var teaserStart = performance.now();
+        function tickTeaser(now) {
+          var elapsed = now - teaserStart;
+          var progress = Math.min(elapsed / 2500, 1);
+          var eased = easeOutExpo(progress);
+          var current = (78 * eased).toFixed(0);
+          valueEl.textContent = '$' + current + 'B';
+          if (progress < 1) requestAnimationFrame(tickTeaser);
+        }
+        requestAnimationFrame(tickTeaser);
+      }
+      if (countriesEl) animateCounter(countriesEl, 28, 2500, '', '');
+      return;
+    }
 
     const total = allDeals.length;
     const withValue = allDeals.filter(d => d.dealValueUSDM != null);
@@ -2878,18 +3025,20 @@ a:hover { text-decoration: underline; }
   }
 
   function updateHomeStats() {
-    // Stats are now set by counter animation; just store data attributes as fallback
-    if (!allDeals || !allDeals.length) return;
-    const total = allDeals.length;
-    const withValue = allDeals.filter(d => d.dealValueUSDM != null);
-    const totalVal = withValue.reduce((s, d) => s + d.dealValueUSDM, 0);
-    const countries = new Set(allDeals.map(d => d.country)).size;
-
-    // Set static values as fallback (overwritten by animation when visible)
-    const el = id => document.getElementById(id);
-    if (el('homeStatDeals') && !homeCountersAnimated) el('homeStatDeals').textContent = total.toLocaleString('en-US');
-    if (el('homeStatValue') && !homeCountersAnimated) el('homeStatValue').textContent = fmtValue(totalVal);
-    if (el('homeStatCountries') && !homeCountersAnimated) el('homeStatCountries').textContent = countries;
+    var el = function(id) { return document.getElementById(id); };
+    if (allDeals && allDeals.length > 0) {
+      var total = allDeals.length;
+      var withValue = allDeals.filter(function(d) { return d.dealValueUSDM != null; });
+      var totalVal = withValue.reduce(function(s, d) { return s + d.dealValueUSDM; }, 0);
+      var countries = new Set(allDeals.map(function(d) { return d.country; })).size;
+      if (el('homeStatDeals') && !homeCountersAnimated) el('homeStatDeals').textContent = total.toLocaleString('en-US');
+      if (el('homeStatValue') && !homeCountersAnimated) el('homeStatValue').textContent = fmtValue(totalVal);
+      if (el('homeStatCountries') && !homeCountersAnimated) el('homeStatCountries').textContent = countries;
+    } else {
+      if (el('homeStatDeals')) el('homeStatDeals').textContent = '217';
+      if (el('homeStatValue')) el('homeStatValue').textContent = '$78B';
+      if (el('homeStatCountries')) el('homeStatCountries').textContent = '28';
+    }
   }
 
   /* ==============================================================
@@ -2994,6 +3143,7 @@ a:hover { text-decoration: underline; }
      DATA LOADING (Supabase)
      ============================================================== */
   async function loadData() {
+    if (!rateLimitCheck('loadData', 2000)) return;
     try {
       // Check if user is authenticated
       var { data: { user } } = await supabase.auth.getUser();
@@ -3397,19 +3547,102 @@ a:hover { text-decoration: underline; }
     });
 
     // Lazy-init the 3D globe when heatmap section is first shown
-    if (sectionId === 'heatmap' && !globeInitialized && allDeals.length > 0) {
-      globeInitialized = true;
-      setTimeout(initGlobe, 50);
+    if (sectionId === 'heatmap') {
+      var heatmapPanel = document.querySelector('#heatmap .panel');
+      if (!currentUser) {
+        if (heatmapPanel) heatmapPanel.style.display = 'none';
+        if (!document.getElementById('heatmapAuthGate')) {
+          var gate = document.createElement('div');
+          gate.id = 'heatmapAuthGate';
+          gate.innerHTML = '<div class="empty-state" style="padding:80px 20px;"><svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" style="opacity:0.3;margin-bottom:12px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><p style="font-size:15px;color:var(--text-secondary);margin-bottom:8px;">Sign in to access the Deal Heatmap</p><p style="font-size:12px;color:var(--text-muted);">Interactive 3D globe with deal activity across 28 countries.</p></div>';
+          document.getElementById('heatmap').querySelector('.section-header').after(gate);
+        }
+      } else {
+        var existingGate = document.getElementById('heatmapAuthGate');
+        if (existingGate) existingGate.remove();
+        if (heatmapPanel) heatmapPanel.style.display = '';
+        if (!globeInitialized && allDeals.length > 0) {
+          globeInitialized = true;
+          setTimeout(initGlobe, 50);
+        }
+      }
     }
 
     // Lazy-load players data when section is first shown
-    if (sectionId === 'players' && !playersLoaded) {
-      loadPlayers();
+    if (sectionId === 'players') {
+      if (!currentUser) {
+        document.querySelector('#players .players-toolbar').style.display = 'none';
+        document.querySelector('#players .players-table-wrap').style.display = 'none';
+        document.querySelector('#players .kpi-grid').style.display = 'none';
+        document.querySelector('#playersPagination').style.display = 'none';
+        if (!document.getElementById('playersAuthGate')) {
+          var gate = document.createElement('div');
+          gate.id = 'playersAuthGate';
+          gate.innerHTML = '<div class="empty-state" style="padding:80px 20px;"><svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" style="opacity:0.3;margin-bottom:12px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><p style="font-size:15px;color:var(--text-secondary);margin-bottom:8px;">Sign in to access Players data</p><p style="font-size:12px;color:var(--text-muted);">591 General Partners tracked across Latin America.</p></div>';
+          document.getElementById('players').querySelector('.section-header').after(gate);
+        }
+      } else {
+        var existingGate = document.getElementById('playersAuthGate');
+        if (existingGate) existingGate.remove();
+        document.querySelector('#players .players-toolbar').style.display = '';
+        document.querySelector('#players .players-table-wrap').style.display = '';
+        document.querySelector('#players .kpi-grid').style.display = '';
+        document.querySelector('#playersPagination').style.display = '';
+        if (!playersLoaded) loadPlayers();
+      }
     }
 
     // Lazy-load PE Funds data when section is first shown
-    if (sectionId === 'pefunds' && !pefLoaded) {
-      loadPEFunds();
+    if (sectionId === 'pefunds') {
+      if (!currentUser) {
+        document.querySelector('#pefunds .pef-disclaimer').style.display = 'none';
+        document.querySelector('#pefunds .pef-report-btn').style.display = 'none';
+        document.querySelector('#pefunds .kpi-grid').style.display = 'none';
+        document.querySelector('#pefunds .pef-tabs').style.display = 'none';
+        document.querySelector('#pefunds .pef-toolbar').style.display = 'none';
+        document.querySelector('#pefunds .pef-table-wrap').style.display = 'none';
+        document.querySelector('#pefunds .pef-charts-grid').style.display = 'none';
+        document.querySelector('#pefPagination').style.display = 'none';
+        if (!document.getElementById('pefAuthGate')) {
+          var gate = document.createElement('div');
+          gate.id = 'pefAuthGate';
+          gate.innerHTML = '<div class="empty-state" style="padding:80px 20px;"><svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" style="opacity:0.3;margin-bottom:12px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><p style="font-size:15px;color:var(--text-secondary);margin-bottom:8px;">Sign in to access PE Funds data</p><p style="font-size:12px;color:var(--text-muted);">1,000+ PE funds with IRR, vintage, and quartile data.</p></div>';
+          document.getElementById('pefunds').querySelector('.section-header').after(gate);
+        }
+      } else {
+        var existingGate = document.getElementById('pefAuthGate');
+        if (existingGate) existingGate.remove();
+        document.querySelector('#pefunds .pef-disclaimer').style.display = '';
+        document.querySelector('#pefunds .pef-report-btn').style.display = '';
+        document.querySelector('#pefunds .kpi-grid').style.display = '';
+        document.querySelector('#pefunds .pef-tabs').style.display = '';
+        document.querySelector('#pefunds .pef-toolbar').style.display = '';
+        document.querySelector('#pefunds .pef-table-wrap').style.display = '';
+        document.querySelector('#pefunds .pef-charts-grid').style.display = '';
+        document.querySelector('#pefPagination').style.display = '';
+        if (!pefLoaded) loadPEFunds();
+      }
+    }
+
+    // Gate Deal Database section
+    if (sectionId === 'database') {
+      if (!currentUser) {
+        document.querySelector('#database .db-toolbar').style.display = 'none';
+        document.querySelector('#database .db-table-wrap').style.display = 'none';
+        document.querySelector('#pagination').style.display = 'none';
+        if (!document.getElementById('dbAuthGate')) {
+          var gate = document.createElement('div');
+          gate.id = 'dbAuthGate';
+          gate.innerHTML = '<div class="empty-state" style="padding:80px 20px;"><svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" style="opacity:0.3;margin-bottom:12px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><p style="font-size:15px;color:var(--text-secondary);margin-bottom:8px;">Sign in to access the Deal Database</p><p style="font-size:12px;color:var(--text-muted);">217 deals across PE, VC, M&A, Real Assets, and Private Credit.</p></div>';
+          document.getElementById('database').querySelector('.section-header').after(gate);
+        }
+      } else {
+        var existingGate = document.getElementById('dbAuthGate');
+        if (existingGate) existingGate.remove();
+        document.querySelector('#database .db-toolbar').style.display = '';
+        document.querySelector('#database .db-table-wrap').style.display = '';
+        document.querySelector('#pagination').style.display = '';
+      }
     }
 
     // Lazy-load Markets widgets when section is first shown
@@ -4256,6 +4489,7 @@ a:hover { text-decoration: underline; }
 
   async function loadPlayers() {
     if (playersLoaded) return;
+    if (!rateLimitCheck('loadPlayers', 2000)) return;
     try {
       var { data: playersData, error } = await supabase
         .from('players')
@@ -4558,6 +4792,7 @@ a:hover { text-decoration: underline; }
 
   async function loadPEFunds() {
     if (pefLoaded) return;
+    if (!rateLimitCheck('loadPEFunds', 2000)) return;
     try {
       var { data: fundsData, error } = await supabase
         .from('pe_funds')
@@ -5317,7 +5552,33 @@ a:hover { text-decoration: underline; }
     if (e.target === document.getElementById('countryDealsModal')) closeCountryDealsModal();
   });
 
-  loadData();
+  // Prevent easy data scraping via DevTools
+  document.addEventListener('contextmenu', function(e) {
+    if (e.target.tagName === 'A' || e.target.tagName === 'IMG') return;
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') return;
+    e.preventDefault();
+  });
+
+  document.addEventListener('keydown', function(e) {
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') return;
+    if (e.key === 'F12') { e.preventDefault(); return; }
+    if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i')) { e.preventDefault(); return; }
+    if (e.ctrlKey && e.shiftKey && (e.key === 'J' || e.key === 'j')) { e.preventDefault(); return; }
+    if (e.ctrlKey && (e.key === 'U' || e.key === 'u')) { e.preventDefault(); return; }
+  });
+
+  updateHomeStats();
+
+  // Refresh session on page load to ensure valid tokens
+  supabase.auth.getSession().then(function(result) {
+    if (result.data.session) {
+      currentUser = result.data.session.user;
+      _updateNavBrand();
+    }
+    loadData();
+  }).catch(function() {
+    loadData();
+  });
 })();
 </script>
 </body>
