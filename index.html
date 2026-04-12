@@ -2059,6 +2059,10 @@ a:hover { text-decoration: underline; }
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
       Markets
     </a></li>
+    <li><a href="#macro" data-section="macro">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+      Macro
+    </a></li>
     <li><a href="#heatmap" data-section="heatmap">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><rect x="7" y="7" width="3" height="3"/><rect x="14" y="7" width="3" height="3"/><rect x="7" y="14" width="3" height="3"/><rect x="14" y="14" width="3" height="3"/></svg>
       Heatmap
@@ -2446,6 +2450,38 @@ a:hover { text-decoration: underline; }
     </div>
   </section>
 
+  <!-- ====== MACRO ====== -->
+  <section id="macro" class="section">
+    <div class="section-header">
+      <h1>Macro Intelligence</h1>
+      <p>Key macroeconomic indicators for Latin America — powered by TradingView</p>
+    </div>
+
+    <!-- Interest Rates -->
+    <div class="markets-group">
+      <div class="markets-group-title">Central Bank Interest Rates</div>
+      <div class="markets-grid" id="macroRatesGrid"></div>
+    </div>
+
+    <!-- Inflation / CPI -->
+    <div class="markets-group">
+      <div class="markets-group-title">Sovereign Bond Yields (10Y)</div>
+      <div class="markets-grid" id="macroBondsGrid"></div>
+    </div>
+
+    <!-- Commodities relevant to LatAm -->
+    <div class="markets-group">
+      <div class="markets-group-title">LatAm-Relevant Commodities</div>
+      <div class="markets-grid" id="macroCommoditiesGrid"></div>
+    </div>
+
+    <!-- Credit Default Swaps / Risk -->
+    <div class="markets-group">
+      <div class="markets-group-title">Risk & Volatility</div>
+      <div class="markets-grid" id="macroRiskGrid"></div>
+    </div>
+  </section>
+
   <!-- ====== CATEGORY DRILLDOWN (injected by JS) ====== -->
   <div id="categoryDrilldown">
     <div class="drilldown-header">
@@ -2480,7 +2516,8 @@ a:hover { text-decoration: underline; }
   <div class="modal" style="max-width:420px;">
     <button class="modal-close" id="loginModalClose">&times;</button>
     <div class="modal-top-accent"></div>
-    <div class="modal-header" style="padding-bottom:8px;">
+    <div class="modal-header" style="padding-bottom:8px;text-align:center;">
+      <img src="logo-horizontal-white.png" alt="DealFlow Perspectives" style="height:28px;margin-bottom:12px;opacity:0.9;" onerror="this.style.display='none'">
       <div class="modal-deal-name" style="font-size:18px;" id="authModalTitle">Sign In</div>
     </div>
     <div class="modal-body" style="padding-top:0;">
@@ -2637,13 +2674,8 @@ a:hover { text-decoration: underline; }
 (function () {
   'use strict';
 
-  // Suppress console output in production to prevent data leaks
-  if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
-    var _noop = function() {};
-    window.console.log = _noop;
-    window.console.table = _noop;
-    window.console.dir = _noop;
-  }
+  // Keep all console methods functional for now (debugging watchlist)
+  // TODO: Re-enable console suppression after watchlist is confirmed working
 
   /* ==============================================================
      SUPABASE CLIENT
@@ -3640,6 +3672,30 @@ a:hover { text-decoration: underline; }
     // Lazy-load Markets widgets when section is first shown
     if (sectionId === 'markets' && !marketsLoaded) {
       initMarkets();
+    }
+
+    // Lazy-load Macro widgets when section is first shown
+    if (sectionId === 'macro' && !macroLoaded) {
+      initMacro();
+    }
+
+    if (sectionId === 'macro') {
+      if (!currentUser) {
+        var macroContent = document.querySelectorAll('#macro .markets-group');
+        macroContent.forEach(function(g) { g.style.display = 'none'; });
+        if (!document.getElementById('macroAuthGate')) {
+          var gate = document.createElement('div');
+          gate.id = 'macroAuthGate';
+          gate.innerHTML = '<div class="empty-state" style="padding:80px 20px;"><svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" style="opacity:0.3;margin-bottom:12px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><p style="font-size:15px;color:var(--text-secondary);margin-bottom:8px;">Sign in to access Macro Intelligence</p><p style="font-size:12px;color:var(--text-muted);">Interest rates, bonds, commodities, and risk indicators across LatAm.</p></div>';
+          document.getElementById('macro').querySelector('.section-header').after(gate);
+        }
+      } else {
+        var existingGate = document.getElementById('macroAuthGate');
+        if (existingGate) existingGate.remove();
+        var macroContent = document.querySelectorAll('#macro .markets-group');
+        macroContent.forEach(function(g) { g.style.display = ''; });
+        if (!macroLoaded) initMacro();
+      }
     }
 
     // Refresh watchlist when returning to dashboard
@@ -5344,84 +5400,148 @@ a:hover { text-decoration: underline; }
     { symbol: 'JPYBRL', label: 'JPY/BRL' }
   ];
 
+  // Macro indicators — TradingView symbols
+  var MACRO_RATES = [
+    { symbol: 'ECONOMICS:MXIR',  label: 'Mexico — Banxico Rate' },
+    { symbol: 'ECONOMICS:BRIR',  label: 'Brazil — Selic Rate' },
+    { symbol: 'ECONOMICS:CLIR',  label: 'Chile — BCCh Rate' },
+    { symbol: 'ECONOMICS:COIR',  label: 'Colombia — BanRep Rate' },
+    { symbol: 'ECONOMICS:PEIR',  label: 'Peru — BCRP Rate' },
+    { symbol: 'ECONOMICS:ARIR',  label: 'Argentina — BCRA Rate' }
+  ];
+
+  var MACRO_BONDS = [
+    { symbol: 'TVC:MX10Y',  label: 'Mexico 10Y Bond' },
+    { symbol: 'TVC:BR10Y',  label: 'Brazil 10Y Bond' },
+    { symbol: 'TVC:CL10Y',  label: 'Chile 10Y Bond' },
+    { symbol: 'TVC:CO10Y',  label: 'Colombia 10Y Bond' },
+    { symbol: 'TVC:US10Y',  label: 'US 10Y Treasury (Benchmark)' }
+  ];
+
+  var MACRO_COMMODITIES = [
+    { symbol: 'TVC:USOIL',    label: 'Crude Oil (WTI)' },
+    { symbol: 'COMEX:GC1!',   label: 'Gold' },
+    { symbol: 'COMEX:HG1!',   label: 'Copper' },
+    { symbol: 'CBOT:ZS1!',    label: 'Soybeans' },
+    { symbol: 'TVC:SILVER',   label: 'Silver' },
+    { symbol: 'NYMEX:NG1!',   label: 'Natural Gas' },
+    { symbol: 'CAPITALCOM:LITHIUM', label: 'Lithium' },
+    { symbol: 'CBOT:ZC1!',    label: 'Corn' }
+  ];
+
+  var MACRO_RISK = [
+    { symbol: 'TVC:VIX',      label: 'VIX — Fear Index' },
+    { symbol: 'TVC:DXY',      label: 'US Dollar Index (DXY)' },
+    { symbol: 'FRED:BAMLHE00EHYIEY', label: 'EM High Yield Spread' },
+    { symbol: 'SP:SPX',       label: 'S&P 500 (Global Risk)' }
+  ];
+
+  var macroLoaded = false;
+
   function getFavorites() {
     // Read from localStorage as cache (synced to Supabase when possible)
     try { return JSON.parse(localStorage.getItem(FAVORITES_KEY)) || []; }
     catch(e) { return []; }
   }
 
-  function setFavorites(favs) {
-    localStorage.setItem(FAVORITES_KEY, JSON.stringify(favs));
-    // Sync to Supabase in background
-    syncPreferencesToSupabase();
-  }
-
   function toggleFavorite(symbol) {
     var favs = getFavorites();
     var idx = favs.indexOf(symbol);
     if (idx > -1) { favs.splice(idx, 1); } else { favs.push(symbol); }
-    setFavorites(favs);
+    localStorage.setItem(FAVORITES_KEY, JSON.stringify(favs));
+    console.log('[Favs] Toggled', symbol, '— total:', favs.length);
+
     document.querySelectorAll('.btn-fav[data-symbol="' + symbol + '"]').forEach(function(btn) {
       btn.classList.toggle('active', favs.indexOf(symbol) > -1);
       btn.innerHTML = favs.indexOf(symbol) > -1 ? '&#9733;' : '&#9734;';
     });
     renderWatchlist();
+
+    syncPreferencesToSupabase();
   }
 
   async function syncPreferencesToSupabase() {
-    var user = currentUser;
-    if (!user) return;
     try {
+      var { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        console.log('[Prefs] No user session, skipping sync');
+        return;
+      }
+
       var favs = getFavorites();
       var layout = {};
       try { layout = JSON.parse(localStorage.getItem(getDashboardLayoutKey())) || {}; } catch(e) {}
 
-      var { error } = await supabase.from('user_preferences').upsert({
+      console.log('[Prefs] Syncing to Supabase:', { user_id: user.id, favorites: favs.length, layout_keys: Object.keys(layout).length });
+
+      var { data, error } = await supabase.from('user_preferences').upsert({
         user_id: user.id,
         market_favorites: favs,
         panel_layout: layout,
         updated_at: new Date().toISOString()
       }, { onConflict: 'user_id' });
 
-      if (error) console.warn('Prefs sync error:', error.message);
+      if (error) {
+        console.error('[Prefs] Sync error:', error.message, error.details, error.hint);
+      } else {
+        console.log('[Prefs] Sync successful');
+      }
     } catch (e) {
-      console.warn('Prefs sync exception:', e);
+      console.error('[Prefs] Sync exception:', e);
     }
   }
 
   async function loadPreferencesFromSupabase() {
-    var user = currentUser;
-    if (!user) return;
     try {
+      var { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        console.log('[Prefs] No user for loading prefs');
+        return;
+      }
+
+      console.log('[Prefs] Loading preferences for user:', user.id);
+
       var { data, error } = await supabase
         .from('user_preferences')
         .select('*')
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle();
 
-      if (error && error.code !== 'PGRST116') {
-        console.warn('Prefs load error:', error.message);
+      if (error) {
+        console.error('[Prefs] Load error:', error.message);
         return;
       }
 
-      if (data) {
-        if (data.market_favorites && data.market_favorites.length > 0) {
-          localStorage.setItem(FAVORITES_KEY, JSON.stringify(data.market_favorites));
-          renderWatchlist();
-          data.market_favorites.forEach(function(symbol) {
-            document.querySelectorAll('.btn-fav[data-symbol="' + symbol + '"]').forEach(function(btn) {
-              btn.classList.add('active');
-              btn.innerHTML = '&#9733;';
-            });
-          });
-        }
-        if (data.panel_layout && Object.keys(data.panel_layout).length > 0) {
-          localStorage.setItem(getDashboardLayoutKey(), JSON.stringify(data.panel_layout));
-          restorePanelSizes();
-        }
+      if (!data) {
+        console.log('[Prefs] No saved preferences found — first time user');
+        return;
+      }
+
+      console.log('[Prefs] Loaded:', { favorites: (data.market_favorites || []).length, has_layout: !!data.panel_layout });
+
+      // Restore favorites
+      if (data.market_favorites && data.market_favorites.length > 0) {
+        localStorage.setItem(FAVORITES_KEY, JSON.stringify(data.market_favorites));
+        document.querySelectorAll('.btn-fav').forEach(function(btn) {
+          var sym = btn.getAttribute('data-symbol');
+          if (data.market_favorites.indexOf(sym) > -1) {
+            btn.classList.add('active');
+            btn.innerHTML = '&#9733;';
+          } else {
+            btn.classList.remove('active');
+            btn.innerHTML = '&#9734;';
+          }
+        });
+        renderWatchlist();
+      }
+
+      // Restore panel layout
+      if (data.panel_layout && Object.keys(data.panel_layout).length > 0) {
+        localStorage.setItem(getDashboardLayoutKey(), JSON.stringify(data.panel_layout));
+        restorePanelSizes();
       }
     } catch (e) {
-      console.warn('Prefs load exception:', e);
+      console.error('[Prefs] Load exception:', e);
     }
   }
 
@@ -5502,6 +5622,21 @@ a:hover { text-decoration: underline; }
     MARKET_CURRENCIES.forEach(function(item) {
       createMarketCard(item, currencyGrid);
     });
+  }
+
+  function initMacro() {
+    if (macroLoaded) return;
+    macroLoaded = true;
+
+    var ratesGrid = document.getElementById('macroRatesGrid');
+    var bondsGrid = document.getElementById('macroBondsGrid');
+    var commoditiesGrid = document.getElementById('macroCommoditiesGrid');
+    var riskGrid = document.getElementById('macroRiskGrid');
+
+    MACRO_RATES.forEach(function(item) { createMarketCard(item, ratesGrid); });
+    MACRO_BONDS.forEach(function(item) { createMarketCard(item, bondsGrid); });
+    MACRO_COMMODITIES.forEach(function(item) { createMarketCard(item, commoditiesGrid); });
+    MACRO_RISK.forEach(function(item) { createMarketCard(item, riskGrid); });
   }
 
   function renderWatchlist() {
@@ -5588,6 +5723,7 @@ a:hover { text-decoration: underline; }
     if (result.data.session) {
       currentUser = result.data.session.user;
       _updateNavBrand();
+      loadPreferencesFromSupabase();
     }
     loadData();
   }).catch(function() {
