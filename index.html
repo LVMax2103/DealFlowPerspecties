@@ -2767,18 +2767,8 @@ a:hover { text-decoration: underline; }
       }
       if (event === 'SIGNED_OUT') {
         currentUser = null;
-        // Clear user-specific data from localStorage
         localStorage.removeItem(FAVORITES_KEY);
         localStorage.removeItem(getDashboardLayoutKey());
-        // Clear data from memory
-        allDeals = [];
-        allPlayers = [];
-        allFunds = [];
-        playersLoaded = false;
-        pefLoaded = false;
-        navigateTo('home');
-        renderWatchlist();
-        updateHomeStats();
       }
     });
 
@@ -2887,8 +2877,10 @@ a:hover { text-decoration: underline; }
     });
 
     btnLogout.addEventListener('click', async function() {
+      if (!confirm('Are you sure you want to log out?')) return;
+      await syncPreferencesToSupabase();
       await supabase.auth.signOut();
-      _updateNavBrand();
+      window.location.reload();
     });
 
     _updateNavBrand();
@@ -5379,35 +5371,57 @@ a:hover { text-decoration: underline; }
   async function syncPreferencesToSupabase() {
     var user = currentUser;
     if (!user) return;
-    var favs = getFavorites();
-    var layout = {};
-    try { layout = JSON.parse(localStorage.getItem(getDashboardLayoutKey())) || {}; } catch(e) {}
+    try {
+      var favs = getFavorites();
+      var layout = {};
+      try { layout = JSON.parse(localStorage.getItem(getDashboardLayoutKey())) || {}; } catch(e) {}
 
-    await supabase.from('user_preferences').upsert({
-      user_id: user.id,
-      market_favorites: favs,
-      panel_layout: layout,
-      updated_at: new Date().toISOString()
-    }, { onConflict: 'user_id' }).catch(function(e) { console.warn('Prefs sync error:', e); });
+      var { error } = await supabase.from('user_preferences').upsert({
+        user_id: user.id,
+        market_favorites: favs,
+        panel_layout: layout,
+        updated_at: new Date().toISOString()
+      }, { onConflict: 'user_id' });
+
+      if (error) console.warn('Prefs sync error:', error.message);
+    } catch (e) {
+      console.warn('Prefs sync exception:', e);
+    }
   }
 
   async function loadPreferencesFromSupabase() {
     var user = currentUser;
     if (!user) return;
-    var { data, error } = await supabase
-      .from('user_preferences')
-      .select('*')
-      .eq('user_id', user.id)
-      .single();
+    try {
+      var { data, error } = await supabase
+        .from('user_preferences')
+        .select('*')
+        .eq('user_id', user.id)
+        .single();
 
-    if (data) {
-      if (data.market_favorites && data.market_favorites.length > 0) {
-        localStorage.setItem(FAVORITES_KEY, JSON.stringify(data.market_favorites));
+      if (error && error.code !== 'PGRST116') {
+        console.warn('Prefs load error:', error.message);
+        return;
       }
-      if (data.panel_layout && Object.keys(data.panel_layout).length > 0) {
-        localStorage.setItem(getDashboardLayoutKey(), JSON.stringify(data.panel_layout));
-        restorePanelSizes();
+
+      if (data) {
+        if (data.market_favorites && data.market_favorites.length > 0) {
+          localStorage.setItem(FAVORITES_KEY, JSON.stringify(data.market_favorites));
+          renderWatchlist();
+          data.market_favorites.forEach(function(symbol) {
+            document.querySelectorAll('.btn-fav[data-symbol="' + symbol + '"]').forEach(function(btn) {
+              btn.classList.add('active');
+              btn.innerHTML = '&#9733;';
+            });
+          });
+        }
+        if (data.panel_layout && Object.keys(data.panel_layout).length > 0) {
+          localStorage.setItem(getDashboardLayoutKey(), JSON.stringify(data.panel_layout));
+          restorePanelSizes();
+        }
       }
+    } catch (e) {
+      console.warn('Prefs load exception:', e);
     }
   }
 
