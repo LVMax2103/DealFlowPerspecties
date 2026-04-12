@@ -1446,15 +1446,15 @@ a:hover { text-decoration: underline; }
 }
 @keyframes arrowAppear {
   from { opacity: 0; transform: translateX(-50%) translateY(10px); }
-  to   { opacity: 0.5; transform: translateX(-50%) translateY(0); }
+  to   { opacity: 0.7; transform: translateX(-50%) translateY(0); }
 }
 .scroll-arrow:hover { opacity: 1; }
 .scroll-arrow span {
   font-size: 10px; text-transform: uppercase; letter-spacing: 2px;
-  color: var(--text-muted); font-weight: 600;
+  color: var(--text-secondary); font-weight: 600;
 }
 .scroll-arrow svg {
-  width: 24px; height: 24px; color: var(--text-muted);
+  width: 24px; height: 24px; color: var(--text-secondary);
   animation: bounceArrow 2s ease-in-out infinite;
 }
 @keyframes bounceArrow {
@@ -3819,12 +3819,9 @@ a:hover { text-decoration: underline; }
     container.addEventListener('mouseup', onGlobeMouseUp);
     container.addEventListener('mouseleave', function(e) {
       onGlobeMouseUp(e);
+      globeHovered = false;
       clearTimeout(globeResumeTimer);
-      globeResumeTimer = setTimeout(function() { globeHovered = false; }, 2000);
-    });
-    container.addEventListener('mouseenter', function() {
-      clearTimeout(globeResumeTimer);
-      globeHovered = true;
+      document.getElementById('globeTooltip').classList.remove('visible');
     });
     container.addEventListener('touchstart', onGlobeTouchStart, { passive: false });
     container.addEventListener('touchmove', onGlobeTouchMove, { passive: false });
@@ -3876,9 +3873,15 @@ a:hover { text-decoration: underline; }
       tooltip.style.top = (e.clientY - rect.top - 10) + 'px';
       tooltip.classList.add('visible');
       container.style.cursor = 'pointer';
+      clearTimeout(globeResumeTimer);
+      globeHovered = true;
     } else {
       tooltip.classList.remove('visible');
       container.style.cursor = 'grab';
+      if (globeHovered) {
+        clearTimeout(globeResumeTimer);
+        globeResumeTimer = setTimeout(function() { globeHovered = false; }, 2000);
+      }
     }
   }
 
@@ -4030,10 +4033,10 @@ a:hover { text-decoration: underline; }
     map2dMaxDeals = Math.max(...Object.values(map2dCountryCounts), 1);
 
     // D3 Mercator projection
-    map2dProjection = d3.geoMercator()
-      .scale((w / (2 * Math.PI)) * 0.95)
-      .translate([w / 2, h / 2 + 80])
-      .center([0, 15]);
+    map2dProjection = d3.geoNaturalEarth1()
+      .scale(w / 5.5)
+      .translate([w / 2, h / 2])
+      .center([-60, -5]);
     map2dPathGen = d3.geoPath().projection(map2dProjection);
 
     // Create SVG
@@ -4141,8 +4144,8 @@ a:hover { text-decoration: underline; }
     const h = container.clientHeight;
 
     map2dProjection
-      .scale((w / (2 * Math.PI)) * 0.95)
-      .translate([w / 2, h / 2 + 80]);
+      .scale(w / 5.5)
+      .translate([w / 2, h / 2]);
     map2dPathGen.projection(map2dProjection);
 
     map2dSvg

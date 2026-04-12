@@ -1,0 +1,14 @@
+# Dependencies
+node_modules/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Environment variables (for Supabase keys later)
+.env
+.env.local
+
+# IDE
+.vscode/
+.idea/
