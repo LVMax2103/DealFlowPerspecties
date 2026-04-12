@@ -5,9 +5,12 @@ node_modules/
 .DS_Store
 Thumbs.db
 
-# Environment variables (for Supabase keys later)
+# Environment variables
 .env
 .env.local
+
+# Supabase seed script (contains service_role key at runtime)
+supabase/seed.js
 
 # IDE
 .vscode/

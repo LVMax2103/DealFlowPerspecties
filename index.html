@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://unpkg.com https://s3.tradingview.com https://www.tradingview.com https://tv-static.tradingview.com https://*.tradingview.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; frame-src https://*.tradingview.com https://s3.tradingview.com https://www.tradingview.com; connect-src 'self' https://cdn.jsdelivr.net https://data.jsdelivr.com https://cdnjs.cloudflare.com https://unpkg.com https://raw.githubusercontent.com;">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://unpkg.com https://s3.tradingview.com https://www.tradingview.com https://tv-static.tradingview.com https://*.tradingview.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; frame-src https://*.tradingview.com https://s3.tradingview.com https://www.tradingview.com; connect-src 'self' https://cdn.jsdelivr.net https://data.jsdelivr.com https://cdnjs.cloudflare.com https://unpkg.com https://raw.githubusercontent.com https://hmrtcvxcdgcuvbmvpetd.supabase.co https://*.supabase.co;">
 <link rel="icon" type="image/png" sizes="192x192" href="favicon-192x192.png">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-192x192.png">
 <link rel="apple-touch-icon" href="favicon-192x192.png">
@@ -2581,6 +2581,7 @@ a:hover { text-decoration: underline; }
 <!-- ============================================================
      JAVASCRIPT
      ============================================================ -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
@@ -2589,15 +2590,15 @@ a:hover { text-decoration: underline; }
   'use strict';
 
   /* ==============================================================
+     SUPABASE CLIENT
+     ============================================================== */
+  const SUPABASE_URL = 'https://hmrtcvxcdgcuvbmvpetd.supabase.co';
+  const SUPABASE_ANON_KEY = 'sb_publishable_RQ5bD4HwpHERVo4mqWRQKA_ovVrYAgM';
+  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  /* ==============================================================
      SECURITY UTILITIES
      ============================================================== */
-  async function sha256(message) {
-    var msgBuffer = new TextEncoder().encode(message);
-    var hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-    var hashArray = Array.from(new Uint8Array(hashBuffer));
-    return hashArray.map(function(b) { return b.toString(16).padStart(2, '0'); }).join('');
-  }
-
   function sanitizeInput(str) {
     if (!str) return '';
     var div = document.createElement('div');
@@ -2606,71 +2607,26 @@ a:hover { text-decoration: underline; }
   }
 
   /* ==============================================================
-     RATE LIMITING — Login attempts
+     AUTH — Supabase Auth (real backend sessions)
      ============================================================== */
-  var _RL_KEY = 'dfp_login_rl';
-  var _RL_MAX = 5;
-  var _RL_WINDOW = 5 * 60 * 1000; // 5 minutes
+  let currentUser = null;
 
-  function getRateLimitState() {
-    try { return JSON.parse(localStorage.getItem(_RL_KEY)) || { attempts: 0, lockedUntil: 0 }; }
-    catch(e) { return { attempts: 0, lockedUntil: 0 }; }
+  async function getUser() {
+    const { data: { user } } = await supabase.auth.getUser();
+    return user;
   }
 
-  function setRateLimitState(state) {
-    localStorage.setItem(_RL_KEY, JSON.stringify(state));
-  }
-
-  function isLoginLocked() {
-    var state = getRateLimitState();
-    if (state.lockedUntil && Date.now() < state.lockedUntil) {
-      return Math.ceil((state.lockedUntil - Date.now()) / 1000);
-    }
-    if (state.lockedUntil && Date.now() >= state.lockedUntil) {
-      setRateLimitState({ attempts: 0, lockedUntil: 0 });
-    }
-    return 0;
-  }
-
-  function recordFailedLogin() {
-    var state = getRateLimitState();
-    state.attempts += 1;
-    if (state.attempts >= _RL_MAX) {
-      state.lockedUntil = Date.now() + _RL_WINDOW;
-      state.attempts = 0;
-    }
-    setRateLimitState(state);
-  }
-
-  function resetLoginAttempts() {
-    setRateLimitState({ attempts: 0, lockedUntil: 0 });
-  }
-
-  /* ==============================================================
-     AUTH — localStorage user session (SHA-256 secure)
-     ============================================================== */
-  function _getUser() {
-    try { return JSON.parse(localStorage.getItem('dfp_user')); } catch(e) { return null; }
-  }
-  function getUser() { return _getUser(); }
-
-  function _setUser(user) {
-    localStorage.setItem('dfp_user', JSON.stringify(user));
-  }
-  function setUser(user) { _setUser(user); }
-
-  function _clearUser() {
-    localStorage.removeItem('dfp_user');
-  }
-  function clearUser() { _clearUser(); }
-
-  function _updateNavBrand() {
-    var user = _getUser();
+  async function _updateNavBrand() {
     var brandText = document.getElementById('navBrandText');
     var btnSignIn = document.getElementById('btnSignIn');
     var navLogout = document.getElementById('navLogout');
+    var user = await getUser();
+    currentUser = user;
     if (user) {
-      brandText.textContent = 'Welcome ' + sanitizeInput(user.firstName) + ' ' + sanitizeInput(user.lastName) + ' v1.0';
+      var meta = user.user_metadata || {};
+      var displayName = (meta.first_name || '') + ' ' + (meta.last_name || '');
+      displayName = displayName.trim() || user.email;
+      brandText.textContent = 'Welcome ' + sanitizeInput(displayName) + ' v1.0';
       btnSignIn.style.display = 'none';
       navLogout.style.display = '';
     } else {
@@ -2681,106 +2637,127 @@ a:hover { text-decoration: underline; }
   }
   function updateNavBrand() { _updateNavBrand(); }
 
-  function updateLockoutUI() {
-    var lockoutEl = document.getElementById('loginLockout');
-    var seconds = isLoginLocked();
-    if (seconds > 0) {
-      var mins = Math.floor(seconds / 60);
-      var secs = seconds % 60;
-      lockoutEl.textContent = 'Too many failed attempts. Try again in ' + mins + 'm ' + secs + 's';
-      lockoutEl.style.display = 'block';
-      return true;
-    }
-    lockoutEl.style.display = 'none';
-    return false;
-  }
-
   function _initAuth() {
     var loginModal = document.getElementById('loginModal');
     var loginForm = document.getElementById('loginForm');
     var btnSignIn = document.getElementById('btnSignIn');
     var btnLogout = document.getElementById('btnLogout');
     var loginModalClose = document.getElementById('loginModalClose');
-    var lockoutTimer = null;
+    var lockoutEl = document.getElementById('loginLockout');
+
+    // Listen for auth state changes
+    supabase.auth.onAuthStateChange(function(event, session) {
+      _updateNavBrand();
+      if (event === 'SIGNED_IN') {
+        loginModal.classList.remove('open');
+        loginForm.reset();
+        lockoutEl.style.display = 'none';
+        // Reload data now that user is authenticated
+        loadData();
+        loadPreferencesFromSupabase();
+        renderWatchlist();
+      }
+      if (event === 'SIGNED_OUT') {
+        currentUser = null;
+        // Clear data from memory
+        allDeals = [];
+        allPlayers = [];
+        allFunds = [];
+        playersLoaded = false;
+        pefLoaded = false;
+        // Navigate to home
+        navigateTo('home');
+      }
+    });
 
     btnSignIn.addEventListener('click', function() {
       loginModal.classList.add('open');
-      updateLockoutUI();
     });
 
     loginModalClose.addEventListener('click', function() {
       loginModal.classList.remove('open');
-      if (lockoutTimer) clearInterval(lockoutTimer);
     });
 
     loginModal.addEventListener('click', function(e) {
       if (e.target === loginModal) {
         loginModal.classList.remove('open');
-        if (lockoutTimer) clearInterval(lockoutTimer);
       }
     });
 
     loginForm.addEventListener('submit', async function(e) {
       e.preventDefault();
+      lockoutEl.style.display = 'none';
 
-      // Check rate limit
-      if (updateLockoutUI()) {
-        if (lockoutTimer) clearInterval(lockoutTimer);
-        lockoutTimer = setInterval(function() {
-          if (!updateLockoutUI()) clearInterval(lockoutTimer);
-        }, 1000);
-        return;
-      }
-
-      var firstName = sanitizeInput(document.getElementById('loginFirstName').value.trim());
-      var lastName = sanitizeInput(document.getElementById('loginLastName').value.trim());
-      var email = sanitizeInput(document.getElementById('loginEmail').value.trim());
+      var firstName = document.getElementById('loginFirstName').value.trim();
+      var lastName = document.getElementById('loginLastName').value.trim();
+      var email = document.getElementById('loginEmail').value.trim();
       var password = document.getElementById('loginPassword').value;
 
       if (!firstName || !lastName || !email || !password) return;
-
-      // Hash the password with SHA-256
-      var passwordHash = await sha256(password);
-      var storedUsers = {};
-      try { storedUsers = JSON.parse(localStorage.getItem('dfp_users_secure')) || {}; } catch(e) {}
-
-      var existingUser = storedUsers[email];
-      if (existingUser) {
-        // Login: verify password hash
-        if (existingUser.passwordHash !== passwordHash) {
-          recordFailedLogin();
-          updateLockoutUI();
-          if (lockoutTimer) clearInterval(lockoutTimer);
-          lockoutTimer = setInterval(function() {
-            if (!updateLockoutUI()) clearInterval(lockoutTimer);
-          }, 1000);
-          var lockoutEl = document.getElementById('loginLockout');
-          var state = getRateLimitState();
-          if (!isLoginLocked()) {
-            lockoutEl.textContent = 'Invalid password. ' + (_RL_MAX - state.attempts) + ' attempts remaining.';
-            lockoutEl.style.display = 'block';
-          }
-          return;
-        }
-      } else {
-        // New registration: store hashed password
-        storedUsers[email] = { firstName: firstName, lastName: lastName, passwordHash: passwordHash };
-        localStorage.setItem('dfp_users_secure', JSON.stringify(storedUsers));
+      if (password.length < 6) {
+        lockoutEl.textContent = 'Password must be at least 6 characters.';
+        lockoutEl.style.display = 'block';
+        return;
       }
 
-      // Success
-      resetLoginAttempts();
-      var user = { firstName: firstName, lastName: lastName, email: email };
-      _setUser(user);
-      _updateNavBrand();
-      loginModal.classList.remove('open');
-      loginForm.reset();
-      document.getElementById('loginLockout').style.display = 'none';
-      renderWatchlist();
+      // Try to sign in first
+      var { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+        email: email,
+        password: password
+      });
+
+      if (signInData && signInData.user) {
+        // Success — signed in
+        return;
+      }
+
+      if (signInError && signInError.message.includes('Invalid login credentials')) {
+        // Could be a new user — try to sign up
+        var { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+          email: email,
+          password: password,
+          options: {
+            data: {
+              first_name: firstName,
+              last_name: lastName
+            }
+          }
+        });
+
+        if (signUpError) {
+          lockoutEl.textContent = signUpError.message;
+          lockoutEl.style.display = 'block';
+          return;
+        }
+
+        if (signUpData && signUpData.user) {
+          // Check if email confirmation is required
+          if (signUpData.user.identities && signUpData.user.identities.length === 0) {
+            lockoutEl.textContent = 'This email is already registered. Check your password.';
+            lockoutEl.style.display = 'block';
+          } else if (!signUpData.session) {
+            lockoutEl.style.display = 'none';
+            lockoutEl.textContent = '';
+            // Show confirmation message
+            var msgDiv = lockoutEl;
+            msgDiv.style.display = 'block';
+            msgDiv.style.background = 'rgba(0,196,140,0.1)';
+            msgDiv.style.borderColor = 'rgba(0,196,140,0.3)';
+            msgDiv.style.color = '#00C48C';
+            msgDiv.textContent = 'Check your email to confirm your account.';
+          }
+          // If session exists, onAuthStateChange will handle it
+          return;
+        }
+      } else if (signInError) {
+        lockoutEl.textContent = signInError.message;
+        lockoutEl.style.display = 'block';
+        return;
+      }
     });
 
-    btnLogout.addEventListener('click', function() {
-      _clearUser();
+    btnLogout.addEventListener('click', async function() {
+      await supabase.auth.signOut();
       _updateNavBrand();
     });
 
@@ -2796,11 +2773,10 @@ a:hover { text-decoration: underline; }
     var msg = document.getElementById('newsletterMsg');
     form.addEventListener('submit', function(e) {
       e.preventDefault();
-      var email = sanitizeInput(document.getElementById('newsletterEmail').value.trim());
+      var email = document.getElementById('newsletterEmail').value.trim();
       if (!email) return;
-      var subs = JSON.parse(localStorage.getItem('dfp_newsletter') || '[]');
-      if (!subs.includes(email)) { subs.push(email); localStorage.setItem('dfp_newsletter', JSON.stringify(subs)); }
-      msg.textContent = 'Thank you! ' + email + ' has been subscribed.';
+      // TODO: Connect to email service (Mailchimp, ConvertKit, etc.)
+      msg.textContent = 'Thank you! ' + sanitizeInput(email) + ' has been subscribed.';
       form.reset();
     });
   }
@@ -3015,43 +2991,47 @@ a:hover { text-decoration: underline; }
   }
 
   /* ==============================================================
-     DATA INTEGRITY — SHA-256 hash verification
-     ============================================================== */
-  var DATA_HASHES = {
-    'deals':    '11c3c04f8858c5e6716434277d647fc420b908474adb6a4af087c2ec5db6b17f',
-    'pefunds':  'd30ac6f0d0cf527d54ce50deb9cf1cdd488c80b9a93a4b7b2520462e2afe9798'
-  };
-
-  async function verifyDataIntegrity(rawText, expectedHash) {
-    var computedHash = await sha256(rawText);
-    return computedHash === expectedHash;
-  }
-
-  function showIntegrityAlert(source) {
-    var alert = document.createElement('div');
-    alert.className = 'integrity-alert';
-    alert.textContent = 'Data integrity compromised — ' + source + ' has been modified in transit. Data will not be rendered.';
-    document.body.insertBefore(alert, document.body.firstChild);
-  }
-
-  /* ==============================================================
-     DATA LOADING (integrity-verified)
+     DATA LOADING (Supabase)
      ============================================================== */
   async function loadData() {
     try {
-      var res = await fetch('data/deals.json');
-      if (!res.ok) throw new Error('HTTP ' + res.status);
-      var rawText = await res.text();
-      var hashOk = await verifyDataIntegrity(rawText, DATA_HASHES.deals);
-      if (!hashOk) {
-        showIntegrityAlert('deals.json');
-        console.error('Data integrity check failed for deals.json');
+      // Check if user is authenticated
+      var { data: { user } } = await supabase.auth.getUser();
+
+      if (!user) {
+        // Not logged in — show empty state but don't error
+        $('#kpiGrid').innerHTML = '<div class="empty-state"><p>Sign in to access deal data.</p></div>';
         return;
       }
-      allDeals = JSON.parse(rawText);
+
+      // Fetch deals from Supabase
+      var { data: dealsData, error: dealsError } = await supabase
+        .from('deals')
+        .select('*')
+        .order('deal_value_usd_m', { ascending: false, nullsFirst: false });
+
+      if (dealsError) throw dealsError;
+
+      // Map Supabase column names back to camelCase used by the frontend
+      allDeals = dealsData.map(function(d) {
+        return {
+          id: d.id,
+          dealName: d.deal_name,
+          category: d.category,
+          investorBuyer: d.investor_buyer,
+          targetCompany: d.target_company,
+          country: d.country,
+          sector: d.sector,
+          dealValueUSDM: d.deal_value_usd_m != null ? Number(d.deal_value_usd_m) : null,
+          localCurrency: d.local_currency,
+          notes: d.notes,
+          period: d.period
+        };
+      });
+
       init();
     } catch (err) {
-      $('#kpiGrid').innerHTML = '<div class="empty-state"><p>Failed to load deals data. Make sure data/deals.json is accessible.</p></div>';
+      $('#kpiGrid').innerHTML = '<div class="empty-state"><p>Failed to load deals data. ' + sanitizeInput(err.message || '') + '</p></div>';
       console.error('Data load error:', err);
     }
   }
@@ -3958,6 +3938,7 @@ a:hover { text-decoration: underline; }
       }
     });
     localStorage.setItem(getDashboardLayoutKey(), JSON.stringify(layout));
+    syncPreferencesToSupabase();
   }
 
   function restorePanelSizes() {
@@ -4276,9 +4257,26 @@ a:hover { text-decoration: underline; }
   async function loadPlayers() {
     if (playersLoaded) return;
     try {
-      const res = await fetch('data/players.json');
-      if (!res.ok) throw new Error('HTTP ' + res.status);
-      allPlayers = await res.json();
+      var { data: playersData, error } = await supabase
+        .from('players')
+        .select('*')
+        .order('aum_numeric', { ascending: false, nullsFirst: false });
+
+      if (error) throw error;
+
+      allPlayers = playersData.map(function(p) {
+        return {
+          name: p.name,
+          aum_display: p.aum_display,
+          aum_numeric: p.aum_numeric != null ? Number(p.aum_numeric) : null,
+          active_funds: p.active_funds != null ? Number(p.active_funds) : 'N/A',
+          total_funds: p.total_funds != null ? Number(p.total_funds) : 'N/A',
+          active_holdings: p.active_holdings != null ? Number(p.active_holdings) : 'N/A',
+          total_holdings: p.total_holdings != null ? Number(p.total_holdings) : 'N/A',
+          addresses: p.addresses != null ? Number(p.addresses) : 'N/A'
+        };
+      });
+
       playersLoaded = true;
       initPlayers();
     } catch (err) {
@@ -4389,12 +4387,9 @@ a:hover { text-decoration: underline; }
         const name = tr.dataset.player;
         // Ensure PE funds data is loaded before opening modal
         if (!pefLoaded) {
-          fetch('data/pe-funds.json').then(r => r.json()).then(data => {
-            allFunds = data;
-            allFunds.forEach(function(f) { f.size_num = parseSizeToM(f.size); });
-            pefLoaded = true;
+          loadPEFunds().then(function() {
             openPlayerModal(name);
-          }).catch(() => openPlayerModal(name));
+          }).catch(function() { openPlayerModal(name); });
         } else {
           openPlayerModal(name);
         }
@@ -4564,20 +4559,31 @@ a:hover { text-decoration: underline; }
   async function loadPEFunds() {
     if (pefLoaded) return;
     try {
-      var res = await fetch('data/pe-funds.json');
-      if (!res.ok) throw new Error('HTTP ' + res.status);
-      var rawText = await res.text();
-      var hashOk = await verifyDataIntegrity(rawText, DATA_HASHES.pefunds);
-      if (!hashOk) {
-        showIntegrityAlert('pe-funds.json');
-        console.error('Data integrity check failed for pe-funds.json');
-        return;
-      }
-      allFunds = JSON.parse(rawText);
-      // Pre-compute numeric size
+      var { data: fundsData, error } = await supabase
+        .from('pe_funds')
+        .select('*')
+        .order('irr', { ascending: false, nullsFirst: false });
+
+      if (error) throw error;
+
+      allFunds = fundsData.map(function(f) {
+        return {
+          fund: f.fund,
+          gp: f.gp,
+          vintage: f.vintage,
+          size: f.size,
+          status: f.status,
+          irr: f.irr != null ? Number(f.irr) : null,
+          quartile: f.quartile,
+          countries: f.countries || []
+        };
+      });
+
+      // Pre-compute numeric size (same as original code)
       allFunds.forEach(function(f) {
         f.size_num = parseSizeToM(f.size);
       });
+
       pefLoaded = true;
       initPEFunds();
     } catch (err) {
@@ -5112,12 +5118,15 @@ a:hover { text-decoration: underline; }
   ];
 
   function getFavorites() {
+    // Read from localStorage as cache (synced to Supabase when possible)
     try { return JSON.parse(localStorage.getItem(FAVORITES_KEY)) || []; }
     catch(e) { return []; }
   }
 
   function setFavorites(favs) {
     localStorage.setItem(FAVORITES_KEY, JSON.stringify(favs));
+    // Sync to Supabase in background
+    syncPreferencesToSupabase();
   }
 
   function toggleFavorite(symbol) {
@@ -5125,12 +5134,46 @@ a:hover { text-decoration: underline; }
     var idx = favs.indexOf(symbol);
     if (idx > -1) { favs.splice(idx, 1); } else { favs.push(symbol); }
     setFavorites(favs);
-    // Update all star buttons for this symbol
     document.querySelectorAll('.btn-fav[data-symbol="' + symbol + '"]').forEach(function(btn) {
       btn.classList.toggle('active', favs.indexOf(symbol) > -1);
       btn.innerHTML = favs.indexOf(symbol) > -1 ? '&#9733;' : '&#9734;';
     });
     renderWatchlist();
+  }
+
+  async function syncPreferencesToSupabase() {
+    var user = currentUser;
+    if (!user) return;
+    var favs = getFavorites();
+    var layout = {};
+    try { layout = JSON.parse(localStorage.getItem(getDashboardLayoutKey())) || {}; } catch(e) {}
+
+    await supabase.from('user_preferences').upsert({
+      user_id: user.id,
+      market_favorites: favs,
+      panel_layout: layout,
+      updated_at: new Date().toISOString()
+    }, { onConflict: 'user_id' }).catch(function(e) { console.warn('Prefs sync error:', e); });
+  }
+
+  async function loadPreferencesFromSupabase() {
+    var user = currentUser;
+    if (!user) return;
+    var { data, error } = await supabase
+      .from('user_preferences')
+      .select('*')
+      .eq('user_id', user.id)
+      .single();
+
+    if (data) {
+      if (data.market_favorites && data.market_favorites.length > 0) {
+        localStorage.setItem(FAVORITES_KEY, JSON.stringify(data.market_favorites));
+      }
+      if (data.panel_layout && Object.keys(data.panel_layout).length > 0) {
+        localStorage.setItem(getDashboardLayoutKey(), JSON.stringify(data.panel_layout));
+        restorePanelSizes();
+      }
+    }
   }
 
   function createMarketCard(item, container) {
@@ -5241,120 +5284,6 @@ a:hover { text-decoration: underline; }
   }
 
   /* ==============================================================
-     ANTI-TAMPERING — HTML checksum validation
-     ============================================================== */
-  var _TAMPER_CHECK_ELEMENTS = ['navMenu', 'loginForm', 'loginModal'];
-
-  function computePageChecksum() {
-    var content = '';
-    _TAMPER_CHECK_ELEMENTS.forEach(function(id) {
-      var el = document.getElementById(id);
-      if (el) content += el.innerHTML;
-    });
-    return sha256(content);
-  }
-
-  var _initialChecksum = null;
-
-  async function initAntiTampering() {
-    _initialChecksum = await computePageChecksum();
-
-    // Periodically verify DOM integrity of critical elements
-    setInterval(async function() {
-      var current = await computePageChecksum();
-      if (_initialChecksum && current !== _initialChecksum) {
-        // Only alert on unexpected changes to auth-related elements
-        var loginModal = document.getElementById('loginModal');
-        var loginForm = document.getElementById('loginForm');
-        if (loginModal && loginForm) {
-          // Re-check — form might have changed due to user interaction
-          var formFields = loginForm.querySelectorAll('input');
-          var hasUnexpectedFields = false;
-          formFields.forEach(function(f) {
-            if (['loginFirstName','loginLastName','loginEmail','loginPassword','loginLockout'].indexOf(f.id) === -1 &&
-                f.type !== 'submit') {
-              hasUnexpectedFields = true;
-            }
-          });
-          if (hasUnexpectedFields) {
-            console.warn('Anti-tampering: unexpected form fields detected');
-          }
-        }
-        // Update checksum after legitimate DOM changes
-        _initialChecksum = current;
-      }
-    }, 30000); // Check every 30 seconds
-  }
-
-  /* ==============================================================
-     INPUT SANITIZATION — bind to all search inputs
-     ============================================================== */
-  function initInputSanitization() {
-    // Sanitize database search on input
-    var dbSearch = document.getElementById('dbSearch');
-    if (dbSearch) {
-      var origHandler = dbSearch.oninput;
-      dbSearch.addEventListener('input', function() {
-        var val = dbSearch.value;
-        var sanitized = sanitizeInput(val);
-        if (val !== sanitized) {
-          dbSearch.value = sanitized;
-        }
-      });
-    }
-
-    // Sanitize players search
-    var playersSearch = document.getElementById('playersSearch');
-    if (playersSearch) {
-      playersSearch.addEventListener('input', function() {
-        var val = playersSearch.value;
-        var sanitized = sanitizeInput(val);
-        if (val !== sanitized) {
-          playersSearch.value = sanitized;
-        }
-      });
-    }
-
-    // Sanitize PE funds search
-    var pefSearch = document.getElementById('pefSearch');
-    if (pefSearch) {
-      pefSearch.addEventListener('input', function() {
-        var val = pefSearch.value;
-        var sanitized = sanitizeInput(val);
-        if (val !== sanitized) {
-          pefSearch.value = sanitized;
-        }
-      });
-    }
-
-    // Sanitize newsletter email
-    var newsletterEmail = document.getElementById('newsletterEmail');
-    if (newsletterEmail) {
-      newsletterEmail.addEventListener('input', function() {
-        var val = newsletterEmail.value;
-        var sanitized = sanitizeInput(val);
-        if (val !== sanitized) {
-          newsletterEmail.value = sanitized;
-        }
-      });
-    }
-
-    // Sanitize login fields
-    ['loginFirstName', 'loginLastName', 'loginEmail'].forEach(function(id) {
-      var el = document.getElementById(id);
-      if (el) {
-        el.addEventListener('input', function() {
-          var val = el.value;
-          var sanitized = sanitizeInput(val);
-          if (val !== sanitized) {
-            el.value = sanitized;
-          }
-        });
-      }
-    });
-  }
-
-  /* ==============================================================
      BOOT
      ============================================================== */
   // Brand logo click → home
@@ -5380,8 +5309,6 @@ a:hover { text-decoration: underline; }
   initNewsletter();
   initHomeScroll();
   initHeatmapToggle();
-  initInputSanitization();
-  initAntiTampering();
   renderWatchlist();
 
   // Country deals modal — close handlers
