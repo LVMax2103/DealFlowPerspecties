@@ -131,6 +131,124 @@ a:hover { text-decoration: underline; }
 
 .navbar-nav li a svg { width: 16px; height: 16px; }
 
+/* Navbar Dropdowns */
+.nav-dropdown {
+  position: relative;
+}
+
+.nav-dropdown-trigger {
+  display: flex; align-items: center; gap: 6px;
+  padding: 8px 16px; border-radius: var(--radius-sm);
+  font-size: 13px; font-weight: 500;
+  color: var(--text-secondary);
+  transition: all var(--transition);
+  cursor: pointer;
+  background: none; border: none;
+  font-family: var(--font-sans);
+  white-space: nowrap;
+}
+
+.nav-dropdown-trigger:hover,
+.nav-dropdown.active > .nav-dropdown-trigger {
+  color: var(--text-primary);
+  background: var(--accent-glow);
+}
+
+.nav-dropdown.has-active-child > .nav-dropdown-trigger {
+  color: var(--accent-light);
+  background: var(--accent-glow);
+}
+
+.nav-dropdown-trigger svg { width: 16px; height: 16px; }
+
+.nav-dropdown-trigger .dropdown-arrow {
+  width: 10px; height: 10px;
+  transition: transform 0.2s ease;
+  margin-left: 2px;
+  opacity: 0.5;
+}
+
+.nav-dropdown.open .dropdown-arrow {
+  transform: rotate(180deg);
+}
+
+.nav-dropdown-menu {
+  display: none;
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  min-width: 200px;
+  background: rgba(10, 10, 10, 0.98);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  padding: 6px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  z-index: 110;
+  animation: dropdownIn 0.15s ease;
+}
+
+@keyframes dropdownIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.nav-dropdown.open .nav-dropdown-menu {
+  display: block;
+}
+
+.nav-dropdown-menu a {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 13px; font-weight: 500;
+  color: var(--text-secondary);
+  transition: all var(--transition);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.nav-dropdown-menu a:hover {
+  color: var(--text-primary);
+  background: var(--accent-glow);
+  text-decoration: none;
+}
+
+.nav-dropdown-menu a.active {
+  color: var(--accent-light);
+  background: var(--accent-glow);
+}
+
+.nav-dropdown-menu a svg {
+  width: 15px; height: 15px; opacity: 0.6;
+}
+
+.nav-dropdown-menu a:hover svg,
+.nav-dropdown-menu a.active svg {
+  opacity: 1;
+}
+
+.nav-dropdown-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 4px 8px;
+}
+
+@media (max-width: 768px) {
+  .nav-dropdown-menu {
+    position: static;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    padding: 0 0 0 16px;
+    backdrop-filter: none;
+    animation: none;
+  }
+  .nav-dropdown.open .nav-dropdown-menu {
+    display: block;
+  }
+}
+
 .navbar-mobile-toggle {
   display: none;
   background: none; border: none; color: var(--text-primary);
@@ -2035,38 +2153,74 @@ a:hover { text-decoration: underline; }
   </button>
 
   <ul class="navbar-nav" id="navMenu">
+    <!-- Home (direct link) -->
     <li><a href="#home" class="active" data-section="home">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
       Home
     </a></li>
-    <li><a href="#dashboard" data-section="dashboard">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-      Dashboard
-    </a></li>
-    <li><a href="#database" data-section="database">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4.03 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4.03 3 9 3s9-1.34 9-3V5"/></svg>
-      Deal Database
-    </a></li>
-    <li><a href="#players" data-section="players">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-      Players
-    </a></li>
-    <li><a href="#pefunds" data-section="pefunds">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
-      PE Funds
-    </a></li>
-    <li><a href="#markets" data-section="markets">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-      Markets
-    </a></li>
-    <li><a href="#macro" data-section="macro">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
-      Macro
-    </a></li>
-    <li><a href="#heatmap" data-section="heatmap">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><rect x="7" y="7" width="3" height="3"/><rect x="14" y="7" width="3" height="3"/><rect x="7" y="14" width="3" height="3"/><rect x="14" y="14" width="3" height="3"/></svg>
-      Heatmap
-    </a></li>
+
+    <!-- Deal Intelligence dropdown -->
+    <li class="nav-dropdown" id="ddDealIntel">
+      <button class="nav-dropdown-trigger">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        Deal Intelligence
+        <svg class="dropdown-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <div class="nav-dropdown-menu">
+        <a href="#dashboard" data-section="dashboard">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+          Dashboard
+        </a>
+        <a href="#database" data-section="database">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4.03 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4.03 3 9 3s9-1.34 9-3V5"/></svg>
+          Deal Database
+        </a>
+        <a href="#heatmap" data-section="heatmap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><rect x="7" y="7" width="3" height="3"/><rect x="14" y="7" width="3" height="3"/><rect x="7" y="14" width="3" height="3"/><rect x="14" y="14" width="3" height="3"/></svg>
+          Heatmap
+        </a>
+      </div>
+    </li>
+
+    <!-- Market Players dropdown -->
+    <li class="nav-dropdown" id="ddMarketPlayers">
+      <button class="nav-dropdown-trigger">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Market Players
+        <svg class="dropdown-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <div class="nav-dropdown-menu">
+        <a href="#players" data-section="players">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          Players
+        </a>
+        <a href="#pefunds" data-section="pefunds">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+          PE Funds
+        </a>
+      </div>
+    </li>
+
+    <!-- Complements dropdown -->
+    <li class="nav-dropdown" id="ddComplements">
+      <button class="nav-dropdown-trigger">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        Complements
+        <svg class="dropdown-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <div class="nav-dropdown-menu">
+        <a href="#markets" data-section="markets">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          Markets
+        </a>
+        <a href="#macro" data-section="macro">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+          Macro
+        </a>
+      </div>
+    </li>
+
+    <!-- Auth buttons -->
     <li>
       <button class="btn-sign-in" id="btnSignIn">Sign In</button>
     </li>
@@ -2459,13 +2613,13 @@ a:hover { text-decoration: underline; }
 
     <!-- Interest Rates -->
     <div class="markets-group">
-      <div class="markets-group-title">Central Bank Interest Rates</div>
+      <div class="markets-group-title">LatAm FX (Interest Rate Proxies)</div>
       <div class="markets-grid" id="macroRatesGrid"></div>
     </div>
 
     <!-- Inflation / CPI -->
     <div class="markets-group">
-      <div class="markets-group-title">Sovereign Bond Yields (10Y)</div>
+      <div class="markets-group-title">Bond Yields & Benchmarks</div>
       <div class="markets-grid" id="macroBondsGrid"></div>
     </div>
 
@@ -3566,8 +3720,13 @@ a:hover { text-decoration: underline; }
     const target = document.getElementById(sectionId);
     if (target) target.classList.add('active');
 
-    $$('.navbar-nav a').forEach(a => {
+    document.querySelectorAll('.navbar-nav a[data-section]').forEach(function(a) {
       a.classList.toggle('active', a.dataset.section === sectionId);
+    });
+
+    document.querySelectorAll('.nav-dropdown').forEach(function(dd) {
+      var hasActive = dd.querySelector('.nav-dropdown-menu a.active');
+      dd.classList.toggle('has-active-child', !!hasActive);
     });
 
     // Lazy-init the 3D globe when heatmap section is first shown
@@ -5402,38 +5561,35 @@ a:hover { text-decoration: underline; }
 
   // Macro indicators — TradingView symbols
   var MACRO_RATES = [
-    { symbol: 'ECONOMICS:MXIR',  label: 'Mexico — Banxico Rate' },
-    { symbol: 'ECONOMICS:BRIR',  label: 'Brazil — Selic Rate' },
-    { symbol: 'ECONOMICS:CLIR',  label: 'Chile — BCCh Rate' },
-    { symbol: 'ECONOMICS:COIR',  label: 'Colombia — BanRep Rate' },
-    { symbol: 'ECONOMICS:PEIR',  label: 'Peru — BCRP Rate' },
-    { symbol: 'ECONOMICS:ARIR',  label: 'Argentina — BCRA Rate' }
+    { symbol: 'FX:USDMXN',    label: 'USD/MXN (Proxy: Banxico)' },
+    { symbol: 'FX:USDBRL',    label: 'USD/BRL (Proxy: Selic)' },
+    { symbol: 'FX:USDCLP',    label: 'USD/CLP (Proxy: BCCh)' },
+    { symbol: 'FX:USDCOP',    label: 'USD/COP (Proxy: BanRep)' },
+    { symbol: 'FX:USDPEN',    label: 'USD/PEN (Proxy: BCRP)' },
+    { symbol: 'FX:USDARS',    label: 'USD/ARS (Proxy: BCRA)' }
   ];
 
   var MACRO_BONDS = [
-    { symbol: 'TVC:MX10Y',  label: 'Mexico 10Y Bond' },
-    { symbol: 'TVC:BR10Y',  label: 'Brazil 10Y Bond' },
-    { symbol: 'TVC:CL10Y',  label: 'Chile 10Y Bond' },
-    { symbol: 'TVC:CO10Y',  label: 'Colombia 10Y Bond' },
-    { symbol: 'TVC:US10Y',  label: 'US 10Y Treasury (Benchmark)' }
+    { symbol: 'TVC:MX10Y',    label: 'Mexico 10Y Bond' },
+    { symbol: 'TVC:BR10Y',    label: 'Brazil 10Y Bond' },
+    { symbol: 'TVC:US10Y',    label: 'US 10Y Treasury (Benchmark)' },
+    { symbol: 'TVC:US02Y',    label: 'US 2Y Treasury' }
   ];
 
   var MACRO_COMMODITIES = [
     { symbol: 'TVC:USOIL',    label: 'Crude Oil (WTI)' },
-    { symbol: 'COMEX:GC1!',   label: 'Gold' },
-    { symbol: 'COMEX:HG1!',   label: 'Copper' },
-    { symbol: 'CBOT:ZS1!',    label: 'Soybeans' },
+    { symbol: 'TVC:GOLD',     label: 'Gold' },
     { symbol: 'TVC:SILVER',   label: 'Silver' },
+    { symbol: 'TVC:UKOIL',    label: 'Brent Oil' },
     { symbol: 'NYMEX:NG1!',   label: 'Natural Gas' },
-    { symbol: 'CAPITALCOM:LITHIUM', label: 'Lithium' },
-    { symbol: 'CBOT:ZC1!',    label: 'Corn' }
+    { symbol: 'TVC:COPPER',   label: 'Copper' }
   ];
 
   var MACRO_RISK = [
-    { symbol: 'TVC:VIX',      label: 'VIX — Fear Index' },
+    { symbol: 'TVC:VIX',      label: 'VIX — Volatility Index' },
     { symbol: 'TVC:DXY',      label: 'US Dollar Index (DXY)' },
-    { symbol: 'FRED:BAMLHE00EHYIEY', label: 'EM High Yield Spread' },
-    { symbol: 'SP:SPX',       label: 'S&P 500 (Global Risk)' }
+    { symbol: 'SP:SPX',       label: 'S&P 500' },
+    { symbol: 'NASDAQ:NDX',   label: 'Nasdaq 100' }
   ];
 
   var macroLoaded = false;
@@ -5676,12 +5832,31 @@ a:hover { text-decoration: underline; }
     navigateTo('home');
   });
 
-  // Navigation links (bind early so they work before data loads)
-  $$('.navbar-nav a').forEach(a => {
-    a.addEventListener('click', (e) => {
+  // Navigation links (including dropdown items)
+  document.querySelectorAll('.navbar-nav a[data-section]').forEach(function(a) {
+    a.addEventListener('click', function(e) {
       e.preventDefault();
       navigateTo(a.dataset.section);
+      document.querySelectorAll('.nav-dropdown').forEach(function(dd) { dd.classList.remove('open'); });
     });
+  });
+
+  // Dropdown toggle behavior
+  document.querySelectorAll('.nav-dropdown-trigger').forEach(function(trigger) {
+    trigger.addEventListener('click', function(e) {
+      e.stopPropagation();
+      var parent = trigger.closest('.nav-dropdown');
+      var wasOpen = parent.classList.contains('open');
+      document.querySelectorAll('.nav-dropdown').forEach(function(dd) { dd.classList.remove('open'); });
+      if (!wasOpen) parent.classList.add('open');
+    });
+  });
+
+  // Close dropdowns when clicking outside
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('.nav-dropdown')) {
+      document.querySelectorAll('.nav-dropdown').forEach(function(dd) { dd.classList.remove('open'); });
+    }
   });
 
   // Mobile toggle
