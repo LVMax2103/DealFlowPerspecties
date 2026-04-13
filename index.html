@@ -3113,20 +3113,20 @@ a:hover { text-decoration: underline; }
 
     if (!allDeals || !allDeals.length) {
       // Show teaser stats with animation even when logged out
-      if (dealsEl) animateCounter(dealsEl, 217, 2500, '', '');
+      if (dealsEl) animateCounter(dealsEl, 277, 2500, '', '');
       if (valueEl) {
         var teaserStart = performance.now();
         function tickTeaser(now) {
           var elapsed = now - teaserStart;
           var progress = Math.min(elapsed / 2500, 1);
           var eased = easeOutExpo(progress);
-          var current = (78 * eased).toFixed(0);
+          var current = (80 * eased).toFixed(0);
           valueEl.textContent = '$' + current + 'B';
           if (progress < 1) requestAnimationFrame(tickTeaser);
         }
         requestAnimationFrame(tickTeaser);
       }
-      if (countriesEl) animateCounter(countriesEl, 28, 2500, '', '');
+      if (countriesEl) animateCounter(countriesEl, 36, 2500, '', '');
       return;
     }
 
@@ -3168,9 +3168,9 @@ a:hover { text-decoration: underline; }
       if (el('homeStatValue') && !homeCountersAnimated) el('homeStatValue').textContent = fmtValue(totalVal);
       if (el('homeStatCountries') && !homeCountersAnimated) el('homeStatCountries').textContent = countries;
     } else {
-      if (el('homeStatDeals')) el('homeStatDeals').textContent = '217';
-      if (el('homeStatValue')) el('homeStatValue').textContent = '$78B';
-      if (el('homeStatCountries')) el('homeStatCountries').textContent = '28';
+      if (el('homeStatDeals')) el('homeStatDeals').textContent = '277';
+      if (el('homeStatValue')) el('homeStatValue').textContent = '$80B';
+      if (el('homeStatCountries')) el('homeStatCountries').textContent = '36';
     }
   }
 
