@@ -3311,6 +3311,18 @@ a:hover { text-decoration: underline; }
   const SUPABASE_ANON_KEY = 'sb_publishable_RQ5bD4HwpHERVo4mqWRQKA_ovVrYAgM';
   const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+  function clearSupabaseStorage() {
+    try {
+      const keys = Object.keys(localStorage).filter(k => k.startsWith('sb-'));
+      keys.forEach(k => localStorage.removeItem(k));
+      const sessionKeys = Object.keys(sessionStorage).filter(k => k.startsWith('sb-'));
+      sessionKeys.forEach(k => sessionStorage.removeItem(k));
+      console.log('[auth] Cleared', keys.length + sessionKeys.length, 'stale supabase tokens');
+    } catch (e) {
+      console.warn('[auth] Storage cleanup failed:', e);
+    }
+  }
+
   function renderAuthGate(containerId) {
     var el = document.getElementById(containerId);
     if (!el) return;
@@ -3552,20 +3564,32 @@ a:hover { text-decoration: underline; }
 
       if (!email || !password) return;
 
-      var { data, error } = await supabase.auth.signInWithPassword({
-        email: email,
-        password: password
-      });
+      try {
+        var { data, error } = await supabase.auth.signInWithPassword({
+          email: email,
+          password: password
+        });
 
-      if (error) {
+        if (error && (error.message.includes('Invalid') || error.message.includes('expired'))) {
+          clearSupabaseStorage();
+          // retry login once
+          var retry = await supabase.auth.signInWithPassword({
+            email: email,
+            password: password
+          });
+          if (retry.error) throw retry.error;
+        } else if (error) {
+          throw error;
+        }
+      } catch (e) {
         lockoutEl.style.background = 'rgba(255,77,106,0.1)';
         lockoutEl.style.borderColor = 'rgba(255,77,106,0.3)';
         lockoutEl.style.color = '#FF4D6A';
 
-        if (error.message.includes('Invalid login credentials')) {
+        if (e.message && e.message.includes('Invalid login credentials')) {
           lockoutEl.textContent = 'Invalid email or password. If you don\'t have an account, create one.';
         } else {
-          lockoutEl.textContent = error.message;
+          lockoutEl.textContent = e.message || 'Login failed. Please try again.';
         }
         lockoutEl.style.display = 'block';
         return;
@@ -3638,6 +3662,7 @@ a:hover { text-decoration: underline; }
       if (!confirm('Are you sure you want to log out?')) return;
       await syncPreferencesToSupabase();
       await supabase.auth.signOut();
+      clearSupabaseStorage();
       window.location.reload();
     });
 
