@@ -930,6 +930,98 @@ a:hover { text-decoration: underline; }
   text-decoration: underline;
 }
 
+/* Demo Access Bar */
+.demo-bar {
+  position: fixed; top: 60px; left: 0; right: 0; z-index: 99;
+  background: linear-gradient(90deg, rgba(0,102,255,0.15), rgba(124,58,237,0.15));
+  border-bottom: 1px solid rgba(0,102,255,0.2);
+  padding: 6px 32px;
+  display: flex; align-items: center; justify-content: center; gap: 12px;
+  font-size: 12px; color: var(--text-secondary);
+  backdrop-filter: blur(10px);
+}
+.demo-bar strong { color: var(--accent-light); font-weight: 600; }
+.demo-bar .demo-days { color: var(--warning); font-weight: 700; font-family: var(--font-mono); }
+.demo-bar-active ~ .main-content { margin-top: 92px; }
+
+/* Request Demo Modal */
+.request-type-tabs {
+  display: flex; gap: 0; margin-bottom: 20px;
+  background: var(--bg-secondary); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); overflow: hidden;
+}
+.request-type-tab {
+  flex: 1; padding: 10px; border: none; background: transparent;
+  color: var(--text-secondary); font-size: 12px; font-weight: 600;
+  font-family: var(--font-sans); cursor: pointer;
+  transition: all var(--transition); text-align: center;
+}
+.request-type-tab:hover { color: var(--text-primary); }
+.request-type-tab.active { background: var(--accent); color: #fff; }
+
+/* Expired overlay */
+.expired-overlay {
+  position: fixed; inset: 0; z-index: 500;
+  background: rgba(0,0,0,0.95); backdrop-filter: blur(12px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px;
+}
+.expired-card {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); max-width: 560px; width: 100%;
+  padding: 40px; text-align: center;
+  box-shadow: var(--shadow-modal);
+}
+.expired-card h2 { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+.expired-card p { font-size: 14px; color: var(--text-secondary); margin-bottom: 24px; }
+
+/* Survey form */
+.survey-stars { display: flex; gap: 8px; justify-content: center; margin: 16px 0; }
+.survey-star {
+  font-size: 32px; cursor: pointer; color: var(--text-muted);
+  transition: color 0.15s ease; background: none; border: none; padding: 0;
+}
+.survey-star:hover, .survey-star.active { color: var(--warning); }
+
+.survey-checkboxes { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin: 12px 0; }
+.survey-checkbox {
+  display: flex; align-items: center; gap: 6px;
+  padding: 6px 12px; background: var(--bg-secondary); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); font-size: 12px; color: var(--text-secondary);
+  cursor: pointer; transition: all var(--transition);
+}
+.survey-checkbox:hover { border-color: var(--accent); }
+.survey-checkbox.checked { background: var(--accent-glow); border-color: var(--accent); color: var(--accent-light); }
+.survey-checkbox input { display: none; }
+
+.survey-textarea {
+  width: 100%; padding: 12px; background: var(--bg-input); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); color: var(--text-primary); font-size: 13px;
+  font-family: var(--font-sans); resize: vertical; min-height: 80px; outline: none;
+}
+.survey-textarea:focus { border-color: var(--accent); }
+
+.privacy-check {
+  display: flex; align-items: flex-start; gap: 8px;
+  margin: 16px 0; text-align: left; font-size: 11px; color: var(--text-muted);
+}
+.privacy-check input { margin-top: 2px; }
+
+.btn-survey-submit {
+  padding: 12px 32px; background: var(--accent); color: #fff; border: none;
+  border-radius: var(--radius-sm); font-size: 14px; font-weight: 600;
+  font-family: var(--font-sans); cursor: pointer; transition: all var(--transition);
+}
+.btn-survey-submit:hover { background: #0052CC; }
+
+/* Request access button (replaces Sign In for non-auth pages) */
+.btn-request-demo {
+  padding: 7px 18px; background: var(--pe-color); color: #fff; border: none;
+  border-radius: var(--radius-sm); font-size: 13px; font-weight: 600;
+  font-family: var(--font-sans); cursor: pointer; transition: all var(--transition);
+}
+.btn-request-demo:hover { background: #6D28D9; }
+
 /* ===================================================================
    FOOTER
    =================================================================== */
@@ -2208,6 +2300,9 @@ a:hover { text-decoration: underline; }
     </a></li>
 
     <!-- Auth buttons -->
+    <li id="navRequestDemo">
+      <button class="btn-request-demo" id="btnRequestDemo">Request Demo</button>
+    </li>
     <li>
       <button class="btn-sign-in" id="btnSignIn">Sign In</button>
     </li>
@@ -2675,6 +2770,134 @@ a:hover { text-decoration: underline; }
   </div>
 </div>
 
+<!-- REQUEST DEMO MODAL -->
+<div class="modal-overlay" id="requestDemoModal">
+  <div class="modal" style="max-width:500px;">
+    <button class="modal-close" id="requestDemoClose">&times;</button>
+    <div class="modal-top-accent" style="background:var(--pe-color);"></div>
+    <div class="modal-header" style="padding-bottom:8px;text-align:center;">
+      <img src="logo-horizontal-white.png" alt="DealFlow Perspectives" style="height:28px;margin-bottom:12px;opacity:0.9;" onerror="this.style.display='none'">
+      <div class="modal-deal-name" style="font-size:18px;">Request Demo Access</div>
+      <p style="font-size:12px;color:var(--text-secondary);margin-top:4px;">Pre-MVP · 7-day full access</p>
+    </div>
+    <div class="modal-body" style="padding-top:0;">
+      <div class="request-type-tabs">
+        <button class="request-type-tab active" id="reqTabIndividual" data-req-type="individual">Individual</button>
+        <button class="request-type-tab" id="reqTabInstitutional" data-req-type="institutional">Institutional</button>
+      </div>
+      <div class="login-lockout" id="requestDemoMsg"></div>
+
+      <form id="requestDemoForm" class="login-form">
+        <input type="hidden" id="reqType" value="individual">
+        <div class="login-field">
+          <label for="reqName">Full Name *</label>
+          <input type="text" id="reqName" required>
+        </div>
+        <div class="login-field">
+          <label for="reqEmail">Work Email *</label>
+          <input type="email" id="reqEmail" required>
+        </div>
+        <div class="login-field">
+          <label for="reqCountry">Country *</label>
+          <input type="text" id="reqCountry" required>
+        </div>
+        <div class="login-field">
+          <label for="reqRole">Role / Title</label>
+          <input type="text" id="reqRole">
+        </div>
+        <!-- Individual fields -->
+        <div class="login-field" id="reqCompanyField">
+          <label for="reqCompany">Company (optional)</label>
+          <input type="text" id="reqCompany">
+        </div>
+        <!-- Institutional fields (hidden by default) -->
+        <div id="reqInstitutionalFields" style="display:none;">
+          <div class="login-field">
+            <label for="reqFirmName">Firm Name *</label>
+            <input type="text" id="reqFirmName">
+          </div>
+          <div class="login-field">
+            <label for="reqFirmUrl">Firm Website</label>
+            <input type="url" id="reqFirmUrl" placeholder="https://...">
+          </div>
+          <div class="login-field">
+            <label for="reqNumAccounts"># of Accounts Needed</label>
+            <input type="number" id="reqNumAccounts" min="1" max="50" value="1">
+          </div>
+          <div class="login-field">
+            <label for="reqIndustry">Industry / Sector</label>
+            <input type="text" id="reqIndustry">
+          </div>
+        </div>
+        <button type="submit" class="btn-login-submit" style="background:var(--pe-color);">Submit Request</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- EXPIRED / SURVEY OVERLAY -->
+<div class="expired-overlay" id="expiredOverlay" style="display:none;">
+  <div class="expired-card">
+    <h2 id="expiredTitle">Your demo access has expired</h2>
+    <p id="expiredSubtitle">Thank you for exploring DealFlow Perspectives. We'd love to hear about your experience.</p>
+
+    <!-- Survey form -->
+    <form id="surveyForm" style="text-align:left;">
+      <div style="margin-bottom:16px;">
+        <label style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);display:block;margin-bottom:8px;">Overall Experience</label>
+        <div class="survey-stars" id="surveyStars">
+          <button type="button" class="survey-star" data-rating="1">&#9734;</button>
+          <button type="button" class="survey-star" data-rating="2">&#9734;</button>
+          <button type="button" class="survey-star" data-rating="3">&#9734;</button>
+          <button type="button" class="survey-star" data-rating="4">&#9734;</button>
+          <button type="button" class="survey-star" data-rating="5">&#9734;</button>
+        </div>
+      </div>
+
+      <div style="margin-bottom:16px;">
+        <label style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);display:block;margin-bottom:8px;">Sections Used</label>
+        <div class="survey-checkboxes" id="surveySections">
+          <label class="survey-checkbox"><input type="checkbox" value="Dashboard"> Dashboard</label>
+          <label class="survey-checkbox"><input type="checkbox" value="Deal Database"> Deal Database</label>
+          <label class="survey-checkbox"><input type="checkbox" value="Players"> Players</label>
+          <label class="survey-checkbox"><input type="checkbox" value="PE Funds"> PE Funds</label>
+          <label class="survey-checkbox"><input type="checkbox" value="Heatmap"> Heatmap</label>
+          <label class="survey-checkbox"><input type="checkbox" value="Markets"> Markets</label>
+        </div>
+      </div>
+
+      <div style="margin-bottom:16px;">
+        <label style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);display:block;margin-bottom:8px;">What data would you like to see?</label>
+        <textarea class="survey-textarea" id="surveyDesiredData" placeholder="e.g., more countries, fund returns, LP data..."></textarea>
+      </div>
+
+      <div style="margin-bottom:16px;">
+        <label style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);display:block;margin-bottom:8px;">Additional Comments</label>
+        <textarea class="survey-textarea" id="surveyComments" placeholder="Your feedback helps us build a better product..."></textarea>
+      </div>
+
+      <div class="privacy-check">
+        <input type="checkbox" id="surveyPrivacy" required>
+        <span>I agree that my responses will be collected and used solely to improve DealFlow Perspectives. My data will not be shared with third parties. I can request deletion at any time by contacting the team.</span>
+      </div>
+
+      <div style="text-align:center;">
+        <button type="submit" class="btn-survey-submit">Submit Feedback</button>
+      </div>
+    </form>
+
+    <!-- Post-survey thank you (hidden initially) -->
+    <div id="surveyThankYou" style="display:none;">
+      <p style="font-size:16px;color:var(--success);margin-bottom:16px;">Thank you for your feedback!</p>
+      <p style="font-size:14px;color:var(--text-secondary);margin-bottom:24px;">If you're interested in continued access, we'd love to connect.</p>
+      <a href="https://www.linkedin.com/company/dealflow-perspectives" target="_blank" rel="noopener" class="btn-landing btn-linkedin" style="display:inline-flex;">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+        Connect on LinkedIn
+      </a>
+    </div>
+  </div>
+</div>
+
 <!-- ============================================================
      DEAL DETAIL MODAL
      ============================================================ -->
@@ -2796,7 +3019,7 @@ a:hover { text-decoration: underline; }
   function renderAuthGate(containerId) {
     var el = document.getElementById(containerId);
     if (!el) return;
-    el.innerHTML = '<div class="empty-state" style="padding:80px 20px;"><svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" style="opacity:0.3;margin-bottom:12px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><p style="font-size:15px;color:var(--text-secondary);margin-bottom:8px;">Sign in to access this data</p><p style="font-size:12px;color:var(--text-muted);">Create an account or log in to view deal intelligence.</p></div>';
+    el.innerHTML = '<div class="empty-state" style="padding:80px 20px;"><svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" style="opacity:0.3;margin-bottom:12px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><p style="font-size:15px;color:var(--text-secondary);margin-bottom:8px;">Request demo access to view this data</p><p style="font-size:12px;color:var(--text-muted);">Create an account or log in to view deal intelligence.</p><br><button onclick="document.getElementById(\'btnRequestDemo\').click()" style="margin-top:12px;padding:8px 20px;background:#7C3AED;color:#fff;border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;">Request Demo Access</button></div>';
   }
 
   // Client-side rate limiting for API calls
@@ -2808,6 +3031,67 @@ a:hover { text-decoration: underline; }
     }
     _apiCallTimestamps[key] = now;
     return true;
+  }
+
+  /* ==============================================================
+     DEMO ACCESS — Check status and expiration
+     ============================================================== */
+  async function checkDemoAccess(user) {
+    if (!user) return { status: 'none', isAdmin: false };
+
+    // Check if admin
+    var { data: adminData } = await supabase
+      .from('admin_accounts')
+      .select('codename, role')
+      .eq('email', user.email)
+      .maybeSingle();
+
+    if (adminData) {
+      return { status: 'admin', isAdmin: true, codename: adminData.codename, role: adminData.role };
+    }
+
+    // Check demo request
+    var { data: demoData } = await supabase
+      .from('demo_requests')
+      .select('status, expires_at, approved_at')
+      .eq('email', user.email)
+      .maybeSingle();
+
+    if (!demoData) return { status: 'none', isAdmin: false };
+    if (demoData.status === 'approved' && demoData.expires_at) {
+      var now = new Date();
+      var expires = new Date(demoData.expires_at);
+      if (now > expires) {
+        return { status: 'expired', isAdmin: false, expires_at: demoData.expires_at };
+      }
+      var daysLeft = Math.ceil((expires - now) / (1000 * 60 * 60 * 24));
+      return { status: 'active', isAdmin: false, expires_at: demoData.expires_at, daysLeft: daysLeft };
+    }
+    return { status: demoData.status, isAdmin: false };
+  }
+
+  function showDemoBar(daysLeft) {
+    removeDemoBar();
+    var bar = document.createElement('div');
+    bar.className = 'demo-bar';
+    bar.id = 'demoBar';
+    bar.innerHTML = '<strong>Demo Access</strong> · <span class="demo-days">' + daysLeft + ' day' + (daysLeft !== 1 ? 's' : '') + ' remaining</span>';
+    document.body.classList.add('demo-bar-active');
+    document.body.insertBefore(bar, document.querySelector('.main-content'));
+  }
+
+  function removeDemoBar() {
+    var existing = document.getElementById('demoBar');
+    if (existing) existing.remove();
+    document.body.classList.remove('demo-bar-active');
+  }
+
+  function showExpiredOverlay() {
+    document.getElementById('expiredOverlay').style.display = 'flex';
+  }
+
+  function hideExpiredOverlay() {
+    document.getElementById('expiredOverlay').style.display = 'none';
   }
 
   /* ==============================================================
@@ -2824,6 +3108,12 @@ a:hover { text-decoration: underline; }
      AUTH — Supabase Auth (real backend sessions)
      ============================================================== */
   let currentUser = null;
+  let isAdmin = false;
+  let demoExpiresAt = null;
+  let demoStatus = null;
+
+  // Admin emails that never expire
+  var ADMIN_EMAILS = ['elenesmaximiliano@gmail.com'];
 
   async function getUser() {
     const { data: { user } } = await supabase.auth.getUser();
@@ -2834,19 +3124,46 @@ a:hover { text-decoration: underline; }
     var brandText = document.getElementById('navBrandText');
     var btnSignIn = document.getElementById('btnSignIn');
     var navLogout = document.getElementById('navLogout');
+    var navRequestDemo = document.getElementById('navRequestDemo');
     var user = await getUser();
     currentUser = user;
+
     if (user) {
-      var meta = user.user_metadata || {};
-      var displayName = (meta.first_name || '') + ' ' + (meta.last_name || '');
-      displayName = displayName.trim() || user.email;
-      brandText.textContent = 'Welcome ' + sanitizeInput(displayName) + ' v1.0';
+      var access = await checkDemoAccess(user);
+      isAdmin = access.isAdmin;
+      demoStatus = access.status;
+
+      if (access.isAdmin) {
+        brandText.textContent = access.codename + ' · ' + access.role;
+        removeDemoBar();
+        hideExpiredOverlay();
+      } else if (access.status === 'active') {
+        var meta = user.user_metadata || {};
+        var displayName = ((meta.first_name || '') + ' ' + (meta.last_name || '')).trim() || user.email;
+        brandText.textContent = sanitizeInput(displayName);
+        showDemoBar(access.daysLeft);
+        hideExpiredOverlay();
+      } else if (access.status === 'expired') {
+        brandText.textContent = 'Demo Expired';
+        removeDemoBar();
+        showExpiredOverlay();
+      } else {
+        var meta2 = user.user_metadata || {};
+        var dn = ((meta2.first_name || '') + ' ' + (meta2.last_name || '')).trim() || user.email;
+        brandText.textContent = sanitizeInput(dn);
+        removeDemoBar();
+      }
+
       btnSignIn.style.display = 'none';
+      if (navRequestDemo) navRequestDemo.style.display = 'none';
       navLogout.style.display = '';
     } else {
-      brandText.textContent = 'Guest v1.0';
+      brandText.textContent = 'DFP · Pre-MVP Demo';
       btnSignIn.style.display = '';
+      if (navRequestDemo) navRequestDemo.style.display = '';
       navLogout.style.display = 'none';
+      removeDemoBar();
+      hideExpiredOverlay();
     }
   }
   function updateNavBrand() { _updateNavBrand(); }
@@ -2895,7 +3212,7 @@ a:hover { text-decoration: underline; }
     document.getElementById('switchToSignIn').addEventListener('click', showSignInMode);
 
     // Listen for auth state changes
-    supabase.auth.onAuthStateChange(function(event, session) {
+    supabase.auth.onAuthStateChange(async function(event, session) {
       _updateNavBrand();
       if (event === 'SIGNED_IN') {
         loginModal.classList.remove('open');
@@ -2905,6 +3222,11 @@ a:hover { text-decoration: underline; }
         loadData();
         if (typeof loadPreferencesFromSupabase === 'function') loadPreferencesFromSupabase();
         renderWatchlist();
+        // Check demo access status
+        var access = await checkDemoAccess(session.user);
+        if (access.status === 'expired') {
+          showExpiredOverlay();
+        }
       }
       if (event === 'SIGNED_OUT') {
         currentUser = null;
@@ -3283,7 +3605,7 @@ a:hover { text-decoration: underline; }
 
       if (!user) {
         // Not logged in — show empty state but don't error
-        $('#kpiGrid').innerHTML = '<div class="empty-state"><p>Sign in to access deal data.</p></div>';
+        $('#kpiGrid').innerHTML = '<div class="empty-state" style="padding:60px 20px;"><svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" style="opacity:0.3;margin-bottom:12px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><p style="font-size:15px;color:#888;margin-bottom:4px;">Request demo access to view the Dashboard</p><p style="font-size:12px;color:#555;">Real-time deal intelligence across Latin America.</p><br><button onclick="document.getElementById(\'btnRequestDemo\').click()" style="padding:8px 20px;background:#7C3AED;color:#fff;border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;">Request Demo Access</button></div>';
         return;
       }
 
@@ -3692,7 +4014,7 @@ a:hover { text-decoration: underline; }
         if (!document.getElementById('heatmapAuthGate')) {
           var gate = document.createElement('div');
           gate.id = 'heatmapAuthGate';
-          gate.innerHTML = '<div class="empty-state" style="padding:80px 20px;"><svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" style="opacity:0.3;margin-bottom:12px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><p style="font-size:15px;color:var(--text-secondary);margin-bottom:8px;">Sign in to access the Deal Heatmap</p><p style="font-size:12px;color:var(--text-muted);">Interactive 3D globe with deal activity across 28 countries.</p></div>';
+          gate.innerHTML = '<div class="empty-state" style="padding:80px 20px;"><svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" style="opacity:0.3;margin-bottom:12px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><p style="font-size:15px;color:var(--text-secondary);margin-bottom:8px;">Request demo access to explore the Deal Heatmap</p><p style="font-size:12px;color:var(--text-muted);">Interactive 3D globe with deal activity across 28 countries.</p><br><button onclick="document.getElementById(\'btnRequestDemo\').click()" style="margin-top:12px;padding:8px 20px;background:#7C3AED;color:#fff;border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;">Request Demo Access</button></div>';
           document.getElementById('heatmap').querySelector('.section-header').after(gate);
         }
       } else {
@@ -3716,7 +4038,7 @@ a:hover { text-decoration: underline; }
         if (!document.getElementById('playersAuthGate')) {
           var gate = document.createElement('div');
           gate.id = 'playersAuthGate';
-          gate.innerHTML = '<div class="empty-state" style="padding:80px 20px;"><svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" style="opacity:0.3;margin-bottom:12px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><p style="font-size:15px;color:var(--text-secondary);margin-bottom:8px;">Sign in to access Players data</p><p style="font-size:12px;color:var(--text-muted);">591 General Partners tracked across Latin America.</p></div>';
+          gate.innerHTML = '<div class="empty-state" style="padding:80px 20px;"><svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" style="opacity:0.3;margin-bottom:12px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><p style="font-size:15px;color:var(--text-secondary);margin-bottom:8px;">Request demo access to view Players data</p><p style="font-size:12px;color:var(--text-muted);">591 General Partners tracked across Latin America.</p><br><button onclick="document.getElementById(\'btnRequestDemo\').click()" style="margin-top:12px;padding:8px 20px;background:#7C3AED;color:#fff;border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;">Request Demo Access</button></div>';
           document.getElementById('players').querySelector('.section-header').after(gate);
         }
       } else {
@@ -3744,7 +4066,7 @@ a:hover { text-decoration: underline; }
         if (!document.getElementById('pefAuthGate')) {
           var gate = document.createElement('div');
           gate.id = 'pefAuthGate';
-          gate.innerHTML = '<div class="empty-state" style="padding:80px 20px;"><svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" style="opacity:0.3;margin-bottom:12px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><p style="font-size:15px;color:var(--text-secondary);margin-bottom:8px;">Sign in to access PE Funds data</p><p style="font-size:12px;color:var(--text-muted);">1,000+ PE funds with IRR, vintage, and quartile data.</p></div>';
+          gate.innerHTML = '<div class="empty-state" style="padding:80px 20px;"><svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" style="opacity:0.3;margin-bottom:12px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><p style="font-size:15px;color:var(--text-secondary);margin-bottom:8px;">Request demo access to view PE Funds data</p><p style="font-size:12px;color:var(--text-muted);">1,000+ PE funds with IRR, vintage, and quartile data.</p><br><button onclick="document.getElementById(\'btnRequestDemo\').click()" style="margin-top:12px;padding:8px 20px;background:#7C3AED;color:#fff;border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;">Request Demo Access</button></div>';
           document.getElementById('pefunds').querySelector('.section-header').after(gate);
         }
       } else {
@@ -3771,7 +4093,7 @@ a:hover { text-decoration: underline; }
         if (!document.getElementById('dbAuthGate')) {
           var gate = document.createElement('div');
           gate.id = 'dbAuthGate';
-          gate.innerHTML = '<div class="empty-state" style="padding:80px 20px;"><svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" style="opacity:0.3;margin-bottom:12px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><p style="font-size:15px;color:var(--text-secondary);margin-bottom:8px;">Sign in to access the Deal Database</p><p style="font-size:12px;color:var(--text-muted);">217 deals across PE, VC, M&A, Real Assets, and Private Credit.</p></div>';
+          gate.innerHTML = '<div class="empty-state" style="padding:80px 20px;"><svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" style="opacity:0.3;margin-bottom:12px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><p style="font-size:15px;color:var(--text-secondary);margin-bottom:8px;">Request demo access to explore the Deal Database</p><p style="font-size:12px;color:var(--text-muted);">217 deals across PE, VC, M&A, Real Assets, and Private Credit.</p><br><button onclick="document.getElementById(\'btnRequestDemo\').click()" style="margin-top:12px;padding:8px 20px;background:#7C3AED;color:#fff;border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;">Request Demo Access</button></div>';
           document.getElementById('database').querySelector('.section-header').after(gate);
         }
       } else {
@@ -5773,6 +6095,180 @@ a:hover { text-decoration: underline; }
   });
 
   updateHomeStats();
+
+  // Request Demo modal
+  var requestDemoModal = document.getElementById('requestDemoModal');
+  var btnRequestDemo = document.getElementById('btnRequestDemo');
+  var requestDemoClose = document.getElementById('requestDemoClose');
+  var requestDemoForm = document.getElementById('requestDemoForm');
+  var requestDemoMsg = document.getElementById('requestDemoMsg');
+
+  if (btnRequestDemo) {
+    btnRequestDemo.addEventListener('click', function() {
+      requestDemoModal.classList.add('open');
+    });
+  }
+
+  if (requestDemoClose) {
+    requestDemoClose.addEventListener('click', function() {
+      requestDemoModal.classList.remove('open');
+    });
+  }
+
+  if (requestDemoModal) {
+    requestDemoModal.addEventListener('click', function(e) {
+      if (e.target === requestDemoModal) requestDemoModal.classList.remove('open');
+    });
+  }
+
+  // Request type tabs
+  document.querySelectorAll('.request-type-tab').forEach(function(tab) {
+    tab.addEventListener('click', function() {
+      document.querySelectorAll('.request-type-tab').forEach(function(t) { t.classList.remove('active'); });
+      tab.classList.add('active');
+      var type = tab.dataset.reqType;
+      document.getElementById('reqType').value = type;
+      document.getElementById('reqCompanyField').style.display = type === 'individual' ? '' : 'none';
+      document.getElementById('reqInstitutionalFields').style.display = type === 'institutional' ? '' : 'none';
+    });
+  });
+
+  // Request Demo form submit
+  if (requestDemoForm) {
+    requestDemoForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      requestDemoMsg.style.display = 'none';
+
+      var email = document.getElementById('reqEmail').value.trim().toLowerCase();
+      var name = document.getElementById('reqName').value.trim();
+      var country = document.getElementById('reqCountry').value.trim();
+      var reqType = document.getElementById('reqType').value;
+
+      if (!email || !name || !country) return;
+
+      // Check disposable email
+      var domain = email.split('@')[1];
+      if (domain) {
+        var { data: blocked } = await supabase
+          .from('blocked_email_domains')
+          .select('domain')
+          .eq('domain', domain)
+          .maybeSingle();
+
+        if (blocked) {
+          requestDemoMsg.style.background = 'rgba(255,77,106,0.1)';
+          requestDemoMsg.style.borderColor = 'rgba(255,77,106,0.3)';
+          requestDemoMsg.style.color = '#FF4D6A';
+          requestDemoMsg.textContent = 'Please use a work or personal email. Temporary email addresses are not accepted.';
+          requestDemoMsg.style.display = 'block';
+          return;
+        }
+      }
+
+      // Build request object
+      var requestData = {
+        email: email,
+        name: name,
+        country: country,
+        role_title: document.getElementById('reqRole').value.trim() || null,
+        request_type: reqType
+      };
+
+      if (reqType === 'individual') {
+        requestData.company = document.getElementById('reqCompany').value.trim() || null;
+      } else {
+        requestData.company = document.getElementById('reqFirmName').value.trim() || null;
+        requestData.company_url = document.getElementById('reqFirmUrl').value.trim() || null;
+        requestData.num_accounts = parseInt(document.getElementById('reqNumAccounts').value) || 1;
+        requestData.industry = document.getElementById('reqIndustry').value.trim() || null;
+      }
+
+      // Submit to Supabase
+      var { error } = await supabase.from('demo_requests').insert(requestData);
+
+      if (error) {
+        if (error.message.includes('duplicate') || error.code === '23505') {
+          requestDemoMsg.style.background = 'rgba(255,184,0,0.1)';
+          requestDemoMsg.style.borderColor = 'rgba(255,184,0,0.3)';
+          requestDemoMsg.style.color = '#FFB800';
+          requestDemoMsg.textContent = 'A request with this email already exists. If approved, check your email for the invitation link.';
+        } else {
+          requestDemoMsg.style.background = 'rgba(255,77,106,0.1)';
+          requestDemoMsg.style.borderColor = 'rgba(255,77,106,0.3)';
+          requestDemoMsg.style.color = '#FF4D6A';
+          requestDemoMsg.textContent = 'Error: ' + error.message;
+        }
+        requestDemoMsg.style.display = 'block';
+        return;
+      }
+
+      // Success
+      requestDemoMsg.style.background = 'rgba(0,196,140,0.1)';
+      requestDemoMsg.style.borderColor = 'rgba(0,196,140,0.3)';
+      requestDemoMsg.style.color = '#00C48C';
+      requestDemoMsg.textContent = 'Request submitted! You will receive an invitation email once approved.';
+      requestDemoMsg.style.display = 'block';
+      requestDemoForm.reset();
+    });
+  }
+
+  // Survey form
+  var surveyRating = 0;
+  document.querySelectorAll('.survey-star').forEach(function(star) {
+    star.addEventListener('click', function() {
+      surveyRating = parseInt(star.dataset.rating);
+      document.querySelectorAll('.survey-star').forEach(function(s) {
+        var r = parseInt(s.dataset.rating);
+        s.classList.toggle('active', r <= surveyRating);
+        s.innerHTML = r <= surveyRating ? '&#9733;' : '&#9734;';
+      });
+    });
+  });
+
+  document.querySelectorAll('.survey-checkbox').forEach(function(label) {
+    label.addEventListener('click', function() {
+      var cb = label.querySelector('input');
+      cb.checked = !cb.checked;
+      label.classList.toggle('checked', cb.checked);
+    });
+  });
+
+  var surveyForm = document.getElementById('surveyForm');
+  if (surveyForm) {
+    surveyForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      if (surveyRating === 0) { alert('Please rate your experience.'); return; }
+      if (!document.getElementById('surveyPrivacy').checked) { alert('Please accept the privacy notice.'); return; }
+
+      var sectionsUsed = [];
+      document.querySelectorAll('#surveySections input:checked').forEach(function(cb) {
+        sectionsUsed.push(cb.value);
+      });
+
+      var user = currentUser;
+      var { error } = await supabase.from('demo_surveys').insert({
+        user_id: user ? user.id : null,
+        email: user ? user.email : 'unknown',
+        rating: surveyRating,
+        sections_used: sectionsUsed,
+        desired_data: document.getElementById('surveyDesiredData').value.trim() || null,
+        comments: document.getElementById('surveyComments').value.trim() || null,
+        privacy_accepted: true
+      });
+
+      if (error) {
+        console.error('Survey error:', error);
+        alert('Error submitting survey. Please try again.');
+        return;
+      }
+
+      // Show thank you
+      surveyForm.style.display = 'none';
+      document.getElementById('expiredTitle').textContent = 'Feedback Received';
+      document.getElementById('expiredSubtitle').style.display = 'none';
+      document.getElementById('surveyThankYou').style.display = '';
+    });
+  }
 
   // Refresh session on page load to ensure valid tokens
   supabase.auth.getSession().then(function(result) {
