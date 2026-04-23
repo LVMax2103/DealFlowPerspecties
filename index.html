@@ -1881,57 +1881,13 @@ a:hover { text-decoration: underline; }
 }
 .btn-hero-secondary:hover { border-color: var(--accent); color: var(--accent-light); text-decoration: none; }
 
-/* Dual monitor mockup */
-.hero-monitors {
-  position: relative;
-  perspective: 1200px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 20px;
-}
-
-.monitor {
-  position: relative;
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 40px rgba(0,102,255,0.08);
-  border: 1px solid rgba(255,255,255,0.06);
-  transition: transform 0.4s ease;
-}
-
-.monitor img {
-  display: block;
+/* Hero image */
+.hero-image {
   width: 100%;
+  max-width: 720px;
   height: auto;
-}
-
-.monitor-left {
-  width: 55%;
-  transform: rotateY(6deg) scale(0.95);
-  z-index: 2;
-}
-
-.monitor-right {
-  width: 55%;
-  transform: rotateY(-6deg) scale(0.95);
-  margin-left: -10%;
-  z-index: 1;
-}
-
-.monitor::after {
-  content: '';
-  position: absolute; inset: 0;
-  background: linear-gradient(180deg, transparent 60%, rgba(6,11,24,0.4) 100%);
-  pointer-events: none;
-}
-
-.monitor-glow {
-  position: absolute;
-  bottom: -30px; left: 10%; right: 10%;
-  height: 60px;
-  background: radial-gradient(ellipse, rgba(0,102,255,0.15) 0%, transparent 70%);
-  filter: blur(20px);
+  display: block;
+  margin: 0 auto;
 }
 
 /* Features section */
@@ -2071,7 +2027,6 @@ a:hover { text-decoration: underline; }
   .hero-text { max-width: 100%; margin: 0 auto; }
   .hero-subtitle { margin: 0 auto 32px; }
   .hero-cta-group { justify-content: center; }
-  .hero-monitors { margin-top: 40px; }
   .features-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
@@ -2082,14 +2037,14 @@ a:hover { text-decoration: underline; }
   .features-grid { grid-template-columns: 1fr; }
   .home-stats-section { padding: 60px 20px; }
   .home-cta-section { padding: 40px 20px; }
-  .monitor-left, .monitor-right { width: 65%; }
+}
+
+@media (max-width: 980px) {
+  .hero-image { max-width: 100%; }
 }
 
 @media (max-width: 480px) {
   .hero-title { font-size: 26px; letter-spacing: -0.5px; }
-  .hero-monitors { flex-direction: column; }
-  .monitor-left, .monitor-right { width: 90%; transform: none; margin: 0; }
-  .monitor-right { margin-top: -20px; }
 }
 
 /* ===================================================================
@@ -2619,14 +2574,10 @@ a:hover { text-decoration: underline; }
         </div>
       </div>
 
-      <div class="hero-monitors reveal">
-        <div class="monitor monitor-left">
-          <img src="hero-dashboard.png" alt="DealFlow Dashboard" loading="lazy">
-        </div>
-        <div class="monitor monitor-right">
-          <img src="hero-database.png" alt="Deal Database" loading="lazy">
-        </div>
-        <div class="monitor-glow"></div>
+      <div class="reveal">
+        <img src="hero-setup.jpg"
+             alt="DealFlow Perspectives — platform in use"
+             class="hero-image" />
       </div>
     </div>
 
