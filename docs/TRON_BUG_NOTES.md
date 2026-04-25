@@ -64,6 +64,30 @@ Es el **default estático del HTML**. El JavaScript **nunca** lo escribe. La ún
 
 **Apunta a**: `AUTH_FLOW.md` §3.6 (checkDemoAccess), `DATA_MODEL.md` §2 `admin_accounts`.
 
+#### Update — confirmación parcial de H3 (grep del schema, 2026-04-24)
+
+Grep de `admin_accounts` en `supabase/`, ahora que `migration_002_access_control.sql` está versionada:
+
+```sql
+-- migration_002_access_control.sql:L111–L114
+CREATE POLICY "Authenticated users can check admin status"
+  ON admin_accounts FOR SELECT
+  TO authenticated
+  USING (true);
+```
+
+**Lo que confirma**:
+- **Hay policy SELECT para rol `authenticated`** → si la sesión YA está hidratada cuando se dispara `checkDemoAccess`, el query funciona (TRON es admin real).
+- **No hay policy SELECT para rol `anon`** → si la sesión aún NO está hidratada y el cliente Supabase cae al rol por defecto `anon`, el SELECT devuelve `{ data: null, error: 'permission denied' }` silenciosamente. Esto combina con H1/H2: el throw + race + rol `anon` transitorio puede dejar al usuario como "no-admin" aunque lo sea en la tabla.
+- La policy usa `USING (true)` — permisivamente expone toda la tabla a cualquier authenticated user. Es un leak separado (no relacionado con el bug), pero mala postura de seguridad. Fuera de scope de este audit; dejar nota.
+
+**Lo que descarta**:
+- **H3 en su forma original (RLS bloqueando a un authenticated)** queda descartada. La policy es permisiva para `authenticated`. El bloqueo solo ocurriría contra `anon`, y eso se reduce a la race condition H2.
+
+**Nueva clasificación de H3**: sub-hipótesis de H2 (race de hidratación → query con rol `anon`). Ya no hipótesis independiente.
+
+**No se ha modificado la policy**. Solo se documenta.
+
 ---
 
 ### H4 — 🟡 MEDIA: `onAuthStateChange` emite eventos que el handler no contempla y el último gana
