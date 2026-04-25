@@ -3309,7 +3309,11 @@ a:hover { text-decoration: underline; }
      ============================================================== */
   const SUPABASE_URL = 'https://hmrtcvxcdgcuvbmvpetd.supabase.co';
   const SUPABASE_ANON_KEY = 'sb_publishable_RQ5bD4HwpHERVo4mqWRQKA_ovVrYAgM';
-  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+    auth: {
+      lock: (name, acquireTimeout, fn) => fn()
+    }
+  });
 
   function clearSupabaseStorage() {
     try {
@@ -3455,8 +3459,31 @@ a:hover { text-decoration: underline; }
       var navLogout = document.getElementById('navLogout');
       var navRequestDemo = document.getElementById('navRequestDemo');
       console.log('[TRON-DEBUG]', new Date().toISOString(), site, 'before supabase.auth.getUser()');
-      var user = await getUser();
-      console.log('[TRON-DEBUG]', new Date().toISOString(), site, 'after getUser()', user ? { email: user.email, id: user.id } : 'null');
+      var user = null;
+      try {
+        user = await Promise.race([
+          getUser(),
+          new Promise(function(_, reject) {
+            setTimeout(function() { reject(new Error('getUser-timeout-8000ms')); }, 8000);
+          })
+        ]);
+        console.log('[TRON-DEBUG]', new Date().toISOString(), site, 'after getUser()', user ? { email: user.email, id: user.id } : 'null');
+      } catch (getUserErr) {
+        console.warn('[TRON-DEBUG]', new Date().toISOString(), site, 'getUser() failed/timed out, falling back to getSession():', getUserErr && getUserErr.message);
+        try {
+          var sessionResult = await Promise.race([
+            supabase.auth.getSession(),
+            new Promise(function(_, reject) {
+              setTimeout(function() { reject(new Error('getSession-timeout-8000ms')); }, 8000);
+            })
+          ]);
+          user = sessionResult && sessionResult.data && sessionResult.data.session ? sessionResult.data.session.user : null;
+          console.log('[TRON-DEBUG]', new Date().toISOString(), site, 'after getSession() fallback', user ? { email: user.email, id: user.id } : 'null');
+        } catch (sessionErr) {
+          console.error('[TRON-DEBUG]', new Date().toISOString(), site, 'getSession() also failed, treating as guest:', sessionErr && sessionErr.message);
+          user = null;
+        }
+      }
       currentUser = user;
 
       if (user) {
