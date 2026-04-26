@@ -3432,16 +3432,7 @@ a:hover { text-decoration: underline; }
      ============================================================== */
   let currentUser = null;
   let isAdmin = false;
-  let demoExpiresAt = null;
   let demoStatus = null;
-
-  // Admin emails that never expire
-  var ADMIN_EMAILS = ['elenesmaximiliano@gmail.com'];
-
-  async function getUser() {
-    const { data: { user } } = await supabase.auth.getUser();
-    return user;
-  }
 
   async function _updateNavBrand() {
     try {
