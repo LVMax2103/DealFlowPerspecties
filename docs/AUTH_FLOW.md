@@ -1,273 +1,131 @@
-# AUTH_FLOW — DealFlow Perspectives
+# AUTH_FLOW — Estado actual en `main`
 
-Documento crítico. Traza todo el camino: login → sesión → role resolution → navbar update. Todos los pointers tienen line number exacto en `index.html`.
+Auditoría tomada con HEAD de `main` = `2c0c6e4`. Sobreescribe la versión anterior.
 
----
-
-## 1. Estado global del módulo de auth
-
-Declarado en **L3417–L3420**:
-
-```js
-let currentUser = null;
-let isAdmin = false;
-let demoExpiresAt = null;   // (escrito pero nunca leído — dead var)
-let demoStatus = null;
-```
-
-Y un array `ADMIN_EMAILS = ['elenesmaximiliano@gmail.com']` en **L3423**.
-
-> ⚠️ `ADMIN_EMAILS` está declarado pero **nunca se lee en todo el archivo**. La única fuente de verdad para `isAdmin` es la tabla Supabase `admin_accounts` (ver L3351).
+Método: greps exhaustivos sobre `index.html` para `localStorage|sessionStorage|supabase.auth.*|onAuthStateChange|signInWithPassword|signUp|signOut|getUser|getSession|setSession|refreshSession|addEventListener.*beforeunload|unload|pagehide|visibilitychange|storage` + lectura completa de las secciones AUTH (L3307–3719) y BOOT (L6679–6696).
 
 ---
 
-## 2. Default HTML del navbar — dónde vive "Guest v1.0"
+## 1. Boot de la página (orden exacto)
 
-**L2473**:
+`index.html` está envuelto en una IIFE única (`(function () {` en L3301 hasta `})();` en L6696).
 
-```html
-<span id="navBrandText">Guest v1.0</span>
-```
+| Orden | Línea | Acción |
+|------:|------:|--------|
+| 1 | 3312 | `const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { auth: { autoRefreshToken: false, lock: (n,t,fn) => fn() } })` — cliente creado. **Aún no toca storage**. |
+| 2 | 3319–3329 | Define `clearSupabaseStorage()` (limpia keys que empiezan en `sb-` de localStorage y sessionStorage). |
+| 3 | 3434–3437 | Define helper `async getUser()` que envuelve `supabase.auth.getUser()`. |
+| 4 | 3454–3521 | Define `_updateNavBrand(callSite)`. Internamente: `await supabase.auth.getSession()` → si user, llama `checkDemoAccess(user)` que SELECTs `admin_accounts` + `demo_requests`; si no user, escribe `'DFP · Pre-MVP Demo'`. |
+| 5 | 3524–3717 | Define `_initAuth()` que registra `onAuthStateChange` y los handlers signIn/signUp/logout. |
+| 6 | 6427 | `initAuth()` se invoca → ejecuta `_initAuth()`. Esto: |
+|   | 3568 | Registra **EL ÚNICO listener** `supabase.auth.onAuthStateChange(async (event, session) => …)`. Supabase v2 emite `INITIAL_SESSION` poco después del registro. |
+|   | 3716 | Llama `_updateNavBrand('call-1-initAuth')` (sin await). |
+| 7 | 6428–6429 | `initNewsletter()`, `initHomeScroll()`. |
+| 8 | 6680 | **Boot block final**: `console.log('boot: calling supabase.auth.getSession()')` |
+| 9 | 6681 | `supabase.auth.getSession().then(result => { if (result.data.session) { currentUser = result.data.session.user; _updateNavBrand('call-3-getSessionThen'); loadPreferencesFromSupabase(); } loadData(); })` |
 
-Es el estado **inicial estático** antes de que corra JS. Si `_updateNavBrand()` nunca completa, el usuario ve este texto para siempre. El JS **nunca escribe el string "Guest v1.0"** — el único string literal equivalente está en **L3468**:
-
-```js
-brandText.textContent = 'DFP · Pre-MVP Demo';  // usado cuando user === null
-```
-
-**→ Conclusión clave**: ver "Guest v1.0" implica que `_updateNavBrand()` nunca alcanzó una rama que escriba `textContent`. No es un estado que produzca la lógica; es el default crudo del HTML.
+**3 entradas a `_updateNavBrand` por boot**: `call-1-initAuth`, `call-2-onAuthStateChange:INITIAL_SESSION`, `call-3-getSessionThen` — cada una llama internamente `getSession()`.
 
 ---
 
-## 3. Flujo paso a paso — login exitoso
+## 2. Login (signInWithPassword)
 
-### 3.1. Entrada — click en "Sign In" (L2542)
+L3604–3645 (handler del submit del form):
 
-`#btnSignIn` click listener en **L3545–L3548** → abre `#loginModal`.
+1. L3615 `await supabase.auth.signInWithPassword({email, password})`.
+2. Si error contiene "Invalid"/"expired" → L3621 `clearSupabaseStorage()` → L3623 retry una vez.
+3. Si éxito → L3644 comentario `"Success handled by onAuthStateChange"` (no hace nada más explícito).
+4. Supabase emite `SIGNED_IN` → handler en L3568 dispara:
+   - L3570 `_updateNavBrand('call-2-onAuthStateChange:SIGNED_IN')` (otra `getSession()`).
+   - L3572 cierra modal, resetea forms, oculta lockout.
+   - L3576 `loadData()` (sin await) → internamente `await supabase.auth.getUser()` en L3961 (HTTP).
+   - L3577 `loadPreferencesFromSupabase()` (sin await) → L6227 `await supabase.auth.getUser()` (HTTP).
+   - L3578 `renderWatchlist()`.
+   - L3580 `await checkDemoAccess(session.user)` → SELECTs `admin_accounts` + `demo_requests`.
+   - L3581 si expirado → `showExpiredOverlay()`.
 
-### 3.2. Submit del sign-in form (L3558–L3598)
+⚠️ `getUser()` (HTTP en /auth/v1/user) dentro de un handler de `onAuthStateChange` provoca re-emisión de `SIGNED_IN` en Supabase v2 → loop documentado en `docs/MULTIPLE_CLIENT_BUG.md`.
+
+---
+
+## 3. Logout
+
+L3708–3714 (click en btnLogout):
 
 ```js
-var { data, error } = await supabase.auth.signInWithPassword({ email, password });
-```
-
-Si error incluye `"Invalid"` o `"expired"`, se dispara `clearSupabaseStorage()` (L3574) y se reintenta una vez (L3576–L3580). Este es el fix defensivo reciente. En éxito, el comentario **L3597** dice: `"Success handled by onAuthStateChange"`.
-
-### 3.3. `onAuthStateChange` listener (L3522–L3543)
-
-```js
-supabase.auth.onAuthStateChange(async function(event, session) {
-  _updateNavBrand();                              // L3523 — siempre
-  if (event === 'SIGNED_IN') {
-    loginModal.classList.remove('open');
-    signInForm.reset();
-    ...
-    loadData();                                   // L3529
-    if (typeof loadPreferencesFromSupabase === 'function')
-      loadPreferencesFromSupabase();              // L3530
-    renderWatchlist();                            // L3531
-    var access = await checkDemoAccess(session.user);  // L3533
-    if (access.status === 'expired') {
-      showExpiredOverlay();                       // L3535
-    }
-  }
-  if (event === 'SIGNED_OUT') {
-    currentUser = null;                           // L3539
-    localStorage.removeItem(FAVORITES_KEY);       // L3540
-    localStorage.removeItem(getDashboardLayoutKey());  // L3541
-  }
+btnLogout.addEventListener('click', async function() {
+  if (!confirm('Are you sure you want to log out?')) return;
+  await syncPreferencesToSupabase();    // upserts user_preferences
+  await supabase.auth.signOut();         // borra sb-* y emite SIGNED_OUT
+  clearSupabaseStorage();                // defensivo: borra sb-* otra vez
+  window.location.reload();              // hard reload
 });
 ```
 
-### 3.4. `_updateNavBrand` (L3430–L3475) — punto crítico
-
-```js
-async function _updateNavBrand() {
-  var brandText = document.getElementById('navBrandText');    // L3431
-  var btnSignIn = document.getElementById('btnSignIn');
-  var navLogout = document.getElementById('navLogout');
-  var navRequestDemo = document.getElementById('navRequestDemo');
-  var user = await getUser();                                 // L3435 — NETWORK CALL
-  currentUser = user;                                          // L3436
-
-  if (user) {
-    var access = await checkDemoAccess(user);                 // L3439 — 2 queries
-    isAdmin = access.isAdmin;
-    demoStatus = access.status;
-
-    if (access.isAdmin) {                                     // L3443
-      brandText.textContent = access.codename + ' · ' + access.role;  // ← "TRON · developer"
-      removeDemoBar();
-      hideExpiredOverlay();
-    } else if (access.status === 'active') {                  // L3447
-      ...
-      brandText.textContent = sanitizeInput(displayName);
-      showDemoBar(access.daysLeft);
-    } else if (access.status === 'expired') {                 // L3453
-      brandText.textContent = 'Demo Expired';
-      showExpiredOverlay();
-    } else {                                                  // L3457
-      brandText.textContent = sanitizeInput(dn);              // displayName o email
-    }
-
-    btnSignIn.style.display = 'none';
-    navLogout.style.display = '';
-  } else {
-    brandText.textContent = 'DFP · Pre-MVP Demo';             // L3468
-    btnSignIn.style.display = '';
-    navLogout.style.display = 'none';
-  }
-}
-```
-
-**No tiene `try / catch`. Cualquier throw en `getUser()` o `checkDemoAccess()` deja el navbar en el estado HTML inicial `"Guest v1.0"`.**
-
-### 3.5. `getUser` (L3425–L3428)
-
-```js
-async function getUser() {
-  const { data: { user } } = await supabase.auth.getUser();
-  return user;
-}
-```
-
-`supabase.auth.getUser()` en la v2 del cliente **hace network call** a `/auth/v1/user` con el access_token actual. Si el token expiró, intenta refresh vía refresh_token. Si el refresh_token también falla, devuelve `{ user: null, error }` **sin throw** por default. Sin embargo, el destructuring `const { data: { user } } = ...` asume que `data` existe — si la promesa se rechaza (no solo retorna error), **propaga el throw**.
-
-### 3.6. `checkDemoAccess` (L3346–L3378)
-
-```js
-async function checkDemoAccess(user) {
-  if (!user) return { status: 'none', isAdmin: false };
-
-  var { data: adminData } = await supabase
-    .from('admin_accounts')
-    .select('codename, role')
-    .eq('email', user.email)
-    .maybeSingle();                               // L3354
-
-  if (adminData) {
-    return { status: 'admin', isAdmin: true, codename: adminData.codename, role: adminData.role };
-  }
-
-  var { data: demoData } = await supabase
-    .from('demo_requests')
-    .select('status, expires_at, approved_at')
-    .eq('email', user.email)
-    .maybeSingle();
-
-  if (!demoData) return { status: 'none', isAdmin: false };
-  if (demoData.status === 'approved' && demoData.expires_at) { ... }
-  return { status: demoData.status, isAdmin: false };
-}
-```
-
-**Comportamiento silencioso**: si `admin_accounts` falla por RLS (401/403), `{ data: null, error: {...} }` → el destructuring descarta el error → `adminData = null` → cae a la rama `demo_requests`. Si TRON no está en `demo_requests` (lo esperado — está en `admin_accounts`), retorna `{ status: 'none', isAdmin: false }` → `_updateNavBrand` entra al else de L3457 y escribe `user.email` o `first_name+last_name` — **NO "Guest v1.0"**.
+`signOut()` emite `SIGNED_OUT` → handler L3585–3589 limpia `currentUser`, borra `FAVORITES_KEY` y `getDashboardLayoutKey()` de localStorage. Inmediatamente después, `window.location.reload()` recarga.
 
 ---
 
-## 4. Tres puntos de escritura de localStorage/sessionStorage relacionados con auth
+## 4. Refresh (estado actual — éste es el bug que vamos a fixear)
 
-### 4.1. Escrituras (auto por Supabase JS)
+Lo que pasa hoy al refrescar la página estando logueado:
 
-Supabase JS v2 guarda el token de sesión en `localStorage` con la key `sb-hmrtcvxcdgcuvbmvpetd-auth-token` (derivada del project ref `hmrtcvxcdgcuvbmvpetd`, L3310). Esto es automático cuando `supabase.auth.signInWithPassword` tiene éxito.
+1. Browser carga `index.html` desde cero. localStorage **persiste** entre reloads (incluyendo `sb-*` tokens).
+2. createClient (L3312) → cliente con `autoRefreshToken: false` y lock no-op.
+3. `initAuth()` registra el listener (L3568) → Supabase emite `INITIAL_SESSION`.
+4. Listener llama `_updateNavBrand` → `getSession()` lee localStorage → recupera la sesión cacheada → marca al user como logueado.
+5. Boot block (L6681) llama `getSession()` otra vez → `_updateNavBrand('call-3-getSessionThen')` → `loadPreferencesFromSupabase()` → `loadData()`.
+6. Si los tokens en localStorage están corruptos o el access_token expiró, los SELECTs a `admin_accounts`/`demo_requests` cuelgan o devuelven 401 → navbar queda en "guest" pero `sb-*` tokens permanecen → `signInWithPassword` posterior se confunde con la sesión inválida y falla hasta que el usuario borra cache manualmente.
 
-### 4.2. Lecturas / limpieza manuales
-
-| Línea | Acción |
-|---|---|
-| L3314–L3324 | `clearSupabaseStorage()` — borra todas las keys con prefijo `sb-` en `localStorage` **y** `sessionStorage` |
-| L3540 | En `SIGNED_OUT`: `localStorage.removeItem(FAVORITES_KEY)` (`'dfp_market_favorites'`) |
-| L3541 | En `SIGNED_OUT`: `localStorage.removeItem(getDashboardLayoutKey())` (`'dfp_dashboard_layout'`) |
-| L3574 | Si el sign-in falla con `Invalid`/`expired`, limpia y reintenta una vez |
-| L3665 | En logout: `clearSupabaseStorage()` después del `signOut()` |
-
-### 4.3. Otros usos de storage (no auth pero tocan flujo autenticado)
-
-| Línea | Key / uso |
-|---|---|
-| L4943, L4949 | `dfp_dashboard_layout` — layout de paneles del dashboard |
-| L6100, L6127, L6135, L6208 | `FAVORITES_KEY = 'dfp_market_favorites'` — favoritos del Markets section |
+**No hay listener de `beforeunload`/`unload`/`pagehide`/`visibilitychange`/`storage`** — verificado por grep negativo.
 
 ---
 
-## 5. Consultas a `admin_accounts` — único lugar
+## 5. Inventario de auth listeners
 
-Solo hay **un** lookup a `admin_accounts` en todo el archivo: **L3350–L3354**, dentro de `checkDemoAccess`. Se invoca en:
+| Listener | Línea | Tipo | Frecuencia |
+|----------|------:|------|-----------|
+| `supabase.auth.onAuthStateChange` | 3568 | Auth events (INITIAL_SESSION, SIGNED_IN, SIGNED_OUT, TOKEN_REFRESHED, USER_UPDATED) | 1 sólo registro, dentro de `_initAuth()` ejecutado una vez vía IIFE. |
 
-- **L3439** — `_updateNavBrand` (3 disparos posibles al boot; ver ARCHITECTURE.md §5)
-- **L3533** — dentro del listener `onAuthStateChange` cuando `event === 'SIGNED_IN'`, para redundancia de `showExpiredOverlay`
-
-Si esta query devuelve error (RLS, red, CORS, timeout), se descarta silenciosamente y la app trata al usuario como no-admin.
-
----
-
-## 6. Todos los puntos donde se dispara `_updateNavBrand`
-
-| Sitio | Línea | Contexto |
-|---|---|---|
-| Dentro de `_initAuth` | **L3523** | handler de `onAuthStateChange` — dispara por SIGNED_IN, SIGNED_OUT, TOKEN_REFRESHED, USER_UPDATED, INITIAL_SESSION |
-| Final de `_initAuth` | **L3669** | sincrónico al arrancar `initAuth()`, sin await |
-| Dentro del `.then` de `getSession()` | **L6636** | al resolver la sesión hidratada desde localStorage |
-
-**Los tres corren en paralelo al arrancar** con una sesión válida. No hay sincronización; la última en completar gana. Sin `try / catch` en ninguna.
+Sin listeners de `window`/`document` para visibility/unload/storage.
 
 ---
 
-## 7. Race conditions — inventario
-
-### R1 — Carrera de escritura de `navBrandText` (tres writers)
-
-Los tres disparos (§6) ejecutan en orden no determinista. Ninguno lee el estado previo. No hay `AbortController`, no hay versionado (`brand_token`), no hay `Promise.race` con el último wins. **Si el último en completar falla (throw), los dos anteriores podrían haber escrito correctamente "TRON · developer" y ese último throw no lo revierte — el navbar permanece correcto.** Pero si los tres fallan, el HTML `"Guest v1.0"` queda.
-
-### R2 — `_updateNavBrand` → `getUser` antes de hidratar sesión
-
-`initAuth` dispara `_updateNavBrand()` (L3669) síncronamente. Supabase JS puede no haber terminado de leer `localStorage` en ese preciso microtick (el cliente corre ciclos de validación en promesas internas). Si `getUser` devuelve `null` en ese momento aunque haya sesión válida en disco, se escribe "DFP · Pre-MVP Demo" hasta que (b) o (c) lo sobrescriban. Este no produce "Guest v1.0" por sí solo.
-
-### R3 — Token corrupto / firmado con proyecto viejo
-
-Si el `localStorage` tiene un token con `iss` o `aud` de un Supabase anterior (cambió `SUPABASE_URL` entre deploys), `supabase.auth.getUser()` en la v2 puede **throw** en lugar de retornar `{ user: null }`. Como `_updateNavBrand` no tiene try/catch, se traga el throw, deja el HTML default "Guest v1.0", y el SIGN_IN event reemplaza el token — pero si el usuario venía con estado previo válido, el listener NO dispara SIGNED_IN al cargar (solo dispara INITIAL_SESSION), y el navbar queda roto hasta refrescar en modo incógnito o limpiar manualmente.
-
-### R4 — `clearSupabaseStorage` corre solo en "Invalid/expired" path del login
-
-El fix defensivo solo limpia storage en la rama **error de login** (L3573–L3574). **No limpia en boot si detecta un token malformed**. Por eso el fix no resuelve la raíz — al abrir en ventana normal, el bug ya ocurrió antes de cualquier login (porque hay sesión previa).
-
-### R5 — `loadData` llama a `getUser` de nuevo (L3914)
-
-En el `.then` del boot (L6639, L6641), `loadData()` también llama `supabase.auth.getUser()`. Si esto throw, se captura en el `catch` de `loadData` (L3948) y muestra empty-state — no afecta navbar directamente, pero puede dejar el dashboard en estado inconsistente.
-
----
-
-## 8. Dónde aparece literal la string "Guest v1.0"
+## 6. Estado de las constantes globales auth
 
 ```
-index.html:L2473   <span id="navBrandText">Guest v1.0</span>
+let currentUser = null;     // L3426
+let isAdmin = false;        // L3427
+let demoExpiresAt = null;   // L3428
+let demoStatus = null;      // L3429
+var ADMIN_EMAILS = ['elenesmaximiliano@gmail.com'];   // L3432
 ```
 
-**Una sola aparición**, en el HTML estático. Ningún JS la escribe. La única forma de mostrarla es que `_updateNavBrand` nunca alcance `brandText.textContent = ...` en ninguno de sus tres disparos, O que el navbar renderice antes de que el `<script>` inline llegue a ejecutar (imposible dado que el script es síncrono al final del body, a menos que el script entero crashee antes de `initAuth()`).
+`currentUser` se setea en:
+- `_updateNavBrand` L3472 (tras `getSession()`).
+- Boot block L6687 (tras `getSession()`).
+- Handler SIGNED_OUT L3586 (a `null`).
+
+Nunca se sincroniza fuera de esos 3 sitios. Otras funciones (`loadData`, `syncPreferencesToSupabase`, `loadPreferencesFromSupabase`) llaman `supabase.auth.getUser()` directamente en vez de leer `currentUser`.
 
 ---
 
-## 9. Checklist de puntos de falla en la cadena login → TRON · developer
+## 7. Lista completa de llamadas a `supabase.auth.*` en `index.html`
 
-1. **Click "Sign In"** → modal abre (L3545). ✅ No falla.
-2. **`signInWithPassword`** → éxito vía Supabase (L3568). ✅ (si las credenciales son correctas).
-3. **`onAuthStateChange` event=SIGNED_IN** → dispara `_updateNavBrand()` sin await (L3523). ⚠️ Sin error handling.
-4. **Dentro de `_updateNavBrand`**: `await getUser()` (L3435). ⚠️ Puede throw; puede devolver user=null por race.
-5. **`await checkDemoAccess(user)`** (L3439). ⚠️ `admin_accounts` RLS silenciosamente falla → no-admin path.
-6. **Write `brandText.textContent = access.codename + ' · ' + access.role`** (L3444). Requiere (1) user válido y (2) `admin_accounts` devuelva row para `user.email`.
-7. **Paralelo**: segundo disparo desde `getSession().then` (L6636) también corre `_updateNavBrand` → mismo flujo.
-8. **Paralelo**: `onAuthStateChange` con `INITIAL_SESSION` en recarga posterior → mismo flujo.
+| Línea | Llamada | Función contenedora |
+|------:|---------|---------------------|
+| 3435 | `getUser()` | helper local `async getUser()` |
+| 3465 | `getSession()` | `_updateNavBrand` |
+| 3568 | `onAuthStateChange(...)` | `_initAuth` (registro) |
+| 3615 | `signInWithPassword(...)` | submit signInForm |
+| 3623 | `signInWithPassword(...)` (retry) | catch del L3615 |
+| 3668 | `signUp(...)` | submit signUpForm |
+| 3711 | `signOut()` | click btnLogout |
+| 3961 | `getUser()` | `loadData()` |
+| 6196 | `getUser()` | `syncPreferencesToSupabase()` |
+| 6227 | `getUser()` | `loadPreferencesFromSupabase()` |
+| 6681 | `getSession()` | boot block IIFE bottom |
 
-**Cualquier throw silencioso o race entre los 3 writers deja el navbar en el HTML default "Guest v1.0"**.
+Total: 4 `getUser`, 2 `getSession`, 2 `signInWithPassword`, 1 cada uno de signUp, signOut, onAuthStateChange.
 
----
-
-## 10. Instrumentación sugerida (NO se aplica en este audit)
-
-Para diagnóstico del bug TRON se necesitaría añadir:
-
-- `try/catch` en `_updateNavBrand` con `console.error('[nav] update failed', e)` antes del return.
-- `console.log('[nav]', new Error().stack.split('\n')[2], user?.email, access?.status)` al inicio y antes de cada `textContent = ...`.
-- Verificar en Supabase dashboard si `admin_accounts` tiene una policy `SELECT` para `authenticated`, o si es `anon` y solo tiene WHERE restrictivo.
-
-Ver `TRON_BUG_NOTES.md` para las hipótesis priorizadas.
+Ver `docs/STORAGE_INVENTORY.md` para todas las keys de localStorage que tocamos.

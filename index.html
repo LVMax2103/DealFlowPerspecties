@@ -3307,14 +3307,24 @@ a:hover { text-decoration: underline; }
   /* ==============================================================
      SUPABASE CLIENT
      ============================================================== */
+  // REFRESH = LOGOUT: clear stale auth + cached prefs on every page load.
+  // user_preferences in Supabase is the source of truth (restored after login).
+  try {
+    var _dropPrefix = function(storage) {
+      var keys = [];
+      for (var i = 0; i < storage.length; i++) {
+        var k = storage.key(i);
+        if (k && (k.indexOf('sb-') === 0 || k.indexOf('supabase') === 0 || k.indexOf('dfp_') === 0)) keys.push(k);
+      }
+      keys.forEach(function(k) { storage.removeItem(k); });
+    };
+    _dropPrefix(localStorage);
+    _dropPrefix(sessionStorage);
+  } catch (e) { /* storage unavailable */ }
+
   const SUPABASE_URL = 'https://hmrtcvxcdgcuvbmvpetd.supabase.co';
   const SUPABASE_ANON_KEY = 'sb_publishable_RQ5bD4HwpHERVo4mqWRQKA_ovVrYAgM';
-  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-    auth: {
-      autoRefreshToken: false,
-      lock: (name, acquireTimeout, fn) => fn()
-    }
-  });
+  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
   function clearSupabaseStorage() {
     try {
@@ -3351,15 +3361,12 @@ a:hover { text-decoration: underline; }
   async function checkDemoAccess(user) {
     if (!user) return { status: 'none', isAdmin: false };
 
-    // [TRON-DEBUG] instrumentation
-    console.log('[TRON-DEBUG]', new Date().toISOString(), 'checkDemoAccess: querying admin_accounts for', user.email);
     // Check if admin
     var adminRes = await supabase
       .from('admin_accounts')
       .select('codename, role')
       .eq('email', user.email)
       .maybeSingle();
-    console.log('[TRON-DEBUG]', new Date().toISOString(), 'checkDemoAccess: admin_accounts result', { data: adminRes.data, error: adminRes.error });
     var adminData = adminRes.data;
 
     if (adminData) {
@@ -3436,69 +3443,44 @@ a:hover { text-decoration: underline; }
     return user;
   }
 
-  // [TRON-DEBUG] post-write inspector: reads current navBrandText and logs whether "Guest v1.0" is still there
-  function _tronInspectNav(site, label, written) {
-    try {
-      var el = document.getElementById('navBrandText');
-      var current = el ? el.textContent : '(element-missing)';
-      var stillGuest = current.indexOf('Guest v1.0') !== -1;
-      console.log('[TRON-DEBUG]', new Date().toISOString(), site, label,
-        'wrote=', JSON.stringify(written),
-        '| navBrandText now=', JSON.stringify(current),
-        '| stillGuest=', stillGuest);
-    } catch (logErr) {
-      console.error('[TRON-DEBUG] inspector failed', logErr);
-    }
-  }
-
-  async function _updateNavBrand(callSite) {
-    var site = callSite || 'call-unknown';
-    console.log('[TRON-DEBUG]', new Date().toISOString(), site, 'enter _updateNavBrand');
+  async function _updateNavBrand() {
     try {
       var brandText = document.getElementById('navBrandText');
       var btnSignIn = document.getElementById('btnSignIn');
       var navLogout = document.getElementById('navLogout');
       var navRequestDemo = document.getElementById('navRequestDemo');
-      console.log('[TRON-DEBUG]', new Date().toISOString(), site, 'before supabase.auth.getSession()');
       var user = null;
       try {
         var sessionResult = await supabase.auth.getSession();
         user = sessionResult && sessionResult.data && sessionResult.data.session ? sessionResult.data.session.user : null;
-        console.log('[TRON-DEBUG]', new Date().toISOString(), site, 'getSession user=', user ? { email: user.email, id: user.id } : 'null');
       } catch (sessionErr) {
-        console.error('[TRON-DEBUG]', new Date().toISOString(), site, 'getSession threw:', sessionErr && sessionErr.message);
         user = null;
       }
       currentUser = user;
 
       if (user) {
         var access = await checkDemoAccess(user);
-        console.log('[TRON-DEBUG]', new Date().toISOString(), site, 'after checkDemoAccess()', access);
         isAdmin = access.isAdmin;
         demoStatus = access.status;
 
         if (access.isAdmin) {
           brandText.textContent = access.codename + ' · ' + access.role;
-          _tronInspectNav(site, 'wrote admin-brand', access.codename + ' · ' + access.role);
           removeDemoBar();
           hideExpiredOverlay();
         } else if (access.status === 'active') {
           var meta = user.user_metadata || {};
           var displayName = ((meta.first_name || '') + ' ' + (meta.last_name || '')).trim() || user.email;
           brandText.textContent = sanitizeInput(displayName);
-          _tronInspectNav(site, 'wrote active-brand', displayName);
           showDemoBar(access.daysLeft);
           hideExpiredOverlay();
         } else if (access.status === 'expired') {
           brandText.textContent = 'Demo Expired';
-          _tronInspectNav(site, 'wrote expired-brand', 'Demo Expired');
           removeDemoBar();
           showExpiredOverlay();
         } else {
           var meta2 = user.user_metadata || {};
           var dn = ((meta2.first_name || '') + ' ' + (meta2.last_name || '')).trim() || user.email;
           brandText.textContent = sanitizeInput(dn);
-          _tronInspectNav(site, 'wrote fallback-brand (status=' + access.status + ')', dn);
           removeDemoBar();
         }
 
@@ -3507,19 +3489,15 @@ a:hover { text-decoration: underline; }
         navLogout.style.display = '';
       } else {
         brandText.textContent = 'DFP · Pre-MVP Demo';
-        _tronInspectNav(site, 'wrote guest-brand (no user)', 'DFP · Pre-MVP Demo');
         btnSignIn.style.display = '';
         if (navRequestDemo) navRequestDemo.style.display = '';
         navLogout.style.display = 'none';
         removeDemoBar();
         hideExpiredOverlay();
       }
-    } catch (tronErr) {
-      console.error('[TRON-DEBUG]', new Date().toISOString(), site, 'THROW in _updateNavBrand:', tronErr, tronErr && tronErr.stack);
-      _tronInspectNav(site, 'exited via throw — navBrandText untouched since throw', '(throw)');
-    }
+    } catch (e) { /* swallow */ }
   }
-  function updateNavBrand() { _updateNavBrand('call-legacy-updateNavBrand'); }
+  function updateNavBrand() { _updateNavBrand(); }
 
   function _initAuth() {
     var loginModal = document.getElementById('loginModal');
@@ -3566,8 +3544,7 @@ a:hover { text-decoration: underline; }
 
     // Listen for auth state changes
     supabase.auth.onAuthStateChange(async function(event, session) {
-      console.log('[TRON-DEBUG]', new Date().toISOString(), 'onAuthStateChange event=', event, 'hasSession=', !!session);
-      _updateNavBrand('call-2-onAuthStateChange:' + event);
+      _updateNavBrand();
       if (event === 'SIGNED_IN') {
         loginModal.classList.remove('open');
         signInForm.reset();
@@ -3713,7 +3690,7 @@ a:hover { text-decoration: underline; }
       window.location.reload();
     });
 
-    _updateNavBrand('call-1-initAuth');
+    _updateNavBrand();
   }
   function initAuth() { _initAuth(); }
 
@@ -3958,7 +3935,8 @@ a:hover { text-decoration: underline; }
     if (!rateLimitCheck('loadData', 2000)) return;
     try {
       // Check if user is authenticated
-      var { data: { user } } = await supabase.auth.getUser();
+      var { data: { session } } = await supabase.auth.getSession();
+      var user = session ? session.user : null;
 
       if (!user) {
         // Not logged in — show empty state but don't error
@@ -4974,8 +4952,7 @@ a:hover { text-decoration: underline; }
      DASHBOARD — RESIZABLE PANELS (localStorage persistence)
      ============================================================== */
   function getDashboardLayoutKey() {
-    const user = getUser();
-    const id = user ? user.email : 'guest';
+    const id = currentUser ? currentUser.email : 'guest';
     return 'dfp_layout_' + id;
   }
 
@@ -6193,7 +6170,8 @@ a:hover { text-decoration: underline; }
 
   async function syncPreferencesToSupabase() {
     try {
-      var { data: { user } } = await supabase.auth.getUser();
+      var { data: { session } } = await supabase.auth.getSession();
+      var user = session ? session.user : null;
       if (!user) {
         console.log('[Prefs] No user session, skipping sync');
         return;
@@ -6224,7 +6202,8 @@ a:hover { text-decoration: underline; }
 
   async function loadPreferencesFromSupabase() {
     try {
-      var { data: { user } } = await supabase.auth.getUser();
+      var { data: { session } } = await supabase.auth.getSession();
+      var user = session ? session.user : null;
       if (!user) {
         console.log('[Prefs] No user for loading prefs');
         return;
@@ -6676,23 +6655,9 @@ a:hover { text-decoration: underline; }
     });
   }
 
-  // Refresh session on page load to ensure valid tokens
-  console.log('[TRON-DEBUG]', new Date().toISOString(), 'boot: calling supabase.auth.getSession()');
-  supabase.auth.getSession().then(function(result) {
-    console.log('[TRON-DEBUG]', new Date().toISOString(), 'boot: getSession resolved', {
-      hasSession: !!result.data.session,
-      userEmail: result.data.session && result.data.session.user ? result.data.session.user.email : null
-    });
-    if (result.data.session) {
-      currentUser = result.data.session.user;
-      _updateNavBrand('call-3-getSessionThen');
-      loadPreferencesFromSupabase();
-    }
-    loadData();
-  }).catch(function(err) {
-    console.error('[TRON-DEBUG]', new Date().toISOString(), 'boot: getSession rejected', err, err && err.stack);
-    loadData();
-  });
+  // Storage was cleared on boot — no session to recover. Render guest navbar + load public data.
+  _updateNavBrand();
+  loadData();
 })();
 </script>
 </body>
