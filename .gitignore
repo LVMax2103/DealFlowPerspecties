@@ -1,9 +1,14 @@
 # Dependencies
 node_modules/
 
-# OS files
+# OS / editor droppings
 .DS_Store
 Thumbs.db
+desktop.ini
+*.tmp
+*.bak
+*.swp
+~$*
 
 # Environment variables
 .env
@@ -15,3 +20,6 @@ supabase/seed.js
 # IDE
 .vscode/
 .idea/
+
+# Claude Code personal settings (per-user, not shared)
+.claude/settings.local.json
