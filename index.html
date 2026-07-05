@@ -2458,6 +2458,9 @@ a:hover { text-decoration: underline; }
   background: var(--accent-glow);
 }
 </style>
+<link rel="preconnect" href="https://hmrtcvxcdgcuvbmvpetd.supabase.co">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -3293,10 +3296,8 @@ a:hover { text-decoration: underline; }
      JAVASCRIPT
      ============================================================ -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.2/anime.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<!-- three.js / topojson / d3 are lazy-loaded on first Heatmap visit (see ensureHeatmapLibs).
+     anime.js was removed: it was never referenced anywhere in the code. -->
 <script>
 (function () {
   'use strict';
@@ -3338,13 +3339,124 @@ a:hover { text-decoration: underline; }
     }
   }
 
-  function renderAuthGate(containerId) {
-    var el = document.getElementById(containerId);
-    if (!el) return;
-    el.innerHTML = '<div class="empty-state" style="padding:80px 20px;"><svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" style="opacity:0.3;margin-bottom:12px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><p style="font-size:15px;color:var(--text-secondary);margin-bottom:8px;">Request demo access to view this data</p><p style="font-size:12px;color:var(--text-muted);">Create an account or log in to view deal intelligence.</p><br><button onclick="document.getElementById(\'btnRequestDemo\').click()" style="margin-top:12px;padding:8px 20px;background:#7C3AED;color:#fff;border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;">Request Demo Access</button></div>';
+  /* ==============================================================
+     LAZY SCRIPT LOADING — heavy libs load on first Heatmap visit
+     ============================================================== */
+  var _scriptPromises = {};
+  function loadScript(src) {
+    if (_scriptPromises[src]) return _scriptPromises[src];
+    _scriptPromises[src] = new Promise(function(resolve, reject) {
+      var s = document.createElement('script');
+      s.src = src;
+      s.onload = function() { resolve(); };
+      s.onerror = function() { delete _scriptPromises[src]; reject(new Error('Failed to load ' + src)); };
+      document.head.appendChild(s);
+    });
+    return _scriptPromises[src];
   }
 
-  // Client-side rate limiting for API calls
+  function ensureHeatmapLibs() {
+    return Promise.all([
+      loadScript('https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js'),
+      loadScript('https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js'),
+      loadScript('https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js')
+    ]);
+  }
+
+  // Shared world-atlas topology — fetched once, reused by the 3D globe AND the 2D map
+  var _worldTopoPromise = null;
+  function getWorldTopology() {
+    if (_worldTopoPromise) return _worldTopoPromise;
+    var urls = [
+      'https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json',
+      'https://unpkg.com/world-atlas@2/countries-110m.json'
+    ];
+    _worldTopoPromise = (function tryNext(i) {
+      if (i >= urls.length) return Promise.reject(new Error('world-atlas unavailable'));
+      return fetch(urls[i])
+        .then(function(resp) {
+          if (!resp.ok) throw new Error('HTTP ' + resp.status);
+          return resp.json();
+        })
+        .catch(function(e) {
+          console.warn('world-atlas: failed to load from ' + urls[i], e);
+          return tryNext(i + 1);
+        });
+    })(0);
+    _worldTopoPromise.catch(function() { _worldTopoPromise = null; }); // allow retry after total failure
+    return _worldTopoPromise;
+  }
+
+  function debounce(fn, ms) {
+    var t;
+    return function() {
+      var args = arguments, ctx = this;
+      clearTimeout(t);
+      t = setTimeout(function() { fn.apply(ctx, args); }, ms);
+    };
+  }
+  var syncPreferencesDebounced = debounce(function() { syncPreferencesToSupabase(); }, 1200);
+
+  /* ==============================================================
+     AUTH GATES — one config + one builder for all gated sections
+     (replaces four near-identical inline blocks in navigateTo)
+     ============================================================== */
+  var AUTH_GATES = {
+    heatmap: {
+      toggles: ['#heatmap .panel'],
+      title: 'Request demo access to explore the Deal Heatmap',
+      sub: 'Interactive 3D globe with deal activity across 28 countries.'
+    },
+    players: {
+      toggles: ['#players .players-toolbar', '#players .players-table-wrap', '#players .kpi-grid', '#playersPagination'],
+      title: 'Request demo access to view Players data',
+      sub: '591 General Partners tracked across Latin America.'
+    },
+    pefunds: {
+      toggles: ['#pefunds .pef-disclaimer', '#pefunds .pef-report-btn', '#pefunds .kpi-grid', '#pefunds .pef-tabs', '#pefunds .pef-toolbar', '#pefunds .pef-table-wrap', '#pefunds .pef-charts-grid', '#pefPagination'],
+      title: 'Request demo access to view PE Funds data',
+      sub: '1,000+ PE funds with IRR, vintage, and quartile data.'
+    },
+    database: {
+      toggles: ['#database .db-toolbar', '#database .db-table-wrap', '#pagination'],
+      title: 'Request demo access to explore the Deal Database',
+      sub: '217 deals across PE, VC, M&A, Real Assets, and Private Credit.'
+    }
+  };
+
+  function buildAuthGate(id, title, sub) {
+    var gate = document.createElement('div');
+    gate.id = id;
+    gate.innerHTML = '<div class="empty-state" style="padding:80px 20px;"><svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" style="opacity:0.3;margin-bottom:12px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><p style="font-size:15px;color:var(--text-secondary);margin-bottom:8px;">' + title + '</p><p style="font-size:12px;color:var(--text-muted);">' + sub + '</p><br><button class="gate-cta" style="margin-top:12px;padding:8px 20px;background:#7C3AED;color:#fff;border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;">Request Demo Access</button></div>';
+    gate.querySelector('.gate-cta').addEventListener('click', function() {
+      document.getElementById('btnRequestDemo').click();
+    });
+    return gate;
+  }
+
+  // Show/hide a section's auth gate. Returns true when the section is locked (guest).
+  function gateSection(sectionId) {
+    var cfg = AUTH_GATES[sectionId];
+    if (!cfg) return false;
+    var locked = !currentUser;
+    cfg.toggles.forEach(function(sel) {
+      var el = document.querySelector(sel);
+      if (el) el.style.display = locked ? 'none' : '';
+    });
+    var gateId = sectionId + 'AuthGate';
+    var existing = document.getElementById(gateId);
+    if (locked) {
+      if (!existing) {
+        document.getElementById(sectionId).querySelector('.section-header')
+          .after(buildAuthGate(gateId, cfg.title, cfg.sub));
+      }
+    } else if (existing) {
+      existing.remove();
+    }
+    return locked;
+  }
+
+  // Client-side rate limiting for API calls  // Client-side rate limiting for API calls
   var _apiCallTimestamps = {};
   function rateLimitCheck(key, cooldownMs) {
     var now = Date.now();
@@ -3361,24 +3473,25 @@ a:hover { text-decoration: underline; }
   async function checkDemoAccess(user) {
     if (!user) return { status: 'none', isAdmin: false };
 
-    // Check if admin
-    var adminRes = await supabase
-      .from('admin_accounts')
-      .select('codename, role')
-      .eq('email', user.email)
-      .maybeSingle();
-    var adminData = adminRes.data;
+    // Admin + demo-request checks run in parallel (one round-trip instead of two)
+    var accessResults = await Promise.all([
+      supabase
+        .from('admin_accounts')
+        .select('codename, role')
+        .eq('email', user.email)
+        .maybeSingle(),
+      supabase
+        .from('demo_requests')
+        .select('status, expires_at, approved_at')
+        .eq('email', user.email)
+        .maybeSingle()
+    ]);
+    var adminData = accessResults[0].data;
+    var demoData = accessResults[1].data;
 
     if (adminData) {
       return { status: 'admin', isAdmin: true, codename: adminData.codename, role: adminData.role };
     }
-
-    // Check demo request
-    var { data: demoData } = await supabase
-      .from('demo_requests')
-      .select('status, expires_at, approved_at')
-      .eq('email', user.email)
-      .maybeSingle();
 
     if (!demoData) return { status: 'none', isAdmin: false };
     if (demoData.status === 'approved' && demoData.expires_at) {
@@ -3874,25 +3987,30 @@ a:hover { text-decoration: underline; }
     return v.toLocaleString('en-US') + 'M';
   }
 
+  const _flagCache = Object.create(null); // memo — called per row on every table render
   function countryToFlag(country) {
     if (!country) return '🌐';
     const lower = country.toLowerCase().trim();
+    if (_flagCache[lower] !== undefined) return _flagCache[lower];
+
+    let result = '🌐';
 
     // Direct match
     if (COUNTRY_FLAGS[lower]) {
       const code = COUNTRY_FLAGS[lower];
-      if (code.length > 2) return code; // emoji directly
-      return codeToEmoji(code);
-    }
-
-    // Partial match
-    for (const [name, code] of Object.entries(COUNTRY_FLAGS)) {
-      if (lower.includes(name) || name.includes(lower)) {
-        if (code.length > 2) return code;
-        return codeToEmoji(code);
+      result = code.length > 2 ? code : codeToEmoji(code); // >2 chars = emoji directly
+    } else {
+      // Partial match
+      for (const [name, code] of Object.entries(COUNTRY_FLAGS)) {
+        if (lower.includes(name) || name.includes(lower)) {
+          result = code.length > 2 ? code : codeToEmoji(code);
+          break;
+        }
       }
     }
-    return '🌐';
+
+    _flagCache[lower] = result;
+    return result;
   }
 
   function codeToEmoji(code) {
@@ -3910,9 +4028,7 @@ a:hover { text-decoration: underline; }
   }
 
   function escapeHtml(str) {
-    const div = document.createElement('div');
-    div.textContent = str;
-    return div.innerHTML;
+    return sanitizeInput(str); // same implementation as sanitizeInput — deduplicated (also guards null/undefined)
   }
 
   function searchUrl(name) {
@@ -4120,6 +4236,7 @@ a:hover { text-decoration: underline; }
      DATABASE — Filters & Sorting
      ============================================================== */
   function populateFilters() {
+    if ($('#filterCategory').options.length > 1) return; // already populated (init re-run guard)
     const categories = [...new Set(allDeals.map(d => d.category))].sort();
     const countries = [...new Set(allDeals.map(d => d.country))].filter(Boolean).sort();
 
@@ -4332,103 +4449,35 @@ a:hover { text-decoration: underline; }
       dd.classList.toggle('has-active-child', !!hasActive);
     });
 
-    // Lazy-init the 3D globe when heatmap section is first shown
+    // Heatmap: gate for guests; lazy-load three/topojson/d3 + init globe on first visit
     if (sectionId === 'heatmap') {
-      var heatmapPanel = document.querySelector('#heatmap .panel');
-      if (!currentUser) {
-        if (heatmapPanel) heatmapPanel.style.display = 'none';
-        if (!document.getElementById('heatmapAuthGate')) {
-          var gate = document.createElement('div');
-          gate.id = 'heatmapAuthGate';
-          gate.innerHTML = '<div class="empty-state" style="padding:80px 20px;"><svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" style="opacity:0.3;margin-bottom:12px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><p style="font-size:15px;color:var(--text-secondary);margin-bottom:8px;">Request demo access to explore the Deal Heatmap</p><p style="font-size:12px;color:var(--text-muted);">Interactive 3D globe with deal activity across 28 countries.</p><br><button onclick="document.getElementById(\'btnRequestDemo\').click()" style="margin-top:12px;padding:8px 20px;background:#7C3AED;color:#fff;border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;">Request Demo Access</button></div>';
-          document.getElementById('heatmap').querySelector('.section-header').after(gate);
-        }
-      } else {
-        var existingGate = document.getElementById('heatmapAuthGate');
-        if (existingGate) existingGate.remove();
-        if (heatmapPanel) heatmapPanel.style.display = '';
-        if (!globeInitialized && allDeals.length > 0) {
-          globeInitialized = true;
-          setTimeout(initGlobe, 50);
-        }
+      if (!gateSection('heatmap')) {
+        ensureHeatmapLibs().then(function() {
+          if (!globeInitialized && allDeals.length > 0) {
+            globeInitialized = true;
+            setTimeout(initGlobe, 50);
+          } else if (globeInitialized && currentHeatmapMode === '3d') {
+            startGlobeLoop(); // resume rendering when returning to the section
+          }
+        }).catch(function(e) { console.warn('Heatmap libraries failed to load', e); });
       }
+    } else {
+      stopGlobeLoop(); // no need to render the globe while its section is hidden
     }
 
-    // Lazy-load players data when section is first shown
-    if (sectionId === 'players') {
-      if (!currentUser) {
-        document.querySelector('#players .players-toolbar').style.display = 'none';
-        document.querySelector('#players .players-table-wrap').style.display = 'none';
-        document.querySelector('#players .kpi-grid').style.display = 'none';
-        document.querySelector('#playersPagination').style.display = 'none';
-        if (!document.getElementById('playersAuthGate')) {
-          var gate = document.createElement('div');
-          gate.id = 'playersAuthGate';
-          gate.innerHTML = '<div class="empty-state" style="padding:80px 20px;"><svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" style="opacity:0.3;margin-bottom:12px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><p style="font-size:15px;color:var(--text-secondary);margin-bottom:8px;">Request demo access to view Players data</p><p style="font-size:12px;color:var(--text-muted);">591 General Partners tracked across Latin America.</p><br><button onclick="document.getElementById(\'btnRequestDemo\').click()" style="margin-top:12px;padding:8px 20px;background:#7C3AED;color:#fff;border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;">Request Demo Access</button></div>';
-          document.getElementById('players').querySelector('.section-header').after(gate);
-        }
-      } else {
-        var existingGate = document.getElementById('playersAuthGate');
-        if (existingGate) existingGate.remove();
-        document.querySelector('#players .players-toolbar').style.display = '';
-        document.querySelector('#players .players-table-wrap').style.display = '';
-        document.querySelector('#players .kpi-grid').style.display = '';
-        document.querySelector('#playersPagination').style.display = '';
-        if (!playersLoaded) loadPlayers();
-      }
+    // Players: gate for guests; lazy-load data on first visit
+    if (sectionId === 'players' && !gateSection('players') && !playersLoaded) {
+      loadPlayers();
     }
 
-    // Lazy-load PE Funds data when section is first shown
-    if (sectionId === 'pefunds') {
-      if (!currentUser) {
-        document.querySelector('#pefunds .pef-disclaimer').style.display = 'none';
-        document.querySelector('#pefunds .pef-report-btn').style.display = 'none';
-        document.querySelector('#pefunds .kpi-grid').style.display = 'none';
-        document.querySelector('#pefunds .pef-tabs').style.display = 'none';
-        document.querySelector('#pefunds .pef-toolbar').style.display = 'none';
-        document.querySelector('#pefunds .pef-table-wrap').style.display = 'none';
-        document.querySelector('#pefunds .pef-charts-grid').style.display = 'none';
-        document.querySelector('#pefPagination').style.display = 'none';
-        if (!document.getElementById('pefAuthGate')) {
-          var gate = document.createElement('div');
-          gate.id = 'pefAuthGate';
-          gate.innerHTML = '<div class="empty-state" style="padding:80px 20px;"><svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" style="opacity:0.3;margin-bottom:12px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><p style="font-size:15px;color:var(--text-secondary);margin-bottom:8px;">Request demo access to view PE Funds data</p><p style="font-size:12px;color:var(--text-muted);">1,000+ PE funds with IRR, vintage, and quartile data.</p><br><button onclick="document.getElementById(\'btnRequestDemo\').click()" style="margin-top:12px;padding:8px 20px;background:#7C3AED;color:#fff;border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;">Request Demo Access</button></div>';
-          document.getElementById('pefunds').querySelector('.section-header').after(gate);
-        }
-      } else {
-        var existingGate = document.getElementById('pefAuthGate');
-        if (existingGate) existingGate.remove();
-        document.querySelector('#pefunds .pef-disclaimer').style.display = '';
-        document.querySelector('#pefunds .pef-report-btn').style.display = '';
-        document.querySelector('#pefunds .kpi-grid').style.display = '';
-        document.querySelector('#pefunds .pef-tabs').style.display = '';
-        document.querySelector('#pefunds .pef-toolbar').style.display = '';
-        document.querySelector('#pefunds .pef-table-wrap').style.display = '';
-        document.querySelector('#pefunds .pef-charts-grid').style.display = '';
-        document.querySelector('#pefPagination').style.display = '';
-        if (!pefLoaded) loadPEFunds();
-      }
+    // PE Funds: gate for guests; lazy-load data on first visit
+    if (sectionId === 'pefunds' && !gateSection('pefunds') && !pefLoaded) {
+      loadPEFunds();
     }
 
-    // Gate Deal Database section
+    // Deal Database: gate for guests
     if (sectionId === 'database') {
-      if (!currentUser) {
-        document.querySelector('#database .db-toolbar').style.display = 'none';
-        document.querySelector('#database .db-table-wrap').style.display = 'none';
-        document.querySelector('#pagination').style.display = 'none';
-        if (!document.getElementById('dbAuthGate')) {
-          var gate = document.createElement('div');
-          gate.id = 'dbAuthGate';
-          gate.innerHTML = '<div class="empty-state" style="padding:80px 20px;"><svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" style="opacity:0.3;margin-bottom:12px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><p style="font-size:15px;color:var(--text-secondary);margin-bottom:8px;">Request demo access to explore the Deal Database</p><p style="font-size:12px;color:var(--text-muted);">217 deals across PE, VC, M&A, Real Assets, and Private Credit.</p><br><button onclick="document.getElementById(\'btnRequestDemo\').click()" style="margin-top:12px;padding:8px 20px;background:#7C3AED;color:#fff;border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;">Request Demo Access</button></div>';
-          document.getElementById('database').querySelector('.section-header').after(gate);
-        }
-      } else {
-        var existingGate = document.getElementById('dbAuthGate');
-        if (existingGate) existingGate.remove();
-        document.querySelector('#database .db-toolbar').style.display = '';
-        document.querySelector('#database .db-table-wrap').style.display = '';
-        document.querySelector('#pagination').style.display = '';
-      }
+      gateSection('database');
     }
 
     // Lazy-load Markets widgets when section is first shown
@@ -4455,7 +4504,13 @@ a:hover { text-decoration: underline; }
   /* ==============================================================
      EVENT BINDINGS
      ============================================================== */
+  let _uiEventsBound = false;
   function bindEvents() {
+    // init() runs again if supabase-js re-emits SIGNED_IN (e.g. token refresh on tab
+    // refocus); without this guard every listener below would be attached twice.
+    if (_uiEventsBound) return;
+    _uiEventsBound = true;
+
     // Search (debounced)
     let searchTimer;
     $('#dbSearch').addEventListener('input', () => {
@@ -4637,6 +4692,8 @@ a:hover { text-decoration: underline; }
 
   let globeScene, globeCamera, globeRenderer, globeGroup;
   let globeAnimFrame;
+  let globeRunning = false;            // render loop pauses while the globe is hidden
+  let globeRaycaster = null, globeMouseVec = null; // reused across events (no per-mousemove allocation)
   let isDragging = false, prevMouse = { x: 0, y: 0 };
   let autoRotateSpeed = 0.002;
   let globeHovered = false;
@@ -4680,6 +4737,9 @@ a:hover { text-decoration: underline; }
     globeRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     globeRenderer.setClearColor(0x000000, 1);
     container.insertBefore(globeRenderer.domElement, container.firstChild);
+
+    globeRaycaster = new THREE.Raycaster();
+    globeMouseVec = new THREE.Vector2();
 
     globeGroup = new THREE.Group();
     globeGroup.rotation.x = 0.2;
@@ -4777,12 +4837,21 @@ a:hover { text-decoration: underline; }
       }
     }
 
-    // Load country borders from GeoJSON and draw as lines on globe surface
-    fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json')
-      .then(function(resp) { return resp.json(); })
+    // Country borders: shared world-atlas fetch, merged into ONE LineSegments
+    // (a single draw call instead of ~1,000 separate THREE.Line objects)
+    getWorldTopology()
       .then(function(topology) {
         var geojson = topojson.feature(topology, topology.objects.countries);
-        var borderMat = new THREE.LineBasicMaterial({ color: 0x1a3a5a, transparent: true, opacity: 0.35 });
+        var segmentPoints = [];
+
+        function addRing(ring) {
+          for (var i = 0; i < ring.length - 1; i++) {
+            segmentPoints.push(
+              latLngToVec3(ring[i][1], ring[i][0], 1.003),
+              latLngToVec3(ring[i + 1][1], ring[i + 1][0], 1.003)
+            );
+          }
+        }
 
         geojson.features.forEach(function(feature) {
           if (!feature.geometry) return;
@@ -4794,21 +4863,14 @@ a:hover { text-decoration: underline; }
               coords = coords.concat(poly);
             });
           }
-          coords.forEach(function(ring) {
-            var points = [];
-            for (var i = 0; i < ring.length; i++) {
-              var lng = ring[i][0];
-              var lat = ring[i][1];
-              var v = latLngToVec3(lat, lng, 1.003);
-              points.push(v);
-            }
-            if (points.length > 1) {
-              var geom = new THREE.BufferGeometry().setFromPoints(points);
-              var line = new THREE.Line(geom, borderMat);
-              globeGroup.add(line);
-            }
-          });
+          coords.forEach(addRing);
         });
+
+        if (segmentPoints.length > 1) {
+          var borderMat = new THREE.LineBasicMaterial({ color: 0x1a3a5a, transparent: true, opacity: 0.35 });
+          var geom = new THREE.BufferGeometry().setFromPoints(segmentPoints);
+          globeGroup.add(new THREE.LineSegments(geom, borderMat));
+        }
       })
       .catch(function(e) { console.warn('Could not load country borders for globe', e); });
 
@@ -4827,10 +4889,22 @@ a:hover { text-decoration: underline; }
     container.addEventListener('touchend', onGlobeMouseUp);
 
     window.addEventListener('resize', onGlobeResize);
+    startGlobeLoop();
+  }
+
+  function startGlobeLoop() {
+    if (globeRunning || !globeRenderer) return;
+    globeRunning = true;
     animateGlobe();
   }
 
+  function stopGlobeLoop() {
+    globeRunning = false;
+    if (globeAnimFrame) { cancelAnimationFrame(globeAnimFrame); globeAnimFrame = null; }
+  }
+
   function animateGlobe() {
+    if (!globeRunning) return;
     globeAnimFrame = requestAnimationFrame(animateGlobe);
     if (!isDragging && !globeHovered) globeGroup.rotation.y += autoRotateSpeed;
     globeRenderer.render(globeScene, globeCamera);
@@ -4855,14 +4929,12 @@ a:hover { text-decoration: underline; }
     }
 
     const rect = container.getBoundingClientRect();
-    const mouse = new THREE.Vector2(
+    globeMouseVec.set(
       ((e.clientX - rect.left) / rect.width) * 2 - 1,
       -((e.clientY - rect.top) / rect.height) * 2 + 1
     );
-
-    const raycaster = new THREE.Raycaster();
-    raycaster.setFromCamera(mouse, globeCamera);
-    const intersects = raycaster.intersectObjects(globeCountryMeshes);
+    globeRaycaster.setFromCamera(globeMouseVec, globeCamera);
+    const intersects = globeRaycaster.intersectObjects(globeCountryMeshes);
 
     if (intersects.length > 0) {
       const data = intersects[0].object.userData;
@@ -4896,13 +4968,12 @@ a:hover { text-decoration: underline; }
   function onGlobeClick(e) {
     const container = document.getElementById('globeContainer');
     const rect = container.getBoundingClientRect();
-    const mouse = new THREE.Vector2(
+    globeMouseVec.set(
       ((e.clientX - rect.left) / rect.width) * 2 - 1,
       -((e.clientY - rect.top) / rect.height) * 2 + 1
     );
-    const raycaster = new THREE.Raycaster();
-    raycaster.setFromCamera(mouse, globeCamera);
-    const intersects = raycaster.intersectObjects(globeCountryMeshes);
+    globeRaycaster.setFromCamera(globeMouseVec, globeCamera);
+    const intersects = globeRaycaster.intersectObjects(globeCountryMeshes);
     if (intersects.length > 0) {
       const data = intersects[0].object.userData;
       openCountryDealsModal(data.country);
@@ -4947,7 +5018,10 @@ a:hover { text-decoration: underline; }
     return 'dfp_layout_' + id;
   }
 
+  let _panelsRestoredAt = 0; // suppress the save-echo fired right after restoring sizes
+
   function savePanelSizes() {
+    if (Date.now() - _panelsRestoredAt < 1500) return; // ResizeObserver also fires for restored sizes
     const layout = {};
     document.querySelectorAll('[data-panel-id]').forEach(el => {
       const id = el.dataset.panelId;
@@ -4956,10 +5030,12 @@ a:hover { text-decoration: underline; }
       }
     });
     localStorage.setItem(getDashboardLayoutKey(), JSON.stringify(layout));
-    syncPreferencesToSupabase();
+    syncPreferencesDebounced(); // batch rapid resize ticks into one Supabase upsert
   }
+  const savePanelSizesDebounced = debounce(savePanelSizes, 400);
 
   function restorePanelSizes() {
+    _panelsRestoredAt = Date.now();
     try {
       const layout = JSON.parse(localStorage.getItem(getDashboardLayoutKey()));
       if (!layout) return;
@@ -4973,15 +5049,16 @@ a:hover { text-decoration: underline; }
     } catch {}
   }
 
+  let _panelsObserved = false; // init() re-runs on every loadData — observe panels only once
   function initResizablePanels() {
     restorePanelSizes();
-    const observer = new MutationObserver(() => savePanelSizes());
-    document.querySelectorAll('[data-panel-id]').forEach(el => {
-      observer.observe(el, { attributes: true, attributeFilter: ['style'] });
-    });
-    // Also use ResizeObserver for more reliable detection
+    if (_panelsObserved) return;
+    _panelsObserved = true;
+    // ResizeObserver alone covers user drag-resizes. The old MutationObserver on the
+    // style attribute only ever fired for JS-driven changes (i.e. restorePanelSizes),
+    // which just echoed the restored layout straight back to Supabase.
     if (typeof ResizeObserver !== 'undefined') {
-      const ro = new ResizeObserver(() => savePanelSizes());
+      const ro = new ResizeObserver(() => savePanelSizesDebounced());
       document.querySelectorAll('[data-panel-id]').forEach(el => ro.observe(el));
     }
   }
@@ -5045,27 +5122,13 @@ a:hover { text-decoration: underline; }
       .attr('height', h)
       .attr('viewBox', '0 0 ' + w + ' ' + h);
 
-    // Load TopoJSON with fallback URLs
-    var topoUrls = [
-      'https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json',
-      'https://unpkg.com/world-atlas@2/countries-110m.json'
-    ];
-
-    var loaded = false;
-    for (var i = 0; i < topoUrls.length && !loaded; i++) {
-      try {
-        var resp = await fetch(topoUrls[i]);
-        if (!resp.ok) throw new Error('HTTP ' + resp.status);
-        var topology = await resp.json();
-        map2dGeojson = topojson.feature(topology, topology.objects.countries);
-        render2dMap(w, h);
-        loaded = true;
-      } catch (e) {
-        console.warn('2D Map: failed to load from ' + topoUrls[i], e);
-      }
-    }
-    if (!loaded) {
-      console.error('2D Map: could not load world borders from any source');
+    // Shared world-atlas fetch (same cached promise the 3D globe uses — one download, not two)
+    try {
+      var topology = await getWorldTopology();
+      map2dGeojson = topojson.feature(topology, topology.objects.countries);
+      render2dMap(w, h);
+    } catch (e) {
+      console.error('2D Map: could not load world borders', e);
     }
 
     window.addEventListener('resize', on2dResize);
@@ -5177,14 +5240,18 @@ a:hover { text-decoration: underline; }
         if (mode === '3d') {
           globeC.style.display = '';
           map2dC.style.display = 'none';
+          startGlobeLoop(); // resume rendering when the 3D view is visible again
         } else {
           globeC.style.display = 'none';
           map2dC.style.display = 'block';
-          if (!map2dInitialized && allDeals.length > 0) {
-            setTimeout(init2dMap, 50);
-          } else {
-            on2dResize();
-          }
+          stopGlobeLoop(); // don't keep rendering the hidden globe behind the 2D map
+          ensureHeatmapLibs().then(function() {
+            if (!map2dInitialized && allDeals.length > 0) {
+              setTimeout(init2dMap, 50);
+            } else {
+              on2dResize();
+            }
+          }).catch(function(e) { console.warn('Heatmap libraries failed to load', e); });
         }
       });
     });
@@ -5347,6 +5414,21 @@ a:hover { text-decoration: underline; }
       renderPlayersTable();
       renderPlayersPagination();
     });
+
+    // Delegated row-click handler (bound once; survives every table re-render)
+    $('#playersTable tbody').addEventListener('click', (e) => {
+      const tr = e.target.closest('tr[data-player]');
+      if (!tr) return;
+      const name = tr.dataset.player;
+      // Ensure PE funds data is loaded before opening modal
+      if (!pefLoaded) {
+        loadPEFunds().then(function() {
+          openPlayerModal(name);
+        }).catch(function() { openPlayerModal(name); });
+      } else {
+        openPlayerModal(name);
+      }
+    });
   }
 
   function applyPlayersFilter() {
@@ -5400,20 +5482,8 @@ a:hover { text-decoration: underline; }
     }
     tbody.innerHTML = html;
 
-    // Click handler for player rows
-    tbody.querySelectorAll('tr[data-player]').forEach(tr => {
-      tr.addEventListener('click', () => {
-        const name = tr.dataset.player;
-        // Ensure PE funds data is loaded before opening modal
-        if (!pefLoaded) {
-          loadPEFunds().then(function() {
-            openPlayerModal(name);
-          }).catch(function() { openPlayerModal(name); });
-        } else {
-          openPlayerModal(name);
-        }
-      });
-    });
+    // Row clicks are handled by ONE delegated listener bound in initPlayers()
+    // (previously 25 fresh listeners were attached on every page/sort/filter render)
 
     // Update sort header styles
     $$('#playersTable thead th').forEach(th => {
@@ -6156,7 +6226,7 @@ a:hover { text-decoration: underline; }
     });
     renderWatchlist();
 
-    syncPreferencesToSupabase();
+    syncPreferencesDebounced(); // batch rapid star-toggles into one upsert
   }
 
   async function syncPreferencesToSupabase() {
@@ -6646,10 +6716,10 @@ a:hover { text-decoration: underline; }
     });
   }
 
-  // Storage was cleared on boot — no session to recover. Render guest navbar + load public data.
-  _updateNavBrand();
+  // Storage was cleared on boot — no session to recover. Load public data.
+  // (Guest navbar is already rendered by initAuth's own _updateNavBrand call.)
   loadData();
 })();
 </script>
 </body>
-</html>
+</html>      
